@@ -56,6 +56,9 @@ const server = http.createServer((req, res) => {
                         case 'product-catalog':
                             resMsg = productCatalog(req, res, urlParts);
                             break;
+                        case 'product-reviews':
+                            resMsg = productReviews(req, res, urlParts);
+                            break;
                         default:
                             break;
                     }
@@ -90,5 +93,13 @@ function productCatalog(req, res, urlParts) {
     resMsg.code = 200;
     resMsg.hdrs = {"Content-Type" : "text/html"};
     resMsg.body = "catalog";
+    return resMsg;
+}
+
+function productReviews(req, res, urlParts) {
+    resMsg = {};
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "text/html"};
+    resMsg.body = "reviews";
     return resMsg;
 }
