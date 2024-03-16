@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const { url } = require('inspector');
 const port = 8000;
+let dBCon = {};
 let html;
 try {
     html = fs.readFileSync('lifesynchub.html', 'utf8');
@@ -18,7 +19,7 @@ const readline = require('readline').createInterface({
 
 readline.question('Enter password: ', pass => { // read password
     const mysql = require("mysql2");
-    const dBCon = mysql.createConnection({ // MySQL database
+    dBCon = mysql.createConnection({ // MySQL database
         host: "localhost",
         user: "root",
         database: "lifesynchub",
@@ -48,16 +49,16 @@ const server = http.createServer((req, res) => {
         req.destroy();
       }
     });
-    req.on('end', function () {
+    req.on('end', async function () {
         switch(req.method) {
             case 'GET':
                 if (urlParts[0]) {
                     switch(urlParts[0]) {
                         case 'product-catalog':
-                            resMsg = productCatalog(req, res, urlParts);
+                            resMsg = await productCatalog(req, res, urlParts);
                             break;
                         case 'product-reviews':
-                            resMsg = productReviews(req, res, urlParts);
+                            resMsg = await productReviews(req, res, urlParts);
                             break;
                         default:
                             break;
@@ -88,18 +89,43 @@ server.once('error', function(err) {
     }
 });
 
-function productCatalog(req, res, urlParts) {
+function failedDB() {
     resMsg = {};
-    resMsg.code = 200;
+    resMsg.code = 503;
     resMsg.hdrs = {"Content-Type" : "text/html"};
-    resMsg.body = "catalog";
+    resMsg.body = "Failed access to database. Please try again later.";
     return resMsg;
 }
 
-function productReviews(req, res, urlParts) {
-    resMsg = {};
+async function productCatalog(req, res, urlParts) {
+    let resMsg = {};
+    if (urlParts[1]) {
+        let product_ID = urlParts[1];
+        let query = "select * from products where product_ID = '" + product_ID + "'";
+        const getProductInfo = async() => {
+            let resMsg = {};
+            await dBCon.promise().query(query).then(([ result ]) => {
+                if (result[0]) {
+                    resMsg.code = 200;
+                    resMsg.hdrs = {"Content-Type" : "application/json"};
+                    resMsg.body = JSON.stringify(result[0]);
+                }
+            }).catch(error => {
+                resMsg = failedDB();
+            });
+            return resMsg;
+        }
+        return getProductInfo();
+    } else {
+        return resMsg;
+    }
+    
+}
+
+async function productReviews(req, res, urlParts) {
+    let resMsg = {};
     resMsg.code = 200;
     resMsg.hdrs = {"Content-Type" : "text/html"};
     resMsg.body = "reviews";
     return resMsg;
-}
+} 
