@@ -1,8 +1,29 @@
 <html>
-    <body>
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <meta name="google-signin-client_id" content="391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com">
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  <body>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script>
+        async function handleCredentialResponse(response) {
+            await fetch("http://localhost:8000/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "test/html",
+                },
+                body: response.credential
+            });
+            document.write("Successful login.");
 
-    </body>
+        }
+        window.onload = function () {
+            google.accounts.id.initialize({
+            client_id: "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("buttonDiv"),
+            { theme: "outline", size: "large" }  // customization attributes
+        );
+    }
+    </script>
+    <div id="buttonDiv"></div>
+  </body>
 </html>

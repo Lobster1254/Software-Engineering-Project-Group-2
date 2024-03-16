@@ -1,9 +1,9 @@
 const http = require('http');
 const fs = require('fs');
-const { url } = require('inspector');
 const port = 8000;
 let dBCon = {};
 let html;
+
 try {
     html = fs.readFileSync('lifesynchub.html', 'utf8');
 } catch (error) {
@@ -69,6 +69,9 @@ const server = http.createServer((req, res) => {
                     resMsg.body = html;
                 }
                 break;
+            case 'POST':
+                resMsg.code = 200;
+                break;
             default:
                 break;
         }
@@ -129,3 +132,4 @@ async function productReviews(req, res, urlParts) {
     resMsg.body = "reviews";
     return resMsg;
 } 
+
