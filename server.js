@@ -104,18 +104,49 @@ async function productCatalog(req, res, urlParts) {
     let resMsg = {};
     if (urlParts[1]) {
         let product_ID = urlParts[1];
-        let query = "select * from products where product_ID = '" + product_ID + "'";
+        let productQuery = "select * from products where product_ID = '" + product_ID + "'";
+        let reviewQuery = "select user_ID, score, description, created from productreviews where product_ID = '" + product_ID + "'";
+        let discountQuery = "select * from discounts where ((product_ID = '" + product_ID + "' and scope = 'single') or (category = (select category from products where product_ID = '" + product_ID + "') and scope = 'category')) and end_date >= CURDATE()";
+        let user_ID = getUserID();
+        let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
         const getProductInfo = async() => {
             let resMsg = {};
-            await dBCon.promise().query(query).then(([ result ]) => {
+            await dBCon.promise().query(productQuery).then(([ result ]) => {
                 if (result[0]) {
-                    resMsg.code = 200;
-                    resMsg.hdrs = {"Content-Type" : "application/json"};
-                    resMsg.body = JSON.stringify(result[0]);
+                    resMsg.body = result[0];
                 }
             }).catch(error => {
                 resMsg = failedDB();
             });
+            await dBCon.promise().query(discountQuery).then(([ result ]) => {
+                if (result[0]) {
+                    resMsg.body.discounts = result;
+                }
+            }).catch(error => {
+                resMsg.body.reviews = "Failed to load discounts.";
+            });
+            await dBCon.promise().query(ordersQuery).then(([ result ]) => {
+                if (result[0]) {
+                    resMsg.body.orders = result;
+                }
+            }).catch(error => {
+                resMsg.body.reviews = "Failed to load orders.";
+                console.log(error);
+            });
+            await dBCon.promise().query(reviewQuery).then(([ result ]) => {
+                if (result[0]) {
+                    let sum = 0;
+                    for (i = 0; i < result.length; i++)
+                        sum = sum + result[i].score;
+                    resMsg.body.average_rating = sum/result.length;
+                    resMsg.body.reviews = result;
+                }
+            }).catch(error => {
+                resMsg.body.reviews = "Failed to load reviews.";
+            });
+            resMsg.code = 200;
+            resMsg.hdrs = {"Content-Type" : "application/json"};
+            resMsg.body = JSON.stringify(resMsg.body);
             return resMsg;
         }
         return getProductInfo();
@@ -133,3 +164,7 @@ async function productReviews(req, res, urlParts) {
     return resMsg;
 } 
 
+function getUserID() {
+    // idk
+    return -1;
+}
