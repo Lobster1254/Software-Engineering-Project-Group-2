@@ -33,15 +33,6 @@ CREATE TABLE `discountedproducts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `discountedproducts`
---
-
-LOCK TABLES `discountedproducts` WRITE;
-/*!40000 ALTER TABLE `discountedproducts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `discountedproducts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `discounts`
 --
 
@@ -62,15 +53,6 @@ CREATE TABLE `discounts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `discounts`
---
-
-LOCK TABLES `discounts` WRITE;
-/*!40000 ALTER TABLE `discounts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `discounts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `helpfulnessratings`
 --
 
@@ -85,15 +67,6 @@ CREATE TABLE `helpfulnessratings` (
   CONSTRAINT `helpfulnessratings_ibfk_1` FOREIGN KEY (`product_ID`, `user_ID`) REFERENCES `productreviews` (`product_ID`, `user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `helpfulnessratings`
---
-
-LOCK TABLES `helpfulnessratings` WRITE;
-/*!40000 ALTER TABLE `helpfulnessratings` DISABLE KEYS */;
-/*!40000 ALTER TABLE `helpfulnessratings` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `orderproducts`
@@ -112,15 +85,6 @@ CREATE TABLE `orderproducts` (
   CONSTRAINT `orderproducts_ibfk_2` FOREIGN KEY (`product_ID`) REFERENCES `products` (`product_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `orderproducts`
---
-
-LOCK TABLES `orderproducts` WRITE;
-/*!40000 ALTER TABLE `orderproducts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `orderproducts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `orders`
@@ -145,16 +109,6 @@ CREATE TABLE `orders` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `orders`
---
-
-LOCK TABLES `orders` WRITE;
-/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,'-1','2024-03-16','credit card',100.00,12.20,23.00,'123 joe street','123 joe street','delivered');
-/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `productreviews`
 --
 
@@ -171,15 +125,6 @@ CREATE TABLE `productreviews` (
   CONSTRAINT `productreviews_ibfk_1` FOREIGN KEY (`product_ID`) REFERENCES `products` (`product_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `productreviews`
---
-
-LOCK TABLES `productreviews` WRITE;
-/*!40000 ALTER TABLE `productreviews` DISABLE KEYS */;
-/*!40000 ALTER TABLE `productreviews` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `products`
@@ -201,18 +146,10 @@ CREATE TABLE `products` (
   `category` varchar(30) DEFAULT NULL,
   `weight_oz` int NOT NULL,
   `color` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`product_ID`)
+  PRIMARY KEY (`product_ID`),
+  FULLTEXT KEY `name` (`name`,`description`,`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `products`
---
-
-LOCK TABLES `products` WRITE;
-/*!40000 ALTER TABLE `products` DISABLE KEYS */;
-/*!40000 ALTER TABLE `products` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `shoppingcartproducts`
@@ -233,15 +170,6 @@ CREATE TABLE `shoppingcartproducts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `shoppingcartproducts`
---
-
-LOCK TABLES `shoppingcartproducts` WRITE;
-/*!40000 ALTER TABLE `shoppingcartproducts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `shoppingcartproducts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `shoppingcarts`
 --
 
@@ -254,15 +182,6 @@ CREATE TABLE `shoppingcarts` (
   PRIMARY KEY (`user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `shoppingcarts`
---
-
-LOCK TABLES `shoppingcarts` WRITE;
-/*!40000 ALTER TABLE `shoppingcarts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `shoppingcarts` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -273,4 +192,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-17 20:04:05
+-- Dump completed on 2024-03-18  0:24:46

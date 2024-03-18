@@ -55,10 +55,10 @@ const server = http.createServer((req, res) => {
                 if (urlParts[0]) {
                     switch(urlParts[0]) {
                         case 'product-catalog':
-                            resMsg = await productCatalog(req, res, urlParts);
+                            resMsg = await productCatalog(urlParts);
                             break;
                         case 'product-reviews':
-                            resMsg = await productReviews(req, res, urlParts);
+                            resMsg = await productReviews(urlParts);
                             break;
                         default:
                             break;
@@ -136,7 +136,6 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
         }
     }).catch(error => {
         discounts = "Failed to load discounts.";
-        console.log(error);
     });
     return discounts;
 }
@@ -199,11 +198,30 @@ function failedDB() { // can be called when the server fails to connect to the d
     return resMsg;
 }
 
-async function productCatalog(req, res, urlParts) {
+async function searchProducts(keyword) {
+    resMsg = {};
+    let searchQuery = "select * from products where match(name, description, category) against('" + keyword + "');";
+    await dBCon.promise().query(searchQuery).then(([ result ]) => {
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "application/json"};
+        resMsg.body = result;
+    }).catch(error => {
+        resMsg = failedDB();
+    });
+    resMsg.body = JSON.stringify(resMsg.body);
+    return resMsg;
+}
+
+async function productCatalog(urlParts) {
     if (urlParts[1]) {
-        let product_ID = urlParts[1];
+        if (urlParts[1].startsWith("search?key=")) {
+            let keyword = urlParts[1].split("=")[1];
+            return await searchProducts(keyword);
+        } else {
+            let product_ID = urlParts[1];
         
-        return await getProductInfo(product_ID);
+            return await getProductInfo(product_ID);
+        }
     } else {
         return {};
     }
@@ -211,21 +229,19 @@ async function productCatalog(req, res, urlParts) {
 }
 
 
-async function productReviews(req, res, urlParts) {
+async function productReviews(urlParts) {
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
         let isProduct = true;
         let foundProduct = true;
         await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
-            console.log(result[0]);
             if (!result[0])
                 isProduct = false;
         }).catch(error => {
             foundProduct = false;
             resMsg = failedDB();
         });
-        console.log(isProduct);
         if (!isProduct || !foundProduct)
             return resMsg;
         let reviewInfo = await getProductReviews(product_ID);
