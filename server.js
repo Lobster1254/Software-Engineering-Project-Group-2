@@ -4,6 +4,9 @@ const port = 8000;
 let dBCon = {};
 let html;
 
+const minReviewScore = 1;
+const maxReviewScore = 5;
+
 try {
     html = fs.readFileSync('lifesynchub.html', 'utf8');
 } catch (error) {
@@ -34,7 +37,7 @@ readline.question('Enter password: ', pass => { // read password
 const server = http.createServer((req, res) => {
     let urlParts = [];
     let segments = req.url.split('/');
-    for (i = 0, num = segments.length; i < num; i++) {
+    for (let i = 0, num = segments.length; i < num; i++) {
       if (segments[i] !== "") { // check for trailing "/" or double "//"
         urlParts.push(segments[i]);
       }
@@ -92,16 +95,46 @@ server.once('error', function(err) {
     }
 });
 
-const getProductReviews = async(product_ID) => { // returns array, index 0 = avg rating, index 1 = JSON of reviews
+const getProductReviews = async(body, product_ID) => { // returns array, index 0 = avg rating, index 1 = score distribution index 2 = JSON of reviews
     let reviewInfo = [];
-    let reviewQuery = "select user_ID, score, description, created from productreviews where product_ID = '" + product_ID + "'";
+    let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.user_ID = h.review_user_ID and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by user_ID, product_ID";
+    if (body != "") {
+        let sorter;
+        try {
+            sorter = JSON.parse(body);
+        } catch (error) {
+            return error;
+        }
+        if (sorter.hasOwnProperty("sort_by")) {
+            if (sorter.sort_by == "date_asc") {
+                reviewQuery = reviewQuery + " order by created asc";
+            } else if (sorter.sort_by == "date_desc") {
+                reviewQuery = reviewQuery + " order by created desc";
+            } else if (sorter.sort_by == "help_asc") {
+                reviewQuery = reviewQuery + " order by helpfulness asc";
+            } else if (sorter.sort_by == "help_desc") {
+                reviewQuery = reviewQuery + " order by helpfulness desc";
+            } else if (sorter.sort_by == "score_asc") {
+                reviewQuery = reviewQuery + " order by score asc";
+            } else {
+                reviewQuery = reviewQuery + " order by score desc";
+            }
+        }
+    }  
     await dBCon.promise().query(reviewQuery).then(([ result ]) => {
         if (result[0]) {
             let sum = 0;
-            for (i = 0; i < result.length; i++)
+            /* distribution is an array that stores the quantity of each review score on a product
+               distribution[0] is the number of reviews with the lowest review score and distribution[distribution.length-1] is the number of reviews with the highest review score
+             */
+            let distribution = Array(maxReviewScore - minReviewScore).fill(0);
+            for (let i = 0; i < result.length; i++) {
+                distribution[result[i].score - minReviewScore]++;
                 sum = sum + result[i].score;
+            }
             reviewInfo[0] = sum/result.length;
-            reviewInfo[1] = result;
+            reviewInfo[1] = distribution;
+            reviewInfo[2] = result;
         }
     }).catch(error => {
         reviewInfo = "Failed to load reviews.";
@@ -117,7 +150,7 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
             let set_price = base_price;
             let lowered_price = base_price;
             let final_discounted_price;
-            for (i = 0; i < result.length; i++) {
+            for (let i = 0; i < result.length; i++) {
                 if (result[i].type == "set_price") {
                     if (result[i].set_price != null && result[i].set_price < set_price)
                         set_price = result[i].set_price;
@@ -140,13 +173,12 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
     return discounts;
 }
 
-const getProductInfo = async(product_ID) => { // returns stringified JSON of product info
+const getProductInfo = async(body, product_ID) => { // returns stringified JSON of product info
     let productQuery = "select * from products where product_ID = '" + product_ID + "'";
     let user_ID = getUserID();
     let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
-    foundProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
         if (result[0]) {
             resMsg.body = result[0];
@@ -154,10 +186,9 @@ const getProductInfo = async(product_ID) => { // returns stringified JSON of pro
             isProduct = false;
         }
     }).catch(error => {
-        foundProduct = false;
-        resMsg = failedDB();
+        return failedDB();
     });
-    if (!isProduct || !foundProduct)
+    if (!isProduct)
         return resMsg;
     let discounts = await getDiscounts(product_ID, resMsg.body.price);
     if (discounts) {
@@ -175,13 +206,19 @@ const getProductInfo = async(product_ID) => { // returns stringified JSON of pro
     }).catch(error => {
         resMsg.body.reviews = "Failed to load orders.";
     });
-    let reviewInfo = await getProductReviews(product_ID);
+    let reviewInfo = await getProductReviews(body, product_ID);
     if (reviewInfo) {
         if (reviewInfo instanceof String) {
             resMsg.body.reviews = reviewInfo;
+        } else if (reviewInfo instanceof Error) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = reviewInfo.toString();
+            return resMsg;
         } else {
             resMsg.body.average_rating = reviewInfo[0];
-            resMsg.body.reviews = reviewInfo[1];
+            resMsg.body.distribution = reviewInfo[1];
+            resMsg.body.reviews = reviewInfo[2];
         }
     }
     resMsg.code = 200;
@@ -200,29 +237,51 @@ function failedDB() { // can be called when the server fails to connect to the d
 
 async function searchProducts(body, keyword) {
     resMsg = {};
-    let searchQuery = "select * from products where match(name, description, category) against('" + keyword + "')";
-    try {
-        let filters = JSON.parse(body);
+    let searchQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID where match(name, description, category) against('" + keyword + "')";
+    let min_price = -1;
+    if (body != "") {
+        let filters;
+        try {
+            filters = JSON.parse(body);
+        } catch (error) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = error.toString();
+            return resMsg;
+        }
         if (filters.hasOwnProperty("category")) // filter by category
             searchQuery = searchQuery + " and category = '" + filters.category + "'";
         if (filters.hasOwnProperty("min_price")) // minimum price
             searchQuery = searchQuery + " and price >= '" + filters.min_price + "'";
+            min_price = filters.min_price;
         if (filters.hasOwnProperty("max_price")) // maximum price
             searchQuery = searchQuery + " and price <= '" + filters.max_price + "'";
-    } catch (error) {
-        resMsg.code = 400;
-        resMsg.hdrs = {"Content-Type" : "text/html"};
-        resMsg.body = error.toString();
-        return resMsg;
+        if (filters.hasOwnProperty("min_rating")) // minimum average review rating
+            searchQuery = searchQuery + "and IFNULL(rating.average_rating, 0) >= '" + filters.min_rating + "'";
     }
-    searchQuery = searchQuery + ";";
     await dBCon.promise().query(searchQuery).then(([ result ]) => {
         resMsg.code = 200;
         resMsg.hdrs = {"Content-Type" : "application/json"};
         resMsg.body = result;
+        
     }).catch(error => {
-        resMsg = failedDB();
+        console.log(error);
+        return failedDB();
     });
+    let discountInfo;
+    for (let i = 0; i < resMsg.body.length; i++) {
+        let currentProduct = resMsg.body[i];
+        discountInfo = await getDiscounts(currentProduct.product_ID, currentProduct.price);
+        currentProduct.discounted_price = discountInfo[0];
+        resMsg.body[i] = currentProduct;
+        if (min_price > discountInfo[0])
+            if (i == 0) 
+                resMsg.body[0] = null;
+            else
+                for (let i = 1; i < resMsg.body.length; i++)
+                    resMsg.body[i] = resMsg.body[i-1];
+    }
+    resMsg.body = resMsg.body.filter((product) => product != null);
     resMsg.body = JSON.stringify(resMsg.body);
     return resMsg;
 }
@@ -235,7 +294,7 @@ async function productCatalog(body, urlParts) {
         } else {
             let product_ID = urlParts[1];
         
-            return await getProductInfo(product_ID);
+            return await getProductInfo(body, product_ID);
         }
     } else {
         return {};
@@ -244,29 +303,33 @@ async function productCatalog(body, urlParts) {
 }
 
 
-async function productReviews(req, urlParts) {
+async function productReviews(body, urlParts) {
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
         let isProduct = true;
-        let foundProduct = true;
         await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
             if (!result[0])
                 isProduct = false;
         }).catch(error => {
-            foundProduct = false;
-            resMsg = failedDB();
+            return failedDB();
         });
-        if (!isProduct || !foundProduct)
+        if (!isProduct)
             return resMsg;
-        let reviewInfo = await getProductReviews(product_ID);
+        let reviewInfo = await getProductReviews(body, product_ID);
         if (reviewInfo) {
             if (reviewInfo instanceof String) {
                 return failedDB();
+            } else if (reviewInfo instanceof Error) {
+                resMsg.code = 400;
+                resMsg.hdrs = {"Content-Type" : "text/html"};
+                resMsg.body = reviewInfo.toString();
+                return resMsg;
             } else {
                 resMsg.body = {};
                 resMsg.body.average_rating = reviewInfo[0];
-                resMsg.body.reviews = reviewInfo[1];
+                resMsg.body.distribution = reviewInfo[1];
+                resMsg.body.reviews = reviewInfo[2];
             }
         }
         resMsg.code = 200;
