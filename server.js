@@ -106,7 +106,7 @@ async function productCatalog(req, res, urlParts) {
         let product_ID = urlParts[1];
         let productQuery = "select * from products where product_ID = '" + product_ID + "'";
         let reviewQuery = "select user_ID, score, description, created from productreviews where product_ID = '" + product_ID + "'";
-        let discountQuery = "select * from discounts where ((product_ID = '" + product_ID + "' and scope = 'single') or (category = (select category from products where product_ID = '" + product_ID + "') and scope = 'category')) and end_date >= CURDATE()";
+        let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE()";
         let user_ID = getUserID();
         let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
         const getProductInfo = async() => {
@@ -120,10 +120,27 @@ async function productCatalog(req, res, urlParts) {
             });
             await dBCon.promise().query(discountQuery).then(([ result ]) => {
                 if (result[0]) {
+                    let set_price = resMsg.body.price;
+                    let lowered_price = resMsg.body.price;
+                    for (i = 0; i < result.length; i++) {
+                        if (result[i].type == "set_price") {
+                            if (result[i].set_price != null && result[i].set_price < set_price)
+                                set_price = result[i].set_price;
+                        } else {
+                            if (result[i].percent_off != null && result[i].percent_off <= 100 && result[i].percent_off > 0)
+                                lowered_price = lowered_price * (100-result[i].percent_off)/100;
+                        }
+                    }
+                    if (set_price < resMsg.body.price) 
+                        resMsg.body.discounted_price = set_price;
+                    else 
+                        resMsg.body.discounted_price = lowered_price;
+                    resMsg.body.discounted_price = roundPrice(resMsg.body.discounted_price);
                     resMsg.body.discounts = result;
                 }
             }).catch(error => {
-                resMsg.body.reviews = "Failed to load discounts.";
+                resMsg.body.discounts = "Failed to load discounts.";
+                console.log(error);
             });
             await dBCon.promise().query(ordersQuery).then(([ result ]) => {
                 if (result[0]) {
@@ -167,4 +184,8 @@ async function productReviews(req, res, urlParts) {
 function getUserID() {
     // idk
     return -1;
+}
+
+function roundPrice(num) {
+    return Math.ceil(num * 100) / 100;
 }
