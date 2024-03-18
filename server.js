@@ -127,7 +127,7 @@ const getProductReviews = async(body, product_ID) => { // returns array, index 0
             /* distribution is an array that stores the quantity of each review score on a product
                distribution[0] is the number of reviews with the lowest review score and distribution[distribution.length-1] is the number of reviews with the highest review score
              */
-            let distribution = Array(maxReviewScore - minReviewScore).fill(0);
+            let distribution = Array(maxReviewScore - minReviewScore + 1).fill(0);
             for (let i = 0; i < result.length; i++) {
                 distribution[result[i].score - minReviewScore]++;
                 sum = sum + result[i].score;
