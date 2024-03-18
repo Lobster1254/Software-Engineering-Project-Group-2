@@ -57,7 +57,7 @@ async function loadProducts() {
             count++
             console.log("Added product " + count + ".");
         }).catch(error => {
-            console.log(description);
+            console.log(error);
         });
     }   
 }

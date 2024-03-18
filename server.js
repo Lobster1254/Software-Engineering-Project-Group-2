@@ -295,7 +295,6 @@ async function productCatalog(body, urlParts) {
                 keyword = param.key;
             else
                 return {};
-            console.log(keyword);
             return await searchProducts(body, keyword);
         } else {
             let product_ID = urlParts[1];
