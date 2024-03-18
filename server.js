@@ -265,7 +265,6 @@ async function searchProducts(body, keyword) {
         resMsg.body = result;
         
     }).catch(error => {
-        console.log(error);
         return failedDB();
     });
     let discountInfo;
