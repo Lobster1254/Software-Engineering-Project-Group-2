@@ -62,9 +62,11 @@ DROP TABLE IF EXISTS `helpfulnessratings`;
 CREATE TABLE `helpfulnessratings` (
   `rating` int NOT NULL,
   `user_ID` varchar(50) NOT NULL,
+  `review_user_ID` varchar(50) NOT NULL,
   `product_ID` varchar(50) NOT NULL,
   PRIMARY KEY (`product_ID`,`user_ID`),
-  CONSTRAINT `helpfulnessratings_ibfk_1` FOREIGN KEY (`product_ID`, `user_ID`) REFERENCES `productreviews` (`product_ID`, `user_ID`)
+  KEY `product_ID` (`product_ID`,`review_user_ID`),
+  CONSTRAINT `helpfulnessratings_ibfk_1` FOREIGN KEY (`product_ID`, `review_user_ID`) REFERENCES `productreviews` (`product_ID`, `user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -192,4 +194,4 @@ CREATE TABLE `shoppingcarts` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-18  0:24:46
+-- Dump completed on 2024-03-18  1:36:01
