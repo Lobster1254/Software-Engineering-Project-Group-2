@@ -16,6 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `discountedproducts`
+--
+
+DROP TABLE IF EXISTS `discountedproducts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `discountedproducts` (
+  `discount_ID` int NOT NULL,
+  `product_ID` varchar(50) NOT NULL,
+  PRIMARY KEY (`discount_ID`,`product_ID`),
+  KEY `product_ID` (`product_ID`),
+  CONSTRAINT `discountedproducts_ibfk_1` FOREIGN KEY (`discount_ID`) REFERENCES `discounts` (`discount_ID`),
+  CONSTRAINT `discountedproducts_ibfk_2` FOREIGN KEY (`product_ID`) REFERENCES `products` (`product_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `discountedproducts`
+--
+
+LOCK TABLES `discountedproducts` WRITE;
+/*!40000 ALTER TABLE `discountedproducts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `discountedproducts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `discounts`
 --
 
@@ -27,11 +53,10 @@ CREATE TABLE `discounts` (
   `start_date` date DEFAULT NULL,
   `end_date` date NOT NULL,
   `category` varchar(30) DEFAULT NULL,
-  `product_ID` varchar(50) DEFAULT NULL,
   `set_price` float(8,2) DEFAULT NULL,
   `percent_off` tinyint DEFAULT NULL,
   `type` enum('percent_off','set_price') NOT NULL,
-  `scope` enum('single','category') NOT NULL,
+  `scope` enum('product_list','category') NOT NULL,
   PRIMARY KEY (`discount_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -125,6 +150,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,'-1','2024-03-16','credit card',100.00,12.20,23.00,'123 joe street','123 joe street','delivered');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +273,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-17 11:02:24
+-- Dump completed on 2024-03-17 20:04:05
