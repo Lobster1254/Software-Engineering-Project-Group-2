@@ -1,0 +1,2472 @@
+{
+    "request_info": {
+      "success": true,
+      "credits_used": 7,
+      "credits_remaining": 93,
+      "credits_used_this_request": 1
+    },
+    "request_parameters": {
+      "type": "category",
+      "category_id": "890F0D8A0C19546115E43C1F6B9E7C165952D082"
+    },
+    "request_metadata": {
+      "created_at": "2024-03-18T17:40:46.972Z",
+      "processed_at": "2024-03-18T17:40:50.970Z",
+      "total_time_taken": 4,
+      "walmart_url": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197"
+    },
+    "category_results": [
+      {
+        "position": 1,
+        "product": {
+          "title": "Microsoft Surface Go 3 10.5\" Pixel Sense Display, 10 Point Multi-Touch, Intel Core i3-10100Y, 8GB RAM, 128GB SSD, Platinum, Windows 11, 8VC-00001",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Go-3-10-5-Pixel-Sense-Display-10-Point-Multi-Touch-Intel-Core-i3-10100Y-8GB-RAM-128GB-SSD-Platinum-Windows-11-8VC-00001/575548922?athbdg=L1600",
+          "item_id": "575548922",
+          "product_id": "2UJY4ZREWNXE",
+          "images": [
+            "https://i5.walmartimages.com/seo/Microsoft-Surface-Go-3-10-5-Pixel-Sense-Display-10-Point-Multi-Touch-Intel-Core-i3-10100Y-8GB-RAM-128GB-SSD-Platinum-Windows-11-8VC-00001_03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Microsoft-Surface-Go-3-10-5-Pixel-Sense-Display-10-Point-Multi-Touch-Intel-Core-i3-10100Y-8GB-RAM-128GB-SSD-Platinum-Windows-11-8VC-00001_03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 5,
+          "ratings_total": 2,
+          "best_seller": true,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 589.99,
+            "currency_symbol": "$",
+            "id": "70C4B3D9B41835FB93793682CF41D189",
+            "seller": {
+              "name": "Always.Deals",
+              "id": "2D0DD174C23F4B029C0A260492F7F689"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 2,
+        "product": {
+          "title": "CHUWI UBook X 12\" Gaming Tablet+KeyBoard+H8 Stylus Pen,512G SSD 12G ROM,Windows 11,intel Core i5-10210Y,2 in 1 Gaming/Workshop Tablet Laptop PC,2160*1440 2K IPS Display,2023 New Upgrade",
+          "link": "https://www.walmart.com/ip/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440/672862812?athbdg=L1700",
+          "item_id": "672862812",
+          "product_id": "1TI7GZFDQ7Q0",
+          "images": [
+            "https://i5.walmartimages.com/seo/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440_6db5327a-e61b-4280-a9cf-ce89afb04aae.34a2948f853533d2937fb29bc86634ea.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440_6db5327a-e61b-4280-a9cf-ce89afb04aae.34a2948f853533d2937fb29bc86634ea.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 4.8,
+          "ratings_total": 268,
+          "best_seller": true,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 375,
+            "currency_symbol": "$",
+            "id": "209BDC2172784FE486CF1C871267DC64",
+            "list_price": 429,
+            "savings_amount": 54,
+            "seller": {
+              "name": "CHU WI",
+              "id": "E3A0D3043FDF497780CAAC2E7D073B39"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 3,
+        "product": {
+          "title": "HIGOLEPC Rugged Tablet Windows 11 Pro 10.1in Intel Celeron N4120 MIL-STD-810G 16000mAh Battery 8GB RAM 128GB ROM 5MP 2MP Cameras",
+          "link": "https://www.walmart.com/ip/HIGOLEPC-Rugged-Tablet-Windows-11-Pro-10-1in-Intel-Celeron-N4120-MIL-STD-810G-16000mAh-Battery-8GB-RAM-128GB-ROM-5MP-2MP-Cameras/5359914885",
+          "item_id": "5359914885",
+          "product_id": "3ZX1AWOVAHHH",
+          "images": [
+            "https://i5.walmartimages.com/seo/HIGOLEPC-Rugged-Tablet-Windows-11-Pro-10-1in-Intel-Celeron-N4120-MIL-STD-810G-16000mAh-Battery-8GB-RAM-128GB-ROM-5MP-2MP-Cameras_7deac6a3-d647-4c6b-a304-81dd70e0d3f1.96247e40b0d3af0dd688b177027e9d33.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/HIGOLEPC-Rugged-Tablet-Windows-11-Pro-10-1in-Intel-Celeron-N4120-MIL-STD-810G-16000mAh-Battery-8GB-RAM-128GB-ROM-5MP-2MP-Cameras_7deac6a3-d647-4c6b-a304-81dd70e0d3f1.96247e40b0d3af0dd688b177027e9d33.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 0,
+          "ratings_total": 0,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 519.99,
+            "currency_symbol": "$",
+            "id": "8D4D09951D763A58B63DA7159AED4A12",
+            "list_price": 579.99,
+            "savings_amount": 60,
+            "seller": {
+              "name": "HIGOLEPC",
+              "id": "AF74AE6B008D42B6B51595C7DAA93406"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 4,
+        "product": {
+          "title": "Restored Dell RGB Gaming Desktop Computer PC, Intel i5 6th Gen. AMD Radeon RX 550 4GB DDR5, 16GB Ram, 512GB SSD, 22 inch Monitor, BTO RGB Gaming Keyboard Mouse & Headset, WiFi Windows 10 Pro (Renewed)",
+          "link": "https://www.walmart.com/ip/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse/3385423630?athbdg=L1600",
+          "item_id": "3385423630",
+          "product_id": "4M4X0X5X9IX5",
+          "images": [
+            "https://i5.walmartimages.com/seo/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse_d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse_d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 3.8,
+          "ratings_total": 58,
+          "best_seller": true,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 287.08,
+            "currency_symbol": "$",
+            "id": "AE35E77C47E04321834E00532797B3E5",
+            "seller": {
+              "name": "SJ Computers LLC",
+              "id": "5C0FBB509E644AA2B920F9291944B74C"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 5,
+        "product": {
+          "title": "Restored Ematic EWT834 Intel 8\" 16GB with Windows 10 Quad-Core Touchscreen Tablet with Bluetooth 4.0 Black (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Ematic-EWT834-Intel-8-16GB-with-Windows-10-Quad-Core-Touchscreen-Tablet-with-Bluetooth-4-0-Black-Refurbished/5224225742",
+          "description": "Merchandise",
+          "item_id": "5224225742",
+          "product_id": "1R3KWRQZAHGG",
+          "images": [
+            "https://i5.walmartimages.com/asr/9289f684-a93b-4603-99c4-93e62c1a1ee9_3.ee85b7f0041c411cc8f642921ccf313d.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/9289f684-a93b-4603-99c4-93e62c1a1ee9_3.ee85b7f0041c411cc8f642921ccf313d.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3,
+          "ratings_total": 5
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 48.99,
+            "currency_symbol": "$",
+            "id": "145397348F67368F9001309A9DB9E3DE",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 6,
+        "product": {
+          "title": "CHUWI UBook 11.5\" Tablet,256GB ROM 8GB RAM,intel Gemini-Lake,WIFI,Windows Gaming/Workstation Tablet,FM,1920*1080 IPS Display",
+          "link": "https://www.walmart.com/ip/CHUWI-UBook-11-5-Tablet-256GB-ROM-8GB-RAM-intel-Gemini-Lake-WIFI-Windows-Gaming-Workstation-Tablet-FM-1920-1080-IPS-Display/991293709?athbdg=L1700",
+          "description": "CHUWI's Android 2-in-1 Tablet HiPad Air, 10.3-inch all metal integrated body, made by CNC technology. This tablet uses an 8-core chip and is equipped with a G52 850mhz high-performance graphics card",
+          "item_id": "991293709",
+          "product_id": "4ZFA1O62H5TF",
+          "images": [
+            "https://i5.walmartimages.com/seo/CHUWI-UBook-11-5-Tablet-256GB-ROM-8GB-RAM-intel-Gemini-Lake-WIFI-Windows-Gaming-Workstation-Tablet-FM-1920-1080-IPS-Display_2688efb5-1dff-480b-9da1-29c430e76557.bd111058e2f655aa5e2b610a51b5c5b9.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/CHUWI-UBook-11-5-Tablet-256GB-ROM-8GB-RAM-intel-Gemini-Lake-WIFI-Windows-Gaming-Workstation-Tablet-FM-1920-1080-IPS-Display_2688efb5-1dff-480b-9da1-29c430e76557.bd111058e2f655aa5e2b610a51b5c5b9.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 4.6,
+          "ratings_total": 24,
+          "best_seller": true,
+          "variants": [
+            {
+              "item_id": "991293709",
+              "product_id": "5R1ACNCZD28W",
+              "title": "UBook intel Gemini-Lake 4100",
+              "image": "https://i5.walmartimages.com/asr/2688efb5-1dff-480b-9da1-29c430e76557.bd111058e2f655aa5e2b610a51b5c5b9.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/CHUWI-UBook-11-5-Tablet-256GB-ROM-8GB-RAM-intel-Gemini-Lake-WIFI-Windows-Gaming-Workstation-Tablet-FM-1920-1080-IPS-Display/991293709?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "959423092",
+              "product_id": "4QBYJSKF59ZA",
+              "title": "UBook intel Gemini-Lake 4120",
+              "image": "https://i5.walmartimages.com/asr/ab31cf50-8ed7-479b-b97b-3ab7c437cbd1.1c54f7ce47742c03bd26524ff596f795.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/CHUWI-UBook-11-5-Tablet-256GB-ROM-8GB-RAM-intel-Gemini-Lake-4120-WIFI-Windows-Gaming-Workstation-Tablet-FM-1920-1080-IPS-Display/959423092?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 139,
+            "currency_symbol": "$",
+            "id": "84ADD6F0694E4F439C791E3045A6A023",
+            "list_price": 169,
+            "savings_amount": 30,
+            "seller": {
+              "name": "ZHI GU",
+              "id": "332646B2AB1A4F80BF0AA9759AA1F062"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 7,
+        "product": {
+          "title": "Ematic 10.1\" Quad-Core Tablet Bundle 16Gb Storage, Bluetooth - Purple EGQ236BDPR",
+          "link": "https://www.walmart.com/ip/Ematic-10-1-Quad-Core-Tablet-Bundle-16Gb-Storage-Bluetooth-Purple-EGQ236BDPR/672073343",
+          "description": "Ematic EGQ236 10\" 16GB Android 8.1 Tablet w/ Keyboard Case and Headphones Purple",
+          "item_id": "672073343",
+          "product_id": "4QNV6ZYRMGE0",
+          "images": [
+            "https://i5.walmartimages.com/asr/47e69498-0be0-4f4e-aa1c-6b782fc86b56.a4427f717b3f8eec11da8ed9218f3041.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/47e69498-0be0-4f4e-aa1c-6b782fc86b56.a4427f717b3f8eec11da8ed9218f3041.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.2,
+          "ratings_total": 126
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 59.99,
+            "currency_symbol": "$",
+            "id": "BC70D553BA5431D79557201E0A6801E0",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 8,
+        "product": {
+          "title": "CHUWI UBook X 12\" Gaming Tablet+KeyBoard+H8 Stylus Pen,512G SSD 12G ROM,Windows 11,intel Core i5-10210Y,2 in 1 Gaming/Workshop Tablet Laptop PC,2160*1440 2K IPS Display,2023 New Upgrade",
+          "link": "https://www.walmart.com/ip/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440/672862812?athbdg=L1700",
+          "description": "Brand Item model numberHardware PlatformOperating SystemItem WeightProdu",
+          "item_id": "672862812",
+          "product_id": "3KZ7LAXSUNOJ",
+          "images": [
+            "https://i5.walmartimages.com/seo/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440_6db5327a-e61b-4280-a9cf-ce89afb04aae.34a2948f853533d2937fb29bc86634ea.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440_6db5327a-e61b-4280-a9cf-ce89afb04aae.34a2948f853533d2937fb29bc86634ea.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 4.8,
+          "ratings_total": 268,
+          "best_seller": true,
+          "variants": [
+            {
+              "item_id": "672862812",
+              "product_id": "1TI7GZFDQ7Q0",
+              "title": "12+512",
+              "image": "https://i5.walmartimages.com/asr/6db5327a-e61b-4280-a9cf-ce89afb04aae.34a2948f853533d2937fb29bc86634ea.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-H8-Stylus-Pen-512G-SSD-12G-ROM-Windows-11-intel-Core-i5-10210Y-2-1-Gaming-Workshop-Tablet-Laptop-PC-2160-1440/672862812?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "602677263",
+              "product_id": "11EAN1RO1HDF",
+              "title": "N4120",
+              "image": "https://i5.walmartimages.com/asr/69f37d49-1c0d-4d72-a97e-d30abe107bcb.d06a801d9777a3bdc3a7ccd1db1d98b1.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/CHUWI-UBook-X-12-Gaming-Tablet-KeyBoard-256G-SSD-8G-ROM-Windows-11-intel-Core-N4120-2-1-Gaming-Workshop-Laptop-PC-2160-1440-2K-IPS-Display-2023-New-U/602677263?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 375,
+            "currency_symbol": "$",
+            "id": "209BDC2172784FE486CF1C871267DC64",
+            "list_price": 429,
+            "savings_amount": 54,
+            "seller": {
+              "name": "CHU WI",
+              "id": "E3A0D3043FDF497780CAAC2E7D073B39"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 9,
+        "product": {
+          "title": "Ematic EWT716 - Tablet - Intel Atom - Win 8.1 - 1 GB RAM - 16 GB - 7\" IPS touchscreen 1024 x 600 - black",
+          "link": "https://www.walmart.com/ip/Ematic-EWT716-Tablet-Intel-Atom-Win-8-1-1-GB-RAM-16-GB-7-IPS-touchscreen-1024-x-600-black/41512395",
+          "description": "<li>7.0\" touchscreen</li><li>1.3GHz Intel Atom Quad-Core processor</li><li>16GB of storage memory</li><li>Microsoft Windows 8.1 OS</li><li>Webcam, WiFi and Bluetooth</li>",
+          "item_id": "41512395",
+          "product_id": "300CJV559BNX",
+          "images": [
+            "https://i5.walmartimages.com/asr/0827169d-7783-414b-b6b9-c1934e1d4b4b.24aa06cc94ece0011ac4007f024f6345.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/0827169d-7783-414b-b6b9-c1934e1d4b4b.24aa06cc94ece0011ac4007f024f6345.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.8,
+          "ratings_total": 13
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 49.95,
+            "currency_symbol": "$",
+            "id": "1A056DC133523D098F01CC087B7E04CA",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 10,
+        "product": {
+          "title": "Microsoft Surface Pro 3 Tablet Computer with Keyboard - Intel Core i3-4020Y 1.5GHz, 4GB RAM, 64GB SSD, 12-inch Display, Windows 10 Pro - Used Grade B",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-3-Tablet-Computer-with-Keyboard-Intel-Core-i3-4020Y-1-5GHz-4GB-RAM-64GB-SSD-12-inch-Display-Windows-10-Pro-Used-Grade-B/714954148?athbdg=L1200",
+          "description": "<li>RefurbishedMicrosoft Surface Pro 3 w/ Keyboard</li><li>Keyboard colors vary</li>\n<li>Intel Core i3-4020Y Processor</li>\n<li>3M Cache,1.50 GHz</li>\n<li>4GB Ram</li>\n<li>64GB SSD Drive</li>\n<li>12\"</li>",
+          "item_id": "714954148",
+          "product_id": "2LPTZKSH1S7I",
+          "images": [
+            "https://i5.walmartimages.com/asr/27c9a5b9-6cdb-423a-850e-7c01611c6b5a.32ef305abc850b8d0f3c025facb5b5cd.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/27c9a5b9-6cdb-423a-850e-7c01611c6b5a.32ef305abc850b8d0f3c025facb5b5cd.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.8,
+          "ratings_total": 32,
+          "popular_pick": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 178.92,
+            "currency_symbol": "$",
+            "id": "7F8E2C2A3B53464F99A5D07ECC10F691",
+            "seller": {
+              "name": "MYPCWORLD.NET Inc",
+              "id": "2C0E430CD02C427D884096675E4A2F73"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 11,
+        "product": {
+          "title": "Restored Apple iPad 5 (2017) A9 Processor 128GB Storage Wi-Fi and Bluetooth with Pro 6 Wireless Earbuds (Space Gray) (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Apple-iPad-5-2017-A9-Processor-128GB-Storage-Wi-Fi-and-Bluetooth-with-Pro-6-Wireless-Earbuds-Space-Gray-Refurbished/359953152",
+          "item_id": "359953152",
+          "product_id": "6EOU64FWS64O",
+          "images": [
+            "https://i5.walmartimages.com/seo/Restored-Apple-iPad-5-2017-A9-Processor-128GB-Storage-Wi-Fi-and-Bluetooth-with-Pro-6-Wireless-Earbuds-Space-Gray-Refurbished_e26fe13f-a6d6-4ae6-a8c8-4f02cb043195.77ba501256f6f07e5532f3e32f3f2759.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Restored-Apple-iPad-5-2017-A9-Processor-128GB-Storage-Wi-Fi-and-Bluetooth-with-Pro-6-Wireless-Earbuds-Space-Gray-Refurbished_e26fe13f-a6d6-4ae6-a8c8-4f02cb043195.77ba501256f6f07e5532f3e32f3f2759.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 3.9,
+          "ratings_total": 13,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 138,
+            "currency_symbol": "$",
+            "id": "E6CFC47AE4C9490CB577CD8E6D4AD3F2",
+            "seller": {
+              "name": "Discount Computer Depot",
+              "id": "DEA609FAA6F7448BAE542FB030870E59"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 12,
+        "product": {
+          "title": "Microsoft Surface Pro 9 13\" Tablet, Intel i5, 8GB/256GB, Platinum (QEZ00001) - Refurbished",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-9-13-Tablet-Intel-i5-8GB-256GB-Platinum-QEZ00001-Refurbished/5346476148",
+          "item_id": "5346476148",
+          "product_id": "0TL5QIC0BH9H",
+          "images": [
+            "https://i5.walmartimages.com/seo/Microsoft-Surface-Pro-9-13-Tablet-Intel-i5-8GB-256GB-Platinum-QEZ00001-Refurbished_3c332405-4247-4748-999d-4095726adb0b.a5497a670d3314513b4e23edb63ce306.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Microsoft-Surface-Pro-9-13-Tablet-Intel-i5-8GB-256GB-Platinum-QEZ00001-Refurbished_3c332405-4247-4748-999d-4095726adb0b.a5497a670d3314513b4e23edb63ce306.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 0,
+          "ratings_total": 0,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 749.99,
+            "currency_symbol": "$",
+            "id": "EBD825A11D1239C28D9AC63ED65907B7",
+            "seller": {
+              "name": "Beach Camera ",
+              "id": "10D2E6BEB0F84585BF5E7BFF5332EE60"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 13,
+        "product": {
+          "title": "Dell Latitude 7000 7200 Tablet, 12.3\", Core i5 8th Gen i5-8365U Quad-core (4 Core) 1.60 GHz, 8 GB RAM, 256 GB SSD, Windows 10 Pro 64-bit",
+          "link": "https://www.walmart.com/ip/Dell-Latitude-7000-7200-Tablet-12-3-Core-i5-8th-Gen-i5-8365U-Quad-core-4-Core-1-60-GHz-8-GB-RAM-256-GB-SSD-Windows-10-Pro-64-bit/542437385",
+          "description": "LATITUDE72002IN1I588365U8GB1DIMMS256GBSSW102C12.3IN",
+          "item_id": "542437385",
+          "product_id": "3Y614WX77S2C",
+          "images": [
+            "https://i5.walmartimages.com/asr/d340c9fb-e5d3-4fc2-b9a6-be20e07f03ef.6df7da754ea65d2a1e104442faf25521.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/d340c9fb-e5d3-4fc2-b9a6-be20e07f03ef.6df7da754ea65d2a1e104442faf25521.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 5,
+          "ratings_total": 1
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 413.32,
+            "currency_symbol": "$",
+            "id": "0195A19D4AFE34BFBDCC9E9DC12F3C75",
+            "list_price": 480.12,
+            "savings_amount": 66.80000000000001,
+            "seller": {
+              "name": "Tech For Less Inc",
+              "id": "5883037D83F1490EBEDE9F07BCA53E40"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 14,
+        "product": {
+          "title": "Microsoft Surface Pro 4 12.3-Inch (4GB RAM, 128GB SSD, Intel Core i5, Windows 10) (Manufacturer Used)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-4-12-3-Inch-4GB-RAM-128GB-SSD-Intel-Core-i5-Windows-10-Manufacturer-Used/107579930",
+          "description": "<li>Surface Pro 4 powers through everything you need to do, while being lighter than ever before</li><li>The 12.3\" PixelSense screen has extremely high contrast and low glare so you can work through</li>",
+          "item_id": "107579930",
+          "product_id": "3FL4EIBN2TMG",
+          "images": [
+            "https://i5.walmartimages.com/asr/60f620fb-49ad-4906-857a-6bd36920dd19.cf2d2785c5011bb48f2be128a3dc9e24.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/60f620fb-49ad-4906-857a-6bd36920dd19.cf2d2785c5011bb48f2be128a3dc9e24.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 1,
+          "ratings_total": 1
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 179,
+            "currency_symbol": "$",
+            "id": "906FADF430AF41E3BE7B080DA6B3DAFF",
+            "seller": {
+              "name": "The Main Main Guy",
+              "id": "2DBE3C98F2464D29A5C8F71E13DD8DB6"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 15,
+        "product": {
+          "title": "Microsoft Surface Go 3 10.5\" Pixel Sense Display, 10 Point Multi-Touch, Intel Core i3-10100Y, 8GB RAM, 128GB SSD, Platinum, Windows 11, 8VC-00001",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Go-3-10-5-Pixel-Sense-Display-10-Point-Multi-Touch-Intel-Core-i3-10100Y-8GB-RAM-128GB-SSD-Platinum-Windows-11-8VC-00001/575548922?athbdg=L1600",
+          "description": "MS8VC00001<li>Surface Go 3 Tablet</li><li>Power Supply</li><li>Quick Start Guide</li><li>Safety and Warranty Documents</li>Meet Surface Go 3See the most portable Surface touchscreen 2-in-1 in action,",
+          "item_id": "575548922",
+          "product_id": "2UJY4ZREWNXE",
+          "images": [
+            "https://i5.walmartimages.com/asr/03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 5,
+          "ratings_total": 2,
+          "best_seller": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 589.99,
+            "currency_symbol": "$",
+            "id": "70C4B3D9B41835FB93793682CF41D189",
+            "seller": {
+              "name": "Always.Deals",
+              "id": "2D0DD174C23F4B029C0A260492F7F689"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 16,
+        "product": {
+          "title": "2.4GHz & Bluetooth Mouse, Rechargeable Wireless LED Mouse for Maxwest Nitro Phablet 71 ALso Compatible with TV / Laptop / PC / Mac / iPad pro / Computer / Tablet / Android - Onyx Black",
+          "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Ony/2477152084",
+          "item_id": "2477152084",
+          "product_id": "2IH0PMXX55K5",
+          "images": [
+            "https://i5.walmartimages.com/asr/63347878-c33b-4cc9-aa5f-4ca15ef4dd97.cba0e0f4a15fd7394aa7566ec08e20ab.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/63347878-c33b-4cc9-aa5f-4ca15ef4dd97.cba0e0f4a15fd7394aa7566ec08e20ab.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 0,
+          "ratings_total": 0,
+          "variants": [
+            {
+              "item_id": "1670607957",
+              "product_id": "2K3GLDP7996P",
+              "title": "Baby Pink",
+              "image": "https://i5.walmartimages.com/asr/d064b9e6-9f78-4701-815b-267b739b7a2a.549ba67d3caa577d31001acf8d2e137e.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Bab/1670607957?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2522233581",
+              "product_id": "1QV24F0IVEZX",
+              "title": "Banana Yellow",
+              "image": "https://i5.walmartimages.com/asr/4550cf95-edb8-475a-8fba-1d9e1eb2b40d.548ed52cf331466c31054952317bbab3.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Ban/2522233581?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "1881635240",
+              "product_id": "26KNWSHDWSQA",
+              "title": "Deep Green",
+              "image": "https://i5.walmartimages.com/asr/aa253b37-4d70-4aab-836f-1dcdce8390f7.aa18a28258936e9e9d3418c7b18b81ff.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Dee/1881635240?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "1661166288",
+              "product_id": "6CRMV5SRR668",
+              "title": "Gold",
+              "image": "https://i5.walmartimages.com/asr/d6126112-da0f-4761-b724-e7f313da7d1b.a1aeffd04ce4b91432aa8c9c20d7296a.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Gol/1661166288?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2477152084",
+              "product_id": "23CBQVPI3K31",
+              "title": "Onyx Black",
+              "image": "https://i5.walmartimages.com/asr/63347878-c33b-4cc9-aa5f-4ca15ef4dd97.cba0e0f4a15fd7394aa7566ec08e20ab.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Ony/2477152084?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2426602631",
+              "product_id": "2FRNBD417I9T",
+              "title": "Pure White",
+              "image": "https://i5.walmartimages.com/asr/7d06c965-8e2e-4dec-8a9a-9230cbc52450.9b8d27edfc41948701e3d2d5054ac93c.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Pur/2426602631?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2875487990",
+              "product_id": "7FX7Z9BYU6UG",
+              "title": "Rose Gold",
+              "image": "https://i5.walmartimages.com/asr/3a563053-74e0-483a-b22a-15b2eefe538c.83d7964a6a7f39732a0737ed7fe9a22e.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Ros/2875487990?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2261869530",
+              "product_id": "64003HZLUNVP",
+              "title": "Silver",
+              "image": "https://i5.walmartimages.com/asr/fa91a80a-c0c6-4ebe-b4d3-fcbef641f860.e9307750a1af9a6ca005854563906f5e.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Sil/2261869530?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2486312718",
+              "product_id": "4TXCVLZCQ177",
+              "title": "Sky Blue",
+              "image": "https://i5.walmartimages.com/asr/2e26fd01-1757-4da4-8c33-fe80bed111ce.1befac3d5558c78b71324c3d1c821916.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Sky/2486312718?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2240974700",
+              "product_id": "12HBKS3TZBT7",
+              "title": "Titanium",
+              "image": "https://i5.walmartimages.com/asr/cc0a4000-7523-40fb-9760-9261c1e5a5c3.96effa7eaf590666a758573220947317.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Tit/2240974700?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "1866542476",
+              "product_id": "4H0BU8SR4UTE",
+              "title": "Turquoise",
+              "image": "https://i5.walmartimages.com/asr/9c8ff1f4-2714-45e6-bdbf-42126fefe1e1.13e6edb608001b5631fd566d26078ed8.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/2-4GHz-Bluetooth-Mouse-Rechargeable-Wireless-LED-Mouse-Maxwest-Nitro-Phablet-71-ALso-Compatible-TV-Laptop-PC-Mac-iPad-pro-Computer-Tablet-Android-Tur/1866542476?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 13.95,
+            "currency_symbol": "$",
+            "id": "204E4CC1EBDE4CB89486D692FDFF0BCC",
+            "seller": {
+              "name": "Urban Extreme LLC",
+              "id": "1111EA3BC9874A02A505DBF75228AADF"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 17,
+        "product": {
+          "title": "Ematic 8.95\" 32GB Tablet Windows 10 with Keyboard, EWT935DK",
+          "link": "https://www.walmart.com/ip/Ematic-8-95-32GB-Tablet-Windows-10-with-Keyboard-EWT935DK/48695652",
+          "description": "<li>8.95\" touchscreen</li><li>1.3GHz Intel Atom processor</li><li>32GB of storage memory</li><li>Windows 10 OS</li><li>Webcams, WiFi, and Bluetooth</li>",
+          "item_id": "48695652",
+          "product_id": "1UR1NWA3B8UX",
+          "images": [
+            "https://i5.walmartimages.com/asr/5501d5c7-c2f9-46a9-9cd2-76436d02baa9_1.1f9609180df5d80e07f23ea80d7f0b84.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/5501d5c7-c2f9-46a9-9cd2-76436d02baa9_1.1f9609180df5d80e07f23ea80d7f0b84.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 2.3,
+          "ratings_total": 28
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 59.9,
+            "currency_symbol": "$",
+            "id": "38186EF858453C759F2475A2ED68D40C",
+            "list_price": 69.9,
+            "savings_amount": 10.000000000000007,
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 18,
+        "product": {
+          "title": "Ematic EWT900BL 16GB Tablet PC - 8.9\" - IPS Technology - Wireless LAN",
+          "link": "https://www.walmart.com/ip/Ematic-EWT900BL-16GB-Tablet-PC-8-9-IPS-Technology-Wireless-LAN/44726310",
+          "description": "Ematic EWT900BL 16 GB Net-tablet PC - 8.9\" - In-plane Switching (IPS) Technology - Wireless LAN - Intel Atom - Black",
+          "item_id": "44726310",
+          "product_id": "2Y4N794G7V5Z",
+          "images": [
+            "https://i5.walmartimages.com/seo/Ematic-EWT900BL-16GB-Tablet-PC-8-9-IPS-Technology-Wireless-LAN_c23e72c6-2349-4651-a0d6-f57c6d366642.335f763776106397d1bd5214dd794e04.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Ematic-EWT900BL-16GB-Tablet-PC-8-9-IPS-Technology-Wireless-LAN_c23e72c6-2349-4651-a0d6-f57c6d366642.335f763776106397d1bd5214dd794e04.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 3.7,
+          "ratings_total": 13,
+          "variants": [
+            {
+              "item_id": "44726312",
+              "product_id": "18KPOSYZKT8E",
+              "title": "Pink",
+              "image": "https://i5.walmartimages.com/asr/226fafa5-bf84-423d-a7ce-c0e459b9dbba_1.dce7c06d1595a24569ce8f919aca1dfa.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Ematic-EWT900PN-8-9-HD-Quad-Core-16-GB-Tablet-With-Windows-8/44726312?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "44726310",
+              "product_id": "5F2Q5T2NFK1D",
+              "title": "Black",
+              "image": "https://i5.walmartimages.com/asr/c23e72c6-2349-4651-a0d6-f57c6d366642.335f763776106397d1bd5214dd794e04.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Ematic-EWT900BL-16GB-Tablet-PC-8-9-IPS-Technology-Wireless-LAN/44726310?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 62.99,
+            "currency_symbol": "$",
+            "id": "0CF3FFDCB22C3CBEB4A5D639BC11747C",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 19,
+        "product": {
+          "title": "Microsoft Surface 2 - Tablet - Win 8.1 RT - 32 GB - 10.6\" (1920 x 1080) - USB host - microSD slot - magnesium - Used",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-2-Tablet-Win-8-1-RT-32-GB-10-6-1920-x-1080-USB-host-microSD-slot-magnesium-Used/40722245",
+          "description": "Key Features and Benefits:<li>Microsoft OfficeSurface 2 pushes the boundaries of what a tablet can do. With touch-optimized versions of Outlook, Word, Excel, PowerPoint, and OneNote, Surface 2 can go</li>",
+          "item_id": "40722245",
+          "product_id": "3LVYFF9GO59X",
+          "images": [
+            "https://i5.walmartimages.com/asr/3157b809-219e-4ec3-aeaa-4c985e58d173.0c5c8045e8b936d1b95b3b7d4c0b2a86.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/3157b809-219e-4ec3-aeaa-4c985e58d173.0c5c8045e8b936d1b95b3b7d4c0b2a86.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 1,
+          "ratings_total": 1
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 149,
+            "currency_symbol": "$",
+            "id": "ED09E306FC2F477C969483BE6788A0C9",
+            "seller": {
+              "name": "Red Tag ",
+              "id": "AF4486D692794F679E08A863536C5323"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 20,
+        "product": {
+          "title": "Microsoft Surface Pro 4 12.3-inch 2-in-1 Tablet w/ Keyboard - 6th Gen Intel Core m3-6Y30 4GB RAM 128GB SSD Windows 10 Pro (Used Grade B)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-4-12-3-inch-2-in-1-Tablet-w-Keyboard-6th-Gen-Intel-Core-m3-6Y30-4GB-RAM-128GB-SSD-Windows-10-Pro-Used-Grade-B/473700942?athbdg=L1600",
+          "description": "<li class=\"item\"><b>Refurbished Grade B Microsoft Surface Pro 4 Tablet</b></li><li class=\"item\"><b>6th Generation Intel Core m3-6Y30 Processor</b></li><li class=\"item\"><b>4M Cache, up to 2.20 GHz</b></li><li class=\"item\"></li>",
+          "item_id": "473700942",
+          "product_id": "0WALEZ0ZXLTS",
+          "images": [
+            "https://i5.walmartimages.com/asr/27c9a5b9-6cdb-423a-850e-7c01611c6b5a.32ef305abc850b8d0f3c025facb5b5cd.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/27c9a5b9-6cdb-423a-850e-7c01611c6b5a.32ef305abc850b8d0f3c025facb5b5cd.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.9,
+          "ratings_total": 14,
+          "best_seller": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 199,
+            "currency_symbol": "$",
+            "id": "3ECE4F0051724FE584BB692C47810501",
+            "seller": {
+              "name": "MYPCWORLD.NET Inc",
+              "id": "2C0E430CD02C427D884096675E4A2F73"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 21,
+        "product": {
+          "title": "Microsoft Surface Pro 7 12.3in Touchscreen i7-1065G7 16GB RAM 256GB SSD Platinum - Restored",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-7-12-3in-Touchscreen-i7-1065G7-16GB-RAM-256GB-SSD-Platinum-Restored/2934125177",
+          "item_id": "2934125177",
+          "product_id": "4PI9SZDBTLC2",
+          "images": [
+            "https://i5.walmartimages.com/seo/Microsoft-Surface-Pro-7-12-3in-Touchscreen-i7-1065G7-16GB-RAM-256GB-SSD-Platinum-Restored_f3c692a2-ba1c-4ccc-933b-8ae22111ec66.b68c1425a622d8426a90a4839799ccf2.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Microsoft-Surface-Pro-7-12-3in-Touchscreen-i7-1065G7-16GB-RAM-256GB-SSD-Platinum-Restored_f3c692a2-ba1c-4ccc-933b-8ae22111ec66.b68c1425a622d8426a90a4839799ccf2.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 0,
+          "ratings_total": 0,
+          "sponsored": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 655,
+            "currency_symbol": "$",
+            "id": "6D2A8CDCF3CF325CAE23C342967DE5B7",
+            "seller": {
+              "name": "Pro Wireless",
+              "id": "140384188F224D1C9C930BD1A6603770"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 22,
+        "product": {
+          "title": "Restored HP Tablet 11-inch Intel Pentium Silver N6000 4GB LPDDR4X RAM 128GB SSD Windows 11 Home",
+          "link": "https://www.walmart.com/ip/Restored-HP-Tablet-11-inch-Intel-Pentium-Silver-N6000-4GB-LPDDR4X-RAM-128GB-SSD-Windows-11-Home/5111019856",
+          "description": "\n<li>Portable and Versatile - The HP 2-in-1 tablet is designed for convenience and versatility. With its 11 inch size, it's perfect for on-the-go productivity and entertainment. Enjoy the benefits of</li>",
+          "item_id": "5111019856",
+          "product_id": "3UH0M5ULI29Z",
+          "images": [
+            "https://i5.walmartimages.com/asr/28921ebf-ac9c-4c02-9148-3eacc2da443d.589b979217f3c8a64d67f4b04228fd5c.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/28921ebf-ac9c-4c02-9148-3eacc2da443d.589b979217f3c8a64d67f4b04228fd5c.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 205.99,
+            "currency_symbol": "$",
+            "id": "78B1D994A28D3A018DD03F59E1584672",
+            "seller": {
+              "name": "ISP TEK, LLC",
+              "id": "8EA67E40B75047408183982CFEB99ADF"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 23,
+        "product": {
+          "title": "Open Box Microsoft Surface 3 10.8\" x7-Z8700 4GB 64GB SSD WIFI LTE NO KEYBOARD - ENGRAVED",
+          "link": "https://www.walmart.com/ip/Open-Box-Microsoft-Surface-3-10-8-x7-Z8700-4GB-64GB-SSD-WIFI-LTE-NO-KEYBOARD-ENGRAVED/5215341520",
+          "description": "The item in this listing is an Open Box (packaging maybe slightly distressed). The unit powers on with factory settings restored and includes the original accessories. The unit may have some minor",
+          "item_id": "5215341520",
+          "product_id": "1LADKHXRYNJG",
+          "images": [
+            "https://i5.walmartimages.com/asr/aa4c9912-370a-4573-9cb1-1ce05f4d8c68.d6cdbf38486b5bf23826eee3fa9440ce.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/aa4c9912-370a-4573-9cb1-1ce05f4d8c68.d6cdbf38486b5bf23826eee3fa9440ce.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 131.15,
+            "currency_symbol": "$",
+            "id": "62D06E3F5C3E36119335994320C61A1B",
+            "seller": {
+              "name": "TRUE MART",
+              "id": "AAD5F3D102CB4317B4DF9DB0363A069D"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 24,
+        "product": {
+          "title": "Restored Dell RGB Gaming Desktop Computer PC, Intel i5 6th Gen. AMD Radeon RX 550 4GB DDR5, 16GB Ram, 512GB SSD, 22 inch Monitor, BTO RGB Gaming Keyboard Mouse & Headset, WiFi Windows 10 Pro (Renewed)",
+          "link": "https://www.walmart.com/ip/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse/3385423630?athbdg=L1600",
+          "description": "<li>Detailed Specifications:</li><li>Dell OptiPlex RGB Computer: \"Small Size, Accelerated Performance\"</li><li>Easy Setup and Customization:</li><li>Setting up and customizing the desktop is a breeze,</li>",
+          "item_id": "3385423630",
+          "product_id": "6CJSRDSKHN36",
+          "images": [
+            "https://i5.walmartimages.com/seo/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse_d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse_d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 3.8,
+          "ratings_total": 58,
+          "best_seller": true,
+          "variants": [
+            {
+              "item_id": "3397107365",
+              "product_id": "17FBUPBEW24F",
+              "title": "16GB Ram + 1TB SSD + 22 inch",
+              "image": "https://i5.walmartimages.com/asr/d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-1TB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headset/3397107365?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "3575225652",
+              "product_id": "1G79PCDDEKLC",
+              "title": "16GB Ram + 512GB SSD + 22 inch",
+              "image": "https://i5.walmartimages.com/asr/da95b882-d25d-4b5f-89e0-e383327e11c1.55be620442f3943f56767a6c71680b89.png?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Dell-OptiPlex-RGB-Desktop-Computer-PC-Intel-i5-Quad-Core-6th-Gen-Processor-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Gaming-Keyboard-Mouse-Head/3575225652?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "3385423630",
+              "product_id": "4M4X0X5X9IX5",
+              "title": "Other",
+              "image": "https://i5.walmartimages.com/asr/d7c21052-2c7d-4d60-b547-bd191583bf72.d6f38e0e699ea7b9d101c63a30df3160.png?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Dell-RGB-Gaming-Desktop-Computer-PC-Intel-i5-6th-Gen-AMD-Radeon-RX-550-4GB-DDR5-16GB-Ram-512GB-SSD-22-inch-Monitor-BTO-Keyboard-Mouse-Headse/3385423630?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 287.08,
+            "currency_symbol": "$",
+            "id": "AE35E77C47E04321834E00532797B3E5",
+            "seller": {
+              "name": "SJ Computers LLC",
+              "id": "5C0FBB509E644AA2B920F9291944B74C"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 25,
+        "product": {
+          "title": "Restored Microsoft Surface Pro 4 with Type Cover Silver - i5-6300u 2.4GHz 8GB 12.3Inch 256GB SSD (Scratch and Dent) (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-4-with-Type-Cover-Silver-i5-6300u-2-4GHz-8GB-12-3Inch-256GB-SSD-Scratch-and-Dent-Refurbished/3991748098",
+          "description": "We aim to show you accurate product information.Manufacturers, suppliers and others provide what you see here, and we have not verified it.See our disclaimer",
+          "item_id": "3991748098",
+          "product_id": "73GXNC4K1GHS",
+          "images": [
+            "https://i5.walmartimages.com/asr/5f6ab840-f53e-4f17-a97e-8c10bc683c57.8033ff5a85ce46c0f48270b25abe054b.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/5f6ab840-f53e-4f17-a97e-8c10bc683c57.8033ff5a85ce46c0f48270b25abe054b.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 229,
+            "currency_symbol": "$",
+            "id": "F262A6CF7C8A46FA88B79C20E2DDBD59",
+            "seller": {
+              "name": "Coretek Enterprises, LLC",
+              "id": "7A9124E7AF31494EA9EC37A862AC98ED"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 26,
+        "product": {
+          "title": "Restored Microsoft Surface Pro 2nd - 10.6\" Intel Core i5 4GB RAM 128GB Storage Windows 10 Pre-Owned",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-4GB-RAM-128GB-Storage-Windows-10-Pre-Owned/5233174417",
+          "description": "<li>Display: 10.6 Inches 1920 x 1080 2M Pixels ClearType Display</li><li>Processor: 4th Gen Intel Core i5 Quad-Core 1.60 2.60 GHz Intel HD Graphics 4400</li><li>RAM: 8GB 1600 MHz LPDDR3 RAM Storage:</li>",
+          "item_id": "5233174417",
+          "product_id": "29TM6OJ1IUWE",
+          "images": [
+            "https://i5.walmartimages.com/seo/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-4GB-RAM-128GB-Storage-Windows-10-Pre-Owned_65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-4GB-RAM-128GB-Storage-Windows-10-Pre-Owned_65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg",
+          "rating": 0,
+          "ratings_total": 0,
+          "variants": [
+            {
+              "item_id": "5182283197",
+              "product_id": "3KFUBPOZ5XSP",
+              "title": "64 GB",
+              "image": "https://i5.walmartimages.com/asr/65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-4GB-RAM-64GB-Storage-Windows-10-Pre-Owned/5182283197?variantFieldId=hard_drive_capacity"
+            },
+            {
+              "item_id": "5233174417",
+              "product_id": "54P01QNRNY7M",
+              "title": "128 GB",
+              "image": "https://i5.walmartimages.com/asr/65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-4GB-RAM-128GB-Storage-Windows-10-Pre-Owned/5233174417?variantFieldId=hard_drive_capacity"
+            },
+            {
+              "item_id": "5180126131",
+              "product_id": "72DD0HB3HOYQ",
+              "title": "256 GB",
+              "image": "https://i5.walmartimages.com/asr/65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-8GB-RAM-256GB-Storage-Windows-10-Pre-Owned/5180126131?variantFieldId=hard_drive_capacity"
+            },
+            {
+              "item_id": "5228304706",
+              "product_id": "2HVV779IHK15",
+              "title": "512 GB",
+              "image": "https://i5.walmartimages.com/asr/65e967e1-5bb7-4a67-b7bd-fb3e0273a358.261e30bb0682ae0675b4000e144df795.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-2nd-10-6-Intel-Core-i5-8GB-RAM-512GB-Storage-Windows-10-Pre-Owned/5228304706?variantFieldId=hard_drive_capacity"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 158.21,
+            "currency_symbol": "$",
+            "id": "4AA4B7B2005230D29E0232A99F94B5AF",
+            "seller": {
+              "name": "The Main Main Guy",
+              "id": "2DBE3C98F2464D29A5C8F71E13DD8DB6"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 27,
+        "product": {
+          "title": "Restored Lenovo Lenovo Miix 630-12Q35 12.3\" Touch Tablet Snapdragon 4GB 128GB SSD W10S (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Lenovo-Lenovo-Miix-630-12Q35-12-3-Touch-Tablet-Snapdragon-4GB-128GB-SSD-W10S-Refurbished/5434804191",
+          "description": "With powerful Snapdragon processing, blazing-fast 4G LTE, and an epic 20-hour battery, the Miix 630 makes everything look easy. Connecting to data networks is a snap. Emails and messages are synced",
+          "item_id": "5434804191",
+          "product_id": "4UCM30Y175N6",
+          "images": [
+            "https://i5.walmartimages.com/asr/33c61858-2a10-4b04-9ceb-be605feab7f0.76f6190bba108d5d63bcb21ebbf20659.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/33c61858-2a10-4b04-9ceb-be605feab7f0.76f6190bba108d5d63bcb21ebbf20659.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 149.99,
+            "currency_symbol": "$",
+            "id": "0A33E239FF223939B77F3C4E0070690B",
+            "list_price": 209.99,
+            "savings_amount": 60,
+            "seller": {
+              "name": "BuyRefurbished",
+              "id": "6DD57C2C71144A3FA5796A1B9946E3DC"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 28,
+        "product": {
+          "title": "Ematic EWT826BK 8 inch 32GB Tablet with Keyboard Dock",
+          "link": "https://www.walmart.com/ip/Ematic-EWT826BK-8-inch-32GB-Tablet-with-Keyboard-Dock/46054564",
+          "description": "<li>8\" touchscreen</li><li>1.3GHz Intel Atom Quad-Core processor</li><li>32GB of storage memory</li><li>Microsoft Windows 10 OS</li><li>Webcams, WiFi and Bluetooth</li>",
+          "item_id": "46054564",
+          "product_id": "35TN1X7W30CY",
+          "images": [
+            "https://i5.walmartimages.com/asr/88e4e5f6-23b9-421b-baf1-c3da2d02db6b_1.8d23283e2b6e521a74565793cd1502f3.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/88e4e5f6-23b9-421b-baf1-c3da2d02db6b_1.8d23283e2b6e521a74565793cd1502f3.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 2.6,
+          "ratings_total": 42
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 94.95,
+            "currency_symbol": "$",
+            "id": "989CBCF79F923CDB9D06BF25C464FA70",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 29,
+        "product": {
+          "title": "Open Box Dell Latitude 7000 7320 13.3\" Tablet - Full HD - 1920 x 1080 - Intel",
+          "link": "https://www.walmart.com/ip/Open-Box-Dell-Latitude-7000-7320-13-3-Tablet-Full-HD-1920-x-1080-Intel/2473900051",
+          "description": "Screen/Display size : 13.3||Hard Drive/Data Storage : 512||Processor Cores : Quad Core",
+          "item_id": "2473900051",
+          "product_id": "1GEPGX2H2OB7",
+          "images": [
+            "https://i5.walmartimages.com/asr/15d6ddf0-807c-416f-8def-2dc90c282c63.df42b2ba18e07e022d52b3881753ef28.png?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/15d6ddf0-807c-416f-8def-2dc90c282c63.df42b2ba18e07e022d52b3881753ef28.png?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 544.49,
+            "currency_symbol": "$",
+            "id": "E9CDE999348946898CC62ECC38400AAF",
+            "seller": {
+              "name": "Tech For Less Inc",
+              "id": "5883037D83F1490EBEDE9F07BCA53E40"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 30,
+        "product": {
+          "title": "Microsoft Surface Pro 3 - Tablet - Core i5 4300U / 1.9 GHz - Win 8.1 Pro 64-bit - 4 GB RAM - 128 GB SSD - 12\" touchscreen 2160 x 1440 (Full HD Plus) - HD Graphics 4400 - Wi-Fi 5 - silver - Used",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-3-Tablet-Core-i5-4300U-1-9-GHz-Win-8-1-64-bit-4-GB-RAM-128-SSD-12-touchscreen-2160-x-1440-Full-HD-Plus-Graphics-4400-Wi-Fi-5-si/43940043",
+          "description": "<li>This Certified Refurbished product is manufacturer refurbished, shows limited or no wear, and includes all original accessories plus a 1-year limited hardware warranty.</li><li>The tablet that can</li>",
+          "item_id": "43940043",
+          "product_id": "5I6YA30LP69V",
+          "images": [
+            "https://i5.walmartimages.com/asr/7e5a5c98-8a93-4582-b527-6b847c4e7041.a9744496cec630ea85e3e43f93cf0034.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/7e5a5c98-8a93-4582-b527-6b847c4e7041.a9744496cec630ea85e3e43f93cf0034.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.3,
+          "ratings_total": 11
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 209.88,
+            "currency_symbol": "$",
+            "id": "CCEEC57C18714990BC8BBFA0F422312C",
+            "seller": {
+              "name": "The Main Main Guy",
+              "id": "2DBE3C98F2464D29A5C8F71E13DD8DB6"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 31,
+        "product": {
+          "title": "Restored Microsoft Surface Pro 6 12.3\" Core i5 1.7GHz 8GB RAM 128GB SSD LPZ-00001 (Etching, ) (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-6-12-3-Core-i5-1-7GHz-8GB-RAM-128GB-SSD-LPZ-00001-Etching-Refurbished/893100241",
+          "description": "PRODUCT OVERVIEW:Ultra-slim and versatile. Stay productive in style with Surface Pro 6, now with the latest 8th Gen Intel Core processor. Surface Pen sold separately.KEY FEATURES:A best in class",
+          "item_id": "893100241",
+          "product_id": "4UBSZ0NGPMOY",
+          "images": [
+            "https://i5.walmartimages.com/asr/9478e96a-081a-4e15-94cf-96aa5fec90d4.456de975efefbd01eb0ca420116781fe.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/9478e96a-081a-4e15-94cf-96aa5fec90d4.456de975efefbd01eb0ca420116781fe.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 1,
+          "ratings_total": 1
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 243.52,
+            "currency_symbol": "$",
+            "id": "B1DA0A71206C4D9FB550107F72241B31",
+            "seller": {
+              "name": "The Main Main Guy",
+              "id": "2DBE3C98F2464D29A5C8F71E13DD8DB6"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 32,
+        "product": {
+          "title": "Restored Apple iPad 5 (2017) A9 Processor 128GB Storage Wi-Fi and Bluetooth with Pro 6 Wireless Earbuds (Space Gray) (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Apple-iPad-5-2017-A9-Processor-128GB-Storage-Wi-Fi-and-Bluetooth-with-Pro-6-Wireless-Earbuds-Space-Gray-Refurbished/359953152",
+          "description": "Profesionaly Refurbished by a Microsoft Authorized Partner.1 Year Warranty with Free Tech SupportFast Intel Quad Core i5 ProcessorAuthentic Windows Software",
+          "item_id": "359953152",
+          "product_id": "6EOU64FWS64O",
+          "images": [
+            "https://i5.walmartimages.com/asr/e26fe13f-a6d6-4ae6-a8c8-4f02cb043195.77ba501256f6f07e5532f3e32f3f2759.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/e26fe13f-a6d6-4ae6-a8c8-4f02cb043195.77ba501256f6f07e5532f3e32f3f2759.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.9,
+          "ratings_total": 13
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 138,
+            "currency_symbol": "$",
+            "id": "E6CFC47AE4C9490CB577CD8E6D4AD3F2",
+            "seller": {
+              "name": "Discount Computer Depot",
+              "id": "DEA609FAA6F7448BAE542FB030870E59"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 33,
+        "product": {
+          "title": "Microsoft Surface Pro 3 Tablet (12-inch, 256 GB, Intel Core i5, Windows 10) + Microsoft Surface Type Cover (Certified Used)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-3-Tablet-12-inch-256-GB-Intel-Core-i5-Windows-10-Microsoft-Surface-Type-Cover-Certified-Used/490156865?athbdg=L1600",
+          "description": "<li>Intel i5-4300U (1.9GHz up to 2,9GHz) Intel HD Graphics 4400</li><li>8GB RAM, 256GB Sold State Drive, Micro SD Card Reader</li><li>12-inch Full HD Touchscreen Display (2160x1440) Bluetooth 4.0</li>",
+          "item_id": "490156865",
+          "product_id": "4F4WPQCHAQLS",
+          "images": [
+            "https://i5.walmartimages.com/asr/9af660cd-e448-4daf-9189-1e0dcad5d92b_1.906b0f3471342d2e2044f2990c388747.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/9af660cd-e448-4daf-9189-1e0dcad5d92b_1.906b0f3471342d2e2044f2990c388747.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 2.5,
+          "ratings_total": 28,
+          "best_seller": true
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 279,
+            "currency_symbol": "$",
+            "id": "A50E850008C446839D14FBCD3D6A84DB",
+            "seller": {
+              "name": "Digital Delivered",
+              "id": "C6B2C697FAEE4D15BDA5440522F8D703"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 34,
+        "product": {
+          "title": "Open Box Microsoft Surface Go 2 10.5 1920x1280 Pentium Gold 4425Y 4GB 64GB SSD Win 10 Pro",
+          "link": "https://www.walmart.com/ip/Open-Box-Microsoft-Surface-Go-2-10-5-1920x1280-Pentium-Gold-4425Y-4GB-64GB-SSD-Win-10-Pro/5179513486",
+          "description": "The item in this listing is an Open Box (packaging maybe slightly distressed). The unit powers on with factory settings restored and includes the original accessories. The unit may have some minor",
+          "item_id": "5179513486",
+          "product_id": "5IYMNFSC1ZY9",
+          "images": [
+            "https://i5.walmartimages.com/asr/f60f4549-4f29-4040-8cdf-75ae36d97232.db608ff00452995f829126891ace3312.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/f60f4549-4f29-4040-8cdf-75ae36d97232.db608ff00452995f829126891ace3312.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 197.66,
+            "currency_symbol": "$",
+            "id": "6A872A106194307F8A2E08EB6D08E353",
+            "seller": {
+              "name": "Smart Shopper LLC",
+              "id": "2D3BE54075F946AC91061E125AC0D6E3"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 35,
+        "product": {
+          "title": "Restored Microsoft Surface Pro 6th Gen - 12.3\" Intel Core I5 8GB RAM 128GB SSD Windows 10 Pre-Owned",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-Pro-6th-Gen-12-3-Intel-Core-I5-8GB-RAM-128GB-SSD-Windows-10-Pre-Owned/1935028654",
+          "description": "<li>Display: 12.3-inch 2736 x 1824</li><li>Processor: 8th Gen Intel Core i5-8250U Quad-core, 8 threads, 1.60GHz GPU: Intel UHD Graphics 620</li><li>RAM: 8GB 1866 MHz LPDDR3 Storage: 128GB SSD</li>",
+          "item_id": "1935028654",
+          "product_id": "0V4HCGFZY2UX",
+          "images": [
+            "https://i5.walmartimages.com/asr/e8a179f4-2d76-445d-a029-5aecab0c26eb.b34dd2786b2512eee1325fa4fe5fe172.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/e8a179f4-2d76-445d-a029-5aecab0c26eb.b34dd2786b2512eee1325fa4fe5fe172.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 1.5,
+          "ratings_total": 2
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 243.52,
+            "currency_symbol": "$",
+            "id": "1EB0A54F89C84324901ABDD18E04E2FF",
+            "seller": {
+              "name": "The Main Main Guy",
+              "id": "2DBE3C98F2464D29A5C8F71E13DD8DB6"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 36,
+        "product": {
+          "title": "HIGOLEPC Rugged Tablet Windows 11 Pro 10.1in Intel Celeron N4120 MIL-STD-810G 16000mAh Battery 8GB RAM 128GB ROM 5MP 2MP Cameras",
+          "link": "https://www.walmart.com/ip/HIGOLEPC-Rugged-Tablet-Windows-11-Pro-10-1in-Intel-Celeron-N4120-MIL-STD-810G-16000mAh-Battery-8GB-RAM-128GB-ROM-5MP-2MP-Cameras/5359914885",
+          "description": "HIGOLEPC Rugged Tablet Windows 10 PRO 64-BIT PC Table|10.1-in Display|MIL-STD-810G|16000mAh Battery| Intel Gemini Lake N4120|8GB RAM/128GB ROM|5MP and 2MP Cameras|for Enterprise Work Field.",
+          "item_id": "5359914885",
+          "product_id": "3ZX1AWOVAHHH",
+          "images": [
+            "https://i5.walmartimages.com/asr/7deac6a3-d647-4c6b-a304-81dd70e0d3f1.96247e40b0d3af0dd688b177027e9d33.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/7deac6a3-d647-4c6b-a304-81dd70e0d3f1.96247e40b0d3af0dd688b177027e9d33.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 519.99,
+            "currency_symbol": "$",
+            "id": "8D4D09951D763A58B63DA7159AED4A12",
+            "list_price": 579.99,
+            "savings_amount": 60,
+            "seller": {
+              "name": "HIGOLEPC",
+              "id": "AF74AE6B008D42B6B51595C7DAA93406"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 37,
+        "product": {
+          "title": "Microsoft Surface Pro 3 Intel Core i5 4300U (1.90 GHz) 4 GB Memory 128 GB SSD 12.0\" 2160 x 1440 Used (Grade C)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-3-Intel-Core-i5-4300U-1-90-GHz-4-GB-Memory-128-GB-SSD-12-0-2160-x-1440-Used-Grade-C/1177180933",
+          "description": "Microsoft Surface Pro 3 4GB/128GB - MQ2-00001Microsoft combines the portability of a tablet and the performance of a laptop with the Surface Pro 3 128GB 12\" Multi-Touch Tablet. Weighing just 1.76",
+          "item_id": "1177180933",
+          "product_id": "0Y9SS6L40COS",
+          "images": [
+            "https://i5.walmartimages.com/asr/946a37cf-dc17-45d2-a9a5-344a31e8c3d9.8b5606eb4ac47cc6d087e7e6df22dd86.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/946a37cf-dc17-45d2-a9a5-344a31e8c3d9.8b5606eb4ac47cc6d087e7e6df22dd86.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 229.99,
+            "currency_symbol": "$",
+            "id": "8CFCDD0C291345639EB17059F6407168",
+            "seller": {
+              "name": "Tech Express",
+              "id": "FB17A27B6D154C66A6626DF20E83CEF2"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 38,
+        "product": {
+          "title": "Microsoft Surface Pro 6 Intel Core i7 16GB RAM 512GB Solid State Drive SSD 2-in-1 Tablet With Keyboard Touchscreen Display Windows 10 Pro Used",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-6-Intel-Core-i7-16GB-RAM-512GB-Solid-State-Drive-SSD-2-in-1-Tablet-With-Keyboard-Touchscreen-Display-Windows-10-Pro-Used/676702369",
+          "description": "<li>512 Solid State Drive</li><li>Intel Core i7-8650U</li><li>90-Day Warranty plus Free Technical Support</li>",
+          "item_id": "676702369",
+          "product_id": "6CYA6OI9EC00",
+          "images": [
+            "https://i5.walmartimages.com/asr/1adfbfb4-c944-4fb2-9eb7-7b25bc584a1c.4b2bb454a2833d5193b7968d09a23ce8.png?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/1adfbfb4-c944-4fb2-9eb7-7b25bc584a1c.4b2bb454a2833d5193b7968d09a23ce8.png?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 599,
+            "currency_symbol": "$",
+            "id": "03EEA89CB25133ADAA69BFC6241580B6",
+            "seller": {
+              "name": "Your EPower",
+              "id": "AD48FE89510C42F8A5D8029AA80891DF"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 39,
+        "product": {
+          "title": "Microsoft Surface Pro 2 - 128GB, Haswell i5 Processor, 10.6\" Full HD Display, Windows 8.1 Pro - Dark Titanium (Used)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Pro-2-128GB-Haswell-i5-Processor-10-6-Full-HD-Display-Windows-8-1-Pro-Dark-Titanium-Used/183582701",
+          "description": "<li>4GB RAM Memory, 128GB Flash Memory (expandable via microSD card slot)</li><li>Intel 4th Generation (Haswell) Core i5 Processor</li><li>10.6-inch 10-point multi-touch ClearType Full HD Display</li>",
+          "item_id": "183582701",
+          "product_id": "54WAN0YKYLIX",
+          "images": [
+            "https://i5.walmartimages.com/asr/69452edc-d254-4489-a10d-b77c1c777dfe_1.a57878498d7b840db27560088bc69d5a.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/69452edc-d254-4489-a10d-b77c1c777dfe_1.a57878498d7b840db27560088bc69d5a.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 1,
+          "ratings_total": 1
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 179,
+            "currency_symbol": "$",
+            "id": "1CECB422D0F2420B8EF693C594CC620F",
+            "seller": {
+              "name": "Digital Delivered",
+              "id": "C6B2C697FAEE4D15BDA5440522F8D703"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 40,
+        "product": {
+          "title": "Microsoft QIL-00001 Surface Pro 9 13\" Touch Tablet, Intel i7, 16GB/256GB, Platinum Bundle with Microsoft Surface Pro Signature Mechanical Keyboard, Black and 1 Year Extended Warranty",
+          "link": "https://www.walmart.com/ip/Microsoft-QIL-00001-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Platinum-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty/1450709331",
+          "description": "EWE90MSQIL00001<li>INCLUDED IN THE BOX:</li><li>Microsoft Surface Pro 9 13\" Touch Tablet, Intel i7, 16GB/256GB, Platinum (QIL-00001)</li><li>Power Supply</li><li>Quick Start Guide Safety and Warranty</li>",
+          "item_id": "1450709331",
+          "product_id": "6Y1VJRJC1WPU",
+          "images": [
+            "https://i5.walmartimages.com/seo/Microsoft-QIL-00001-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Platinum-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty_0eefb5c7-8249-4305-9948-364eb86a41fe.109366be53fa0b6bc2b2ff0f20909d34.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF"
+          ],
+          "main_image": "https://i5.walmartimages.com/seo/Microsoft-QIL-00001-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Platinum-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty_0eefb5c7-8249-4305-9948-364eb86a41fe.109366be53fa0b6bc2b2ff0f20909d34.jpeg?odnHeight=180&odnWidth=180&odnBg=FFFFFF",
+          "rating": 0,
+          "ratings_total": 0,
+          "variants": [
+            {
+              "item_id": "1185363514",
+              "product_id": "54B2NJ01ZJKO",
+              "title": "Forest",
+              "image": "https://i5.walmartimages.com/asr/bbce6ad0-6260-4389-bf3f-264c0af3c70b.b111391ce7dafa7630a64efed0062fba.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Microsoft-QIL-00052-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Forest-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty/1185363514?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "2668260536",
+              "product_id": "4X4DF2Z58KMX",
+              "title": "Graphite",
+              "image": "https://i5.walmartimages.com/asr/a82ea216-1b5d-4ca1-9b6f-720f7d630af3.9dc830594ae86f20b463eebfb15bae5d.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Microsoft-QIL-00018-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Graphite-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty/2668260536?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "1450709331",
+              "product_id": "4JX5WKKPG4TS",
+              "title": "Platinum",
+              "image": "https://i5.walmartimages.com/asr/0eefb5c7-8249-4305-9948-364eb86a41fe.109366be53fa0b6bc2b2ff0f20909d34.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Microsoft-QIL-00001-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Platinum-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty/1450709331?variantFieldId=actual_color"
+            },
+            {
+              "item_id": "1223342765",
+              "product_id": "1EL6MMYFSW5L",
+              "title": "Sapphire",
+              "image": "https://i5.walmartimages.com/asr/cd00e02b-04d8-4727-a178-bc639e058fd0.02fb3c1049d4c8a1818983104af18d18.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+              "link": "https://www.walmart.com/ip/Microsoft-QIL-00035-Surface-Pro-9-13-Touch-Tablet-Intel-i7-16GB-256GB-Sapphire-Bundle-Signature-Mechanical-Keyboard-Black-1-Year-Extended-Warranty/1223342765?variantFieldId=actual_color"
+            }
+          ]
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 1339.99,
+            "currency_symbol": "$",
+            "id": "11F614D2168741E69C1DEA04EFC2CE9F",
+            "seller": {
+              "name": "Beach Camera ",
+              "id": "10D2E6BEB0F84585BF5E7BFF5332EE60"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 41,
+        "product": {
+          "title": "Microsoft Surface Go (Intel Pentium Gold, 4GB RAM, 64GB) (Used - Excellent)",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Go-Intel-Pentium-Gold-4GB-RAM-64GB-Used-Excellent/2777715493",
+          "description": "Designed for daily tasks while on the go, the Microsoft Surface Go 10\" 64GB Multi-Touch Tablet provides an optimal balance of laptop performance, tablet portability, and a responsive touchscreen.\n\nThe",
+          "item_id": "2777715493",
+          "product_id": "1XCHQJWETKEW",
+          "images": [
+            "https://i5.walmartimages.com/asr/ec6fe175-687c-40d7-8966-0085619d8bfe.246638c39e2ff2306cde8a946134ca77.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/ec6fe175-687c-40d7-8966-0085619d8bfe.246638c39e2ff2306cde8a946134ca77.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 210,
+            "currency_symbol": "$",
+            "id": "F0A5BD8E489646B895202A89186930E1",
+            "seller": {
+              "name": "Always.Deals",
+              "id": "2D0DD174C23F4B029C0A260492F7F689"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 42,
+        "product": {
+          "title": "Ematic EWT900BU 8.9\" HD Quad-Core 16 GB Tablet With Windows 8",
+          "link": "https://www.walmart.com/ip/Ematic-EWT900BU-8-9-HD-Quad-Core-16-GB-Tablet-With-Windows-8/44726311",
+          "description": "Ematic 8.9\" Hd Quad-core 16gb Tablet Wit",
+          "item_id": "44726311",
+          "product_id": "4HOZIIVZ0GN4",
+          "images": [
+            "https://i5.walmartimages.com/asr/993acedb-7069-4964-b237-b80a95b44526_1.34e9b18b8d9eb5882e49a44caa261234.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/993acedb-7069-4964-b237-b80a95b44526_1.34e9b18b8d9eb5882e49a44caa261234.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 89.95,
+            "currency_symbol": "$",
+            "id": "7826A090859C39CD8F7E1D4F321CABB8",
+            "seller": {
+              "name": "SDG Distribution",
+              "id": "90A618580C2D4B5686B93369C8A8C044"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 43,
+        "product": {
+          "title": "Restored Microsoft Surface PRO-4 256 GB Intel Core i5-6300U X2 2.4GHz 12.3\",Silver (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-PRO-4-256-GB-Intel-Core-i5-6300U-X2-2-4GHz-12-3-Silver-Refurbished/914372810",
+          "description": "<li>This Certified Refurbished product is tested and certified to look and work like new. The refurbishing process includes functionality testing, basic cleaning, inspection, and repackaging. The</li>",
+          "item_id": "914372810",
+          "product_id": "20U55R8RX9Q9",
+          "images": [
+            "https://i5.walmartimages.com/asr/852c6ba5-4ef5-4b16-9bf5-771426dd39ca_1.de57ae5965b4f11a3b7b28e67ac85eef.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/852c6ba5-4ef5-4b16-9bf5-771426dd39ca_1.de57ae5965b4f11a3b7b28e67ac85eef.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 3.4,
+          "ratings_total": 10
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 249.99,
+            "currency_symbol": "$",
+            "id": "1E8CB993473346F59C3C8E5A29420836",
+            "seller": {
+              "name": "Red Tag ",
+              "id": "AF4486D692794F679E08A863536C5323"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 44,
+        "product": {
+          "title": "Supersonic SC-4032WKB - Tablet - with detachable keyboard - Intel - Windows 10 - 4 GB RAM - 32 GB SSD - 10.1\" IPS touchscreen 1280 x 800 - gray",
+          "link": "https://www.walmart.com/ip/Supersonic-SC-4032WKB-Tablet-with-detachable-keyboard-Intel-Windows-10-4-GB-RAM-32-GB-SSD-10-1-IPS-touchscreen-1280-x-800-gray/951707256",
+          "description": "10.1 Capacitive Touchscreen Display Tablet and fully detachable Keyboard, Powered by Windows 10 Operating System, Quad Core 1.84GHz Intel Processor, Bluetooth 4.0 Compatible Allows You to Connect Most",
+          "item_id": "951707256",
+          "product_id": "63HCYXQHLVXJ",
+          "images": [
+            "https://i5.walmartimages.com/asr/10de318d-8917-412c-81d7-47f737ab74dd.2a9ba11ff1e99969eeb9bf0e9149cd26.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/10de318d-8917-412c-81d7-47f737ab74dd.2a9ba11ff1e99969eeb9bf0e9149cd26.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 2,
+          "ratings_total": 2
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 254.99,
+            "currency_symbol": "$",
+            "id": "E2C7FE0C558E4DADA2FD292EEC996D7D",
+            "seller": {
+              "name": "California Sales",
+              "id": "0F82191F781844899A8169B623CB735C"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 45,
+        "product": {
+          "title": "Restored Microsoft Surface 3 7G500015 Tablet 10.8\", 64GB, Intel Atom x7Z8700 (Refurbished)",
+          "link": "https://www.walmart.com/ip/Restored-Microsoft-Surface-3-7G500015-Tablet-10-8-64GB-Intel-Atom-x7Z8700-Refurbished/377053289",
+          "description": "<li>Microsoft combines the portability of a tablet and the performance of a laptop with the 10.8\" Surface 3 Multi-Touch Tablet. Weighing just 1.37 pounds and measuring just 0.34\" thin, the Surface 3</li>",
+          "item_id": "377053289",
+          "product_id": "1GFIBIDQZD6C",
+          "images": [
+            "https://i5.walmartimages.com/asr/7da837d0-dcce-4858-8f16-c498a8a09118.011a4afc17f6cf34b86cf8bd6b0063ef.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/7da837d0-dcce-4858-8f16-c498a8a09118.011a4afc17f6cf34b86cf8bd6b0063ef.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 0,
+          "ratings_total": 0
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 124.99,
+            "currency_symbol": "$",
+            "id": "D0BE1D5B0D1B4107B8300E7CBB81F5FF",
+            "seller": {
+              "name": "Tech Express",
+              "id": "FB17A27B6D154C66A6626DF20E83CEF2"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      },
+      {
+        "position": 46,
+        "product": {
+          "title": "Microsoft Surface Go 3 10.5\" Pixel Sense Flow Display, 10 Point Multi- touch, IntelPentium Gold 6500Y, 8GB RAM, 128GB SSD, Platinum, Windows 11, 8VA-00001",
+          "link": "https://www.walmart.com/ip/Microsoft-Surface-Go-3-10-5-Pixel-Sense-Flow-Display-10-Point-Multi-touch-Intel-Pentium-Gold-6500Y-8GB-RAM-128GB-SSD-Platinum-Windows-11-8VA-00001/234987003",
+          "description": "- Screen: 10.5 PixelSense Display- Resolution: 1920 x 1280 (220 PPI)- Dual-core Intel Pentium Gold 6500Y Processor- Windows 11 in S Mode- 8GB/128GB- Up to 11 hours of typical device usage- Intel UHD",
+          "item_id": "234987003",
+          "product_id": "46YCTONDXUY8",
+          "images": [
+            "https://i5.walmartimages.com/asr/03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff"
+          ],
+          "main_image": "https://i5.walmartimages.com/asr/03c34a6a-6033-4619-86ac-3acca4aa3757.6639fd3f3c76aaf050af589a4728e310.jpeg?odnHeight=180&odnWidth=180&odnBg=ffffff",
+          "rating": 4,
+          "ratings_total": 2
+        },
+        "inventory": {
+          "in_stock": true,
+          "preorder": false
+        },
+        "offers": {
+          "primary": {
+            "price": 520,
+            "currency_symbol": "$",
+            "id": "9D112F03941848568F6FFBB7011554E2",
+            "seller": {
+              "name": "Always.Deals",
+              "id": "2D0DD174C23F4B029C0A260492F7F689"
+            }
+          },
+          "is_marketplace_item": true
+        },
+        "fulfillment": {
+          "pickup": false,
+          "delivery_from_store": false,
+          "shipping": false
+        }
+      }
+    ],
+    "breadcrumbs": [
+      {
+        "name": "Electronics",
+        "link": "https://www.walmart.com/cp/electronics/3944"
+      },
+      {
+        "name": "iPad & Tablets",
+        "link": "https://www.walmart.com/cp/ipad-tablets/1078524"
+      },
+      {
+        "name": "Windows Tablets",
+        "link": "https://www.walmart.com/cp/windows-tablets/1231197"
+      }
+    ],
+    "facets": [
+      {
+        "name": "cat_id",
+        "display_name": "Departments",
+        "values": [
+          {
+            "name": "All Windows Tablets",
+            "param_value": "facets=cat_id=All+Windows+Tablets",
+            "count": 299
+          },
+          {
+            "name": "10 Inch Windows Tablets",
+            "param_value": "facets=cat_id=10+Inch+Windows+Tablets",
+            "count": 4
+          },
+          {
+            "name": "8 Inch Windows Tablets",
+            "param_value": "facets=cat_id=8+Inch+Windows+Tablets",
+            "count": 6
+          },
+          {
+            "name": "12 Inch Windows Tablets",
+            "param_value": "facets=cat_id=12+Inch+Windows+Tablets",
+            "count": 12
+          },
+          {
+            "name": "7 Inch Windows Tablets",
+            "param_value": "facets=cat_id=7+Inch+Windows+Tablets",
+            "count": 2
+          },
+          {
+            "name": "Surface Tablets",
+            "param_value": "facets=cat_id=Surface+Tablets",
+            "count": 352
+          }
+        ]
+      },
+      {
+        "name": "brand",
+        "display_name": "Brand",
+        "values": [
+          {
+            "name": "Microsoft",
+            "param_value": "facets=brand=Microsoft",
+            "count": 350
+          },
+          {
+            "name": "Ematic",
+            "param_value": "facets=brand=Ematic",
+            "count": 11
+          },
+          {
+            "name": "Chuwi",
+            "param_value": "facets=brand=Chuwi",
+            "count": 2
+          },
+          {
+            "name": "Lenovo",
+            "param_value": "facets=brand=Lenovo",
+            "count": 5
+          },
+          {
+            "name": "Dell",
+            "param_value": "facets=brand=Dell",
+            "count": 9
+          },
+          {
+            "name": "HP",
+            "param_value": "facets=brand=HP",
+            "count": 7
+          },
+          {
+            "name": "Apple",
+            "param_value": "facets=brand=Apple",
+            "count": 2
+          },
+          {
+            "name": "HiGOLE",
+            "param_value": "facets=brand=HiGOLE",
+            "count": 1
+          },
+          {
+            "name": "UrbanX",
+            "param_value": "facets=brand=UrbanX",
+            "count": 1
+          },
+          {
+            "name": "SANOXY",
+            "param_value": "facets=brand=SANOXY",
+            "count": 1
+          },
+          {
+            "name": "Supersonic",
+            "param_value": "facets=brand=Supersonic",
+            "count": 2
+          },
+          {
+            "name": "Samsung",
+            "param_value": "facets=brand=Samsung",
+            "count": 2
+          },
+          {
+            "name": "Nokia",
+            "param_value": "facets=brand=Nokia",
+            "count": 1
+          },
+          {
+            "name": "Acer",
+            "param_value": "facets=brand=Acer",
+            "count": 1
+          },
+          {
+            "name": "ASUS",
+            "param_value": "facets=brand=ASUS",
+            "count": 1
+          },
+          {
+            "name": "Panasonic",
+            "param_value": "facets=brand=Panasonic",
+            "count": 11
+          },
+          {
+            "name": "Kocaso",
+            "param_value": "facets=brand=Kocaso",
+            "count": 1
+          },
+          {
+            "name": "LA Tronics",
+            "param_value": "facets=brand=LA+Tronics",
+            "count": 2
+          },
+          {
+            "name": "KUU",
+            "param_value": "facets=brand=KUU",
+            "count": 1
+          },
+          {
+            "name": "Wacom",
+            "param_value": "facets=brand=Wacom",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "fulfillment_speed",
+        "display_name": "Fulfillment Speed",
+        "values": [
+          {
+            "name": "Today",
+            "param_value": "facets=fulfillment_speed=Today"
+          },
+          {
+            "name": "Tomorrow",
+            "param_value": "facets=fulfillment_speed=Tomorrow"
+          },
+          {
+            "name": "2 days",
+            "param_value": "facets=fulfillment_speed=2+days"
+          },
+          {
+            "name": "Anytime",
+            "param_value": "facets=fulfillment_speed=Anytime"
+          }
+        ]
+      },
+      {
+        "name": "exclude_oos",
+        "display_name": "Availability",
+        "values": [
+          {
+            "name": "Show available items only",
+            "param_value": "facets=exclude_oos=Show+available+items+only"
+          }
+        ]
+      },
+      {
+        "name": "screen_size_tablet",
+        "display_name": "Screen Size",
+        "values": [
+          {
+            "name": "10 to 10.9 Inches",
+            "param_value": "facets=screen_size_tablet=10+to+10.9+Inches",
+            "count": 73
+          },
+          {
+            "name": "11 Inches & Up",
+            "param_value": "facets=screen_size_tablet=11+Inches+&+Up",
+            "count": 234
+          },
+          {
+            "name": "7 to 7.9 Inches",
+            "param_value": "facets=screen_size_tablet=7+to+7.9+Inches",
+            "count": 4
+          },
+          {
+            "name": "8 to 8.9 Inches",
+            "param_value": "facets=screen_size_tablet=8+to+8.9+Inches",
+            "count": 9
+          },
+          {
+            "name": "9 to 9.9 Inches",
+            "param_value": "facets=screen_size_tablet=9+to+9.9+Inches",
+            "count": 2
+          },
+          {
+            "name": "Under 7 Inches",
+            "param_value": "facets=screen_size_tablet=Under+7+Inches",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "name": "memory_capacity_tablets",
+        "display_name": "Memory Capacity",
+        "values": [
+          {
+            "name": "128 GB",
+            "param_value": "facets=memory_capacity_tablets=128+GB",
+            "count": 10
+          },
+          {
+            "name": "16 GB",
+            "param_value": "facets=memory_capacity_tablets=16+GB",
+            "count": 16
+          },
+          {
+            "name": "256 GB & up",
+            "param_value": "facets=memory_capacity_tablets=256+GB+&+up",
+            "count": 14
+          },
+          {
+            "name": "32 GB",
+            "param_value": "facets=memory_capacity_tablets=32+GB",
+            "count": 3
+          },
+          {
+            "name": "64 GB",
+            "param_value": "facets=memory_capacity_tablets=64+GB",
+            "count": 9
+          },
+          {
+            "name": "8 GB and Under",
+            "param_value": "facets=memory_capacity_tablets=8+GB+and+Under",
+            "count": 65
+          }
+        ]
+      },
+      {
+        "name": "customer_rating",
+        "display_name": "Customer Rating",
+        "values": [
+          {
+            "name": "4 - 5 Stars",
+            "param_value": "facets=customer_rating=4+-+5+Stars",
+            "count": 58
+          },
+          {
+            "name": "3 - 3.9 Stars",
+            "param_value": "facets=customer_rating=3+-+3.9+Stars",
+            "count": 94
+          },
+          {
+            "name": "2 - 2.9 Stars",
+            "param_value": "facets=customer_rating=2+-+2.9+Stars",
+            "count": 112
+          },
+          {
+            "name": "1 - 1.9 Stars",
+            "param_value": "facets=customer_rating=1+-+1.9+Stars",
+            "count": 133
+          }
+        ]
+      },
+      {
+        "name": "special_offers",
+        "display_name": "Special Offers",
+        "values": [
+          {
+            "name": "Reduced Price",
+            "param_value": "facets=special_offers=Reduced+Price",
+            "count": 7
+          }
+        ]
+      },
+      {
+        "name": "condition",
+        "display_name": "Item Condition",
+        "values": [
+          {
+            "name": "New",
+            "param_value": "facets=condition=New",
+            "count": 90
+          },
+          {
+            "name": "Refurbished",
+            "param_value": "facets=condition=Refurbished",
+            "count": 30
+          },
+          {
+            "name": "Restored",
+            "param_value": "facets=condition=Restored",
+            "count": 92
+          },
+          {
+            "name": "Seller Refurbished",
+            "param_value": "facets=condition=Seller+Refurbished",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "color",
+        "display_name": "Color",
+        "values": [
+          {
+            "name": "Silver",
+            "param_value": "facets=color=Silver",
+            "count": 190
+          },
+          {
+            "name": "Black",
+            "param_value": "facets=color=Black",
+            "count": 87
+          },
+          {
+            "name": "Gray",
+            "param_value": "facets=color=Gray",
+            "count": 16
+          },
+          {
+            "name": "Multicolor",
+            "param_value": "facets=color=Multicolor",
+            "count": 15
+          },
+          {
+            "name": "Blue",
+            "param_value": "facets=color=Blue",
+            "count": 12
+          },
+          {
+            "name": "White",
+            "param_value": "facets=color=White",
+            "count": 7
+          },
+          {
+            "name": "Green",
+            "param_value": "facets=color=Green",
+            "count": 5
+          },
+          {
+            "name": "Gold",
+            "param_value": "facets=color=Gold",
+            "count": 4
+          },
+          {
+            "name": "Pink",
+            "param_value": "facets=color=Pink",
+            "count": 4
+          },
+          {
+            "name": "Red",
+            "param_value": "facets=color=Red",
+            "count": 4
+          },
+          {
+            "name": "Beige",
+            "param_value": "facets=color=Beige",
+            "count": 2
+          },
+          {
+            "name": "Clear",
+            "param_value": "facets=color=Clear",
+            "count": 1
+          },
+          {
+            "name": "Purple",
+            "param_value": "facets=color=Purple",
+            "count": 1
+          },
+          {
+            "name": "Yellow",
+            "param_value": "facets=color=Yellow",
+            "count": 1
+          },
+          {
+            "name": "Other",
+            "param_value": "facets=color=Other",
+            "count": 8
+          }
+        ]
+      },
+      {
+        "name": "retailer_type",
+        "display_name": "Retailer",
+        "values": [
+          {
+            "name": "Walmart",
+            "param_value": "facets=retailer_type=Walmart",
+            "count": 24
+          },
+          {
+            "name": "Pro Sellers",
+            "param_value": "facets=retailer_type=Pro+Sellers",
+            "count": 89
+          },
+          {
+            "name": "Marketplace Sellers fulfilled by Walmart",
+            "param_value": "facets=retailer_type=Marketplace+Sellers+fulfilled+by+Walmart",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "name": "Gifting",
+        "display_name": "Gifting",
+        "values": [
+          {
+            "name": "Gift eligible",
+            "param_value": "facets=Gifting=Gift+eligible",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "benefit_programs",
+        "display_name": "Benefit Programs",
+        "values": [
+          {
+            "name": "EBT eligible",
+            "param_value": "facets=benefit_programs=EBT+eligible"
+          }
+        ]
+      }
+    ],
+    "category_info": {
+      "is_landing_page": false
+    },
+    "pagination": {
+      "current": {
+        "page": 1,
+        "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197"
+      },
+      "next": {
+        "page": 2,
+        "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=2"
+      },
+      "total_pages": 11,
+      "other_pages": [
+        {
+          "page": 1,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=1"
+        },
+        {
+          "page": 2,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=2"
+        },
+        {
+          "page": 3,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=3"
+        },
+        {
+          "page": 4,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=4"
+        },
+        {
+          "page": 5,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=5"
+        },
+        {
+          "page": 6,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=6"
+        },
+        {
+          "page": 7,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=7"
+        },
+        {
+          "page": 8,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=8"
+        },
+        {
+          "page": 9,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=9"
+        },
+        {
+          "page": 10,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=10"
+        },
+        {
+          "page": 11,
+          "link": "https://www.walmart.com/browse/ipad-tablets/windows-tablets/3944_1078524_1231197?page=11"
+        }
+      ],
+      "total_results": 431
+    },
+    "location_info": {
+      "city": "Bentonville",
+      "state": "AR",
+      "zipcode": "72712",
+      "store_id": "3164"
+    }
+  }

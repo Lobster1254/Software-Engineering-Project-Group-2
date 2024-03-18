@@ -137,8 +137,7 @@ DROP TABLE IF EXISTS `products`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
   `product_ID` varchar(50) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `material` varchar(50) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
   `description` varchar(2000) DEFAULT NULL,
   `stock` int NOT NULL,
   `price` float(8,2) NOT NULL,
