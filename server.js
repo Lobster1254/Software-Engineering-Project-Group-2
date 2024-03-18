@@ -92,7 +92,7 @@ server.once('error', function(err) {
     }
 });
 
-const getProductReviews = async(product_ID) => {
+const getProductReviews = async(product_ID) => { // returns array, index 0 = avg rating, index 1 = JSON of reviews
     let reviewInfo = [];
     let reviewQuery = "select user_ID, score, description, created from productreviews where product_ID = '" + product_ID + "'";
     await dBCon.promise().query(reviewQuery).then(([ result ]) => {
@@ -109,9 +109,40 @@ const getProductReviews = async(product_ID) => {
     return reviewInfo;
 }
 
-const getProductInfo = async(product_ID) => {
-    let productQuery = "select * from products where product_ID = '" + product_ID + "'";
+const getDiscounts = async(product_ID, base_price) => { // returns array, index 0 = discounted price, index 1 = JSON of discounts
     let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE()";
+    let discounts = [];
+    await dBCon.promise().query(discountQuery).then(([ result ]) => {
+        if (result[0]) {
+            let set_price = base_price;
+            let lowered_price = base_price;
+            let final_discounted_price;
+            for (i = 0; i < result.length; i++) {
+                if (result[i].type == "set_price") {
+                    if (result[i].set_price != null && result[i].set_price < set_price)
+                        set_price = result[i].set_price;
+                } else {
+                    if (result[i].percent_off != null && result[i].percent_off <= 100 && result[i].percent_off > 0)
+                        lowered_price = lowered_price * (100-result[i].percent_off)/100;
+                }
+            }
+            if (set_price < base_price) 
+                final_discounted_price = set_price;
+            else 
+                final_discounted_price = lowered_price;
+            final_discounted_price = roundPrice(final_discounted_price);
+            discounts[0] = final_discounted_price;
+            discounts[1] = result;
+        }
+    }).catch(error => {
+        discounts = "Failed to load discounts.";
+        console.log(error);
+    });
+    return discounts;
+}
+
+const getProductInfo = async(product_ID) => { // returns stringified JSON of product info
+    let productQuery = "select * from products where product_ID = '" + product_ID + "'";
     let user_ID = getUserID();
     let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
@@ -129,29 +160,15 @@ const getProductInfo = async(product_ID) => {
     });
     if (!isProduct || !foundProduct)
         return resMsg;
-    await dBCon.promise().query(discountQuery).then(([ result ]) => {
-        if (result[0]) {
-            let set_price = resMsg.body.price;
-            let lowered_price = resMsg.body.price;
-            for (i = 0; i < result.length; i++) {
-                if (result[i].type == "set_price") {
-                    if (result[i].set_price != null && result[i].set_price < set_price)
-                        set_price = result[i].set_price;
-                } else {
-                    if (result[i].percent_off != null && result[i].percent_off <= 100 && result[i].percent_off > 0)
-                        lowered_price = lowered_price * (100-result[i].percent_off)/100;
-                }
-            }
-            if (set_price < resMsg.body.price) 
-                resMsg.body.discounted_price = set_price;
-            else 
-                resMsg.body.discounted_price = lowered_price;
-            resMsg.body.discounted_price = roundPrice(resMsg.body.discounted_price);
-            resMsg.body.discounts = result;
+    let discounts = await getDiscounts(product_ID, resMsg.body.price);
+    if (discounts) {
+        if (discounts instanceof String) {
+            resMsg.body.discounts = discounts;
+        } else {
+            resMsg.body.discounted_price = discounts[0];
+            resMsg.body.discounts = discounts[1];
         }
-    }).catch(error => {
-        resMsg.body.discounts = "Failed to load discounts.";
-    });
+    }
     await dBCon.promise().query(ordersQuery).then(([ result ]) => {
         if (result[0]) {
             resMsg.body.orders = result;
