@@ -55,10 +55,10 @@ const server = http.createServer((req, res) => {
                 if (urlParts[0]) {
                     switch(urlParts[0]) {
                         case 'product-catalog':
-                            resMsg = await productCatalog(urlParts);
+                            resMsg = await productCatalog(body, urlParts);
                             break;
                         case 'product-reviews':
-                            resMsg = await productReviews(urlParts);
+                            resMsg = await productReviews(body, urlParts);
                             break;
                         default:
                             break;
@@ -198,9 +198,24 @@ function failedDB() { // can be called when the server fails to connect to the d
     return resMsg;
 }
 
-async function searchProducts(keyword) {
+async function searchProducts(body, keyword) {
     resMsg = {};
-    let searchQuery = "select * from products where match(name, description, category) against('" + keyword + "');";
+    let searchQuery = "select * from products where match(name, description, category) against('" + keyword + "')";
+    try {
+        let filters = JSON.parse(body);
+        if (filters.hasOwnProperty("category")) // filter by category
+            searchQuery = searchQuery + " and category = '" + filters.category + "'";
+        if (filters.hasOwnProperty("min_price")) // minimum price
+            searchQuery = searchQuery + " and price >= '" + filters.min_price + "'";
+        if (filters.hasOwnProperty("max_price")) // maximum price
+            searchQuery = searchQuery + " and price <= '" + filters.max_price + "'";
+    } catch (error) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = error.toString();
+        return resMsg;
+    }
+    searchQuery = searchQuery + ";";
     await dBCon.promise().query(searchQuery).then(([ result ]) => {
         resMsg.code = 200;
         resMsg.hdrs = {"Content-Type" : "application/json"};
@@ -212,11 +227,11 @@ async function searchProducts(keyword) {
     return resMsg;
 }
 
-async function productCatalog(urlParts) {
+async function productCatalog(body, urlParts) {
     if (urlParts[1]) {
         if (urlParts[1].startsWith("search?key=")) {
             let keyword = urlParts[1].split("=")[1];
-            return await searchProducts(keyword);
+            return await searchProducts(body, keyword);
         } else {
             let product_ID = urlParts[1];
         
@@ -229,7 +244,7 @@ async function productCatalog(urlParts) {
 }
 
 
-async function productReviews(urlParts) {
+async function productReviews(req, urlParts) {
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
