@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const querystring = require('querystring');
 const port = 8000;
 let dBCon = {};
 let html;
@@ -287,8 +288,14 @@ async function searchProducts(body, keyword) {
 
 async function productCatalog(body, urlParts) {
     if (urlParts[1]) {
-        if (urlParts[1].startsWith("search?key=")) {
-            let keyword = urlParts[1].split("=")[1];
+        if (urlParts[1].startsWith("search?")) {
+            let param = querystring.decode(urlParts[1].substring(7));
+            let keyword;
+            if (param.key)
+                keyword = param.key;
+            else
+                return {};
+            console.log(keyword);
             return await searchProducts(body, keyword);
         } else {
             let product_ID = urlParts[1];
