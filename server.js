@@ -86,7 +86,7 @@ const server = http.createServer((req, res) => {
                                 return failed();
                             } else if (validID) {
                                 resMsg.code = 200;
-                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body /*+ "; HttpOnly"*/};
+                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
                             }
                             break;
                         default:
