@@ -71,9 +71,18 @@ const server = http.createServer((req, res) => {
                             break;
                     }
                 } else {
-                    resMsg.code = 200;
-                    resMsg.hdrs = {"Content-Type" : "text/html"};
-                    resMsg.body = html;
+                    let user_ID = await getUserID(req);
+                    if (user_ID instanceof Error)
+                        resMsg = failed();
+                    else if (user_ID == -1) {
+                        resMsg.code = 200;
+                        resMsg.hdrs = {"Content-Type" : "text/html"};
+                        resMsg.body = html;
+                    } else {
+                        resMsg.code = 200;
+                        resMsg.hdrs = {"Content-Type" : "text/html"};
+                        resMsg.body = "Already logged in.";
+                    }
                 }
                 break;
             case 'POST':
