@@ -1,0 +1,17 @@
+<html>
+    <header>
+        <a href="#" onclick="signOut();">Sign out</a>
+<script>
+    async function signOut() {
+        await fetch("http://localhost:8000/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "test/html",
+                },
+                body: ""
+            });
+        document.write("Successfully logged out.");
+    }
+</script>
+    </header>
+</html>

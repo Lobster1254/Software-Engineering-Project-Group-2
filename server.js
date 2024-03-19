@@ -3,7 +3,8 @@ const fs = require('fs');
 const querystring = require('querystring');
 const port = 8000;
 let dBCon = {};
-let html;
+let loginhtml;
+let logouthtml;
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com";
@@ -12,10 +13,13 @@ const minReviewScore = 1;
 const maxReviewScore = 5;
 
 try {
-    html = fs.readFileSync('lifesynchub.html', 'utf8');
+    loginhtml = fs.readFileSync('login.html', 'utf8');
+    logouthtml = fs.readFileSync('logout.html', 'utf8');
 } catch (error) {
     throw error;
 }
+
+
 
 let pass = "";
 
@@ -77,11 +81,11 @@ const server = http.createServer((req, res) => {
                     else if (user_ID == -1) {
                         resMsg.code = 200;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
-                        resMsg.body = html;
+                        resMsg.body = loginhtml;
                     } else {
                         resMsg.code = 200;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
-                        resMsg.body = "Already logged in.";
+                        resMsg.body = logouthtml;
                     }
                 }
                 break;
@@ -97,6 +101,10 @@ const server = http.createServer((req, res) => {
                                 resMsg.code = 200;
                                 resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
                             }
+                            break;
+                        case 'logout':
+                            resMsg.code = 200;
+                            resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
                             break;
                         default:
                             break;
