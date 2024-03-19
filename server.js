@@ -4,6 +4,9 @@ const querystring = require('querystring');
 const port = 8000;
 let dBCon = {};
 let html;
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client();
+const CLIENT_ID = "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com";
 
 const minReviewScore = 1;
 const maxReviewScore = 5;
@@ -59,10 +62,10 @@ const server = http.createServer((req, res) => {
                 if (urlParts[0]) {
                     switch(urlParts[0]) {
                         case 'product-catalog':
-                            resMsg = await productCatalog(body, urlParts);
+                            resMsg = await productCatalog(req, body, urlParts);
                             break;
                         case 'product-reviews':
-                            resMsg = await productReviews(body, urlParts);
+                            resMsg = await productReviews(req, body, urlParts);
                             break;
                         default:
                             break;
@@ -74,7 +77,22 @@ const server = http.createServer((req, res) => {
                 }
                 break;
             case 'POST':
-                resMsg.code = 200;
+                if (urlParts[0]) {
+                    switch(urlParts[0]) {
+                        case 'login':
+                            let validID;
+                            validID = await verify(body).catch(validID = Error);
+                            if (validID instanceof Error) {
+                                return failed();
+                            } else if (validID) {
+                                resMsg.code = 200;
+                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body /*+ "; HttpOnly"*/};
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                  }
                 break;
             default:
                 break;
@@ -89,6 +107,39 @@ const server = http.createServer((req, res) => {
     });
 });
 
+function parseCookies (req) {
+    const list = {};
+    const cookieHeader = req.headers?.cookie;
+    if (!cookieHeader) return list;
+
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        if (!name) return;
+        const value = rest.join(`=`).trim();
+        if (!value) return;
+        list[name] = decodeURIComponent(value);
+    });
+
+    return list;
+}
+
+async function verify(user_ID) {
+    const ticket = await client.verifyIdToken({
+        idToken: user_ID,
+        audience: CLIENT_ID,
+    }).catch(error => {
+        return;
+    });
+    if (!ticket)
+        return false;
+    const payload = ticket.getPayload();
+    if (payload)
+        return true;
+    else
+        return false;
+}
+
 server.once('error', function(err) {
     if (err.code === 'EADDRINUSE') {
       console.log('Port ' + port + ' is already in use. Please kill all processes associated with this port before launching this server.');
@@ -96,7 +147,7 @@ server.once('error', function(err) {
     }
 });
 
-const getProductReviews = async(body, product_ID) => { // returns array, index 0 = avg rating, index 1 = score distribution index 2 = JSON of reviews
+const getProductReviews = async(req, body, product_ID) => { // returns array, index 0 = avg rating, index 1 = score distribution index 2 = JSON of reviews
     let reviewInfo = [];
     let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.user_ID = h.review_user_ID and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by user_ID, product_ID";
     if (body != "") {
@@ -174,9 +225,11 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
     return discounts;
 }
 
-const getProductInfo = async(body, product_ID) => { // returns stringified JSON of product info
+const getProductInfo = async(req, body, product_ID) => { // returns stringified JSON of product info
     let productQuery = "select * from products where product_ID = '" + product_ID + "'";
-    let user_ID = getUserID();
+    let user_ID = await getUserID(req);
+    if (user_ID instanceof Error)
+        return failed();
     let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
@@ -187,7 +240,7 @@ const getProductInfo = async(body, product_ID) => { // returns stringified JSON 
             isProduct = false;
         }
     }).catch(error => {
-        return failedDB();
+        return failed();
     });
     if (!isProduct)
         return resMsg;
@@ -200,14 +253,16 @@ const getProductInfo = async(body, product_ID) => { // returns stringified JSON 
             resMsg.body.discounts = discounts[1];
         }
     }
-    await dBCon.promise().query(ordersQuery).then(([ result ]) => {
-        if (result[0]) {
-            resMsg.body.orders = result;
-        }
-    }).catch(error => {
-        resMsg.body.reviews = "Failed to load orders.";
-    });
-    let reviewInfo = await getProductReviews(body, product_ID);
+    if (user_ID != -1) {
+        await dBCon.promise().query(ordersQuery).then(([ result ]) => {
+            if (result[0]) {
+                resMsg.body.orders = result;
+            }
+        }).catch(error => {
+            resMsg.body.reviews = "Failed to load orders.";
+        });
+    }
+    let reviewInfo = await getProductReviews(req, body, product_ID);
     if (reviewInfo) {
         if (reviewInfo instanceof String) {
             resMsg.body.reviews = reviewInfo;
@@ -228,15 +283,15 @@ const getProductInfo = async(body, product_ID) => { // returns stringified JSON 
     return resMsg;
 }
 
-function failedDB() { // can be called when the server fails to connect to the database and that failure is fatal to the use case's function
+function failed() { // can be called when the server fails to connect to an API or the database and that failure is fatal to the use case's function
     resMsg = {};
     resMsg.code = 503;
     resMsg.hdrs = {"Content-Type" : "text/html"};
-    resMsg.body = "Failed access to database. Please try again later.";
+    resMsg.body = "Failed access to vital service. Please try again later.";
     return resMsg;
 }
 
-async function searchProducts(body, keyword) {
+async function searchProducts(req, body, keyword) {
     resMsg = {};
     let searchQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID where match(name, description, category) against('" + keyword + "')";
     let min_price = -1;
@@ -266,7 +321,7 @@ async function searchProducts(body, keyword) {
         resMsg.body = result;
         
     }).catch(error => {
-        return failedDB();
+        return failed();
     });
     let discountInfo;
     for (let i = 0; i < resMsg.body.length; i++) {
@@ -286,7 +341,7 @@ async function searchProducts(body, keyword) {
     return resMsg;
 }
 
-async function productCatalog(body, urlParts) {
+async function productCatalog(req, body, urlParts) {
     if (urlParts[1]) {
         if (urlParts[1].startsWith("search?")) {
             let param = querystring.decode(urlParts[1].substring(7));
@@ -295,11 +350,10 @@ async function productCatalog(body, urlParts) {
                 keyword = param.key;
             else
                 return {};
-            return await searchProducts(body, keyword);
+            return await searchProducts(req, body, keyword);
         } else {
             let product_ID = urlParts[1];
-        
-            return await getProductInfo(body, product_ID);
+            return await getProductInfo(req, body, product_ID);
         }
     } else {
         return {};
@@ -308,7 +362,7 @@ async function productCatalog(body, urlParts) {
 }
 
 
-async function productReviews(body, urlParts) {
+async function productReviews(req, body, urlParts) {
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
@@ -317,14 +371,14 @@ async function productReviews(body, urlParts) {
             if (!result[0])
                 isProduct = false;
         }).catch(error => {
-            return failedDB();
+            return failed();
         });
         if (!isProduct)
             return resMsg;
-        let reviewInfo = await getProductReviews(body, product_ID);
+        let reviewInfo = await getProductReviews(req, body, product_ID);
         if (reviewInfo) {
             if (reviewInfo instanceof String) {
-                return failedDB();
+                return failed();
             } else if (reviewInfo instanceof Error) {
                 resMsg.code = 400;
                 resMsg.hdrs = {"Content-Type" : "text/html"};
@@ -346,8 +400,17 @@ async function productReviews(body, urlParts) {
     }
 } 
 
-function getUserID() {
-    // idk
+async function getUserID(req) {
+    let cookies = parseCookies(req);
+    if (cookies.hasOwnProperty("user_ID")) {
+        let user_ID = cookies.user_ID;
+        let validID;
+        validID = await verify(user_ID).catch(validID = Error);
+        if (validID instanceof Error) {
+            return validID;
+        } else if (validID)
+            return user_ID;
+    }
     return -1;
 }
 

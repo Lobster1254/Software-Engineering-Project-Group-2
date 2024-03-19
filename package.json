@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "fs": "^0.0.1-security",
+    "google-auth-library": "^9.7.0",
     "mysql2": "^3.9.2",
     "querystring": "^0.2.1"
   }

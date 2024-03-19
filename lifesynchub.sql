@@ -60,9 +60,9 @@ DROP TABLE IF EXISTS `helpfulnessratings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `helpfulnessratings` (
-  `rating` boolean NOT NULL,
-  `user_ID` varchar(50) NOT NULL,
-  `review_user_ID` varchar(50) NOT NULL,
+  `rating` tinyint(1) NOT NULL,
+  `user_ID` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `review_user_ID` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `product_ID` varchar(50) NOT NULL,
   PRIMARY KEY (`product_ID`,`user_ID`),
   KEY `product_ID` (`product_ID`,`review_user_ID`),
@@ -97,7 +97,7 @@ DROP TABLE IF EXISTS `orders`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
   `order_ID` int NOT NULL,
-  `user_ID` varchar(50) NOT NULL,
+  `user_ID` varchar(1500) NOT NULL,
   `date_made` date NOT NULL,
   `payment_method` varchar(50) NOT NULL,
   `products_cost` float(12,2) NOT NULL,
@@ -120,7 +120,7 @@ DROP TABLE IF EXISTS `productreviews`;
 CREATE TABLE `productreviews` (
   `score` int NOT NULL,
   `description` varchar(2000) DEFAULT NULL,
-  `user_ID` varchar(50) NOT NULL,
+  `user_ID` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `product_ID` varchar(50) NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`product_ID`,`user_ID`),
@@ -138,6 +138,7 @@ DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
   `product_ID` varchar(50) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `material` varchar(50) DEFAULT NULL,
   `description` varchar(2000) DEFAULT NULL,
   `stock` int NOT NULL,
   `price` float(8,2) NOT NULL,
@@ -160,7 +161,7 @@ DROP TABLE IF EXISTS `shoppingcartproducts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shoppingcartproducts` (
-  `user_ID` varchar(50) NOT NULL,
+  `user_ID` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `product_ID` varchar(50) NOT NULL,
   `quantity` int NOT NULL,
   PRIMARY KEY (`product_ID`,`user_ID`),
@@ -178,7 +179,7 @@ DROP TABLE IF EXISTS `shoppingcarts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shoppingcarts` (
-  `user_ID` varchar(50) NOT NULL,
+  `user_ID` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `cost` float(12,2) NOT NULL,
   PRIMARY KEY (`user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -193,4 +194,4 @@ CREATE TABLE `shoppingcarts` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-18  1:36:01
+-- Dump completed on 2024-03-18 20:20:36
