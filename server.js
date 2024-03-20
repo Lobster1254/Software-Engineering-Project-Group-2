@@ -144,12 +144,12 @@ function parseCookies (req) {
     return list;
 }
 
-async function verify(user_ID) {
+async function verify(user_ID) { // returns error if error, -1 if invalid ID, email if valid ID
     const ticket = await client.verifyIdToken({
         idToken: user_ID,
         audience: CLIENT_ID,
     }).catch(error => {
-        return;
+        return error;
     });
     if (!ticket)
         return -1;
@@ -444,7 +444,7 @@ async function viewOrders(urlParts) {
     }
 }
 
-async function getUserID(req) {
+async function getUserID(req) {  // returns error if error, returns -1 if not logged in, returns userID if logged in
     let cookies = parseCookies(req);
     if (cookies.hasOwnProperty("user_ID")) {
         let user_ID = cookies.user_ID;
@@ -459,7 +459,7 @@ async function getUserID(req) {
     return -1;
 }
 
-async function getEmail(req) {
+async function getEmail(req) { // returns error if error, returns -1 if not logged in, returns email if logged in
     let cookies = parseCookies(req);
     if (cookies.hasOwnProperty("user_ID")) {
         let user_ID = cookies.user_ID;
