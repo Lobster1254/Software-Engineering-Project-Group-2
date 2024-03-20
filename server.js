@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
+const { createOrder } = require('./src/makeOrder.js');
 const port = 8000;
 let dBCon = {};
 let loginhtml;
@@ -71,6 +72,9 @@ const server = http.createServer((req, res) => {
                         case 'product-reviews':
                             resMsg = await productReviews(req, body, urlParts);
                             break;
+                        case 'view-orders':
+                            resMsg = await viewOrders(urlParts);
+                            break;
                         default:
                             break;
                     }
@@ -105,6 +109,9 @@ const server = http.createServer((req, res) => {
                         case 'logout':
                             resMsg.code = 200;
                             resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+                            break;
+                        case 'make-order':
+                            resMsg = await makeOrder(urlParts);
                             break;
                         default:
                             break;
@@ -416,6 +423,91 @@ async function productReviews(req, body, urlParts) {
         return {};
     }
 } 
+
+async function viewOrders(urlParts) {
+    let resMsg = {};
+    if (urlParts[1]) {
+        let user_ID = urlParts[1];
+        let query = "select * from orders where user_ID = '" + user_ID + "'";
+        const getOrderHistory = async() => {
+            let resMsg = {};
+            await dBCon.promise().query(query).then(([ result ]) => {
+                if (result[0]) {
+                    resMsg.code = 200;
+                    resMsg.hdrs = {"Content-Type" : "application/json"};
+                    resMsg.body = JSON.stringify(result);
+                }
+            }).catch(error => {
+                resMsg = failedDB();
+            });
+            return resMsg;
+        }
+        return getOrderHistory();
+    } else {
+        return resMsg;
+    }
+}
+
+async function makeOrder(urlParts) {
+    let resMsg = {};
+
+    let user_ID = urlParts[1];
+    const queries = [
+        "select * from shoppingcarts where user_ID = '" + user_ID + "'",
+        "select * from shoppingcartproducts where user_ID = '" + user_ID + "'",
+        "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.user_ID = '" + user_ID + "'",
+      ];
+    const results = []; //results format = [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
+    for(let i = 0; i < queries.length; i++) {
+        try {
+            // Execute SQL queries asynchronously
+            let temp = await executeQueries(queries[i]);
+            results.push(temp);
+        } catch (error) {
+            resMsg.code = 200;
+            resMsg.writeHead(500, { 'Content-Type': 'text/plain' });
+            resMsg.end(`Error executing queries: ${error.message}`);
+        }
+    }
+    const result = await createOrder(results)
+    await insertOrder(result);
+    if(insertOrder) {
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "successfully placed order :D\norder_ID: " + result.order_ID; 
+        return resMsg;
+    }
+    return;
+}
+
+async function executeQueries(query) {
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(result);
+        });
+    });
+}
+
+async function insertOrder(order) {
+    let body = "";
+    const orderAttributes = "(order_ID, user_ID, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)";
+    let orderValues = `(${order.order_ID}, '${order.user_ID}', '${order.date_made}', '${order.payment_method}', ${order.products_cost}, ${order.tax_cost}, ${order.shipping_cost}, '${order.delivery_address}', '${order.billing_address}', '${order.status}')`;
+    let query = "insert into orders " + orderAttributes + " values "  + orderValues;
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return body;
+            }
+            resolve(result);
+        });
+    });
+    
+}
 
 async function getUserID(req) {
     let cookies = parseCookies(req);
