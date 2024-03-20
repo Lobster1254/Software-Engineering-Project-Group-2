@@ -311,31 +311,95 @@ function failed() { // can be called when the server fails to connect to an API 
     return resMsg;
 }
 
-async function searchProducts(req, body, keyword) {
+async function searchProducts(req, filters, keyword) {
     resMsg = {};
-    let searchQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID where match(name, description, category) against('" + keyword + "')";
+    let baseQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID";
+    let whereClauses = [];
+    let parameters = [];
+    whereClauses.push("match(name, description, category) against(?)");
+    parameters.push(keyword);
     let min_price = -1;
-    if (body != "") {
-        let filters;
-        try {
-            filters = JSON.parse(body);
-        } catch (error) {
-            resMsg.code = 400;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = error.toString();
-            return resMsg;
+    if (filters) {
+        if (filters.category) { // filter by category
+            whereClauses.push("category = ?");
+            parameters.push(filters.category);
         }
-        if (filters.hasOwnProperty("category")) // filter by category
-            searchQuery = searchQuery + " and category = '" + filters.category + "'";
-        if (filters.hasOwnProperty("min_price")) // minimum price
-            searchQuery = searchQuery + " and price >= '" + filters.min_price + "'";
+        if (filters.min_price) { // minimum price
+            whereClauses.push("price >= ?");
+            parameters.push(filters.min_price);
             min_price = filters.min_price;
-        if (filters.hasOwnProperty("max_price")) // maximum price
-            searchQuery = searchQuery + " and price <= '" + filters.max_price + "'";
-        if (filters.hasOwnProperty("min_rating")) // minimum average review rating
-            searchQuery = searchQuery + "and IFNULL(rating.average_rating, 0) >= '" + filters.min_rating + "'";
+        }
+        if (filters.max_price) { // maximum price
+            whereClauses.push("price <= ?");
+            parameters.push(filters.max_price);
+        }
+        if (filters.min_rating) { // minimum average review rating
+            whereClauses.push("IFNULL(rating.average_rating, 0) >= ?");
+            parameters.push(filters.min_rating);
+        }
+        if (filters.max_rating) { // maximum average review rating
+            whereClauses.push("IFNULL(rating.average_rating, 0) <= ?");
+            parameters.push(filters.max_rating);
+        }
+        if (filters.material) { // filter by material
+            whereClauses.push("material = ?");
+            parameters.push(filters.material);
+        }
+        if (filters.color) { // filter by color
+            whereClauses.push("color = ?");
+            parameters.push(filters.color);
+        }
+        if (filters.min_length) { // filter by minimum length
+            whereClauses.push("length_in >= ?");
+            parameters.push(filters.min_length);
+        }
+        if (filters.max_length) { // filter by maximum length
+            whereClauses.push("length_in <= ?");
+            parameters.push(filters.max_length);
+        }
+        if (filters.min_width) { // filter by minimum width
+            whereClauses.push("width_in >= ?");
+            parameters.push(filters.min_width);
+        }
+        if (filters.max_width) { // filter by maximum width
+            whereClauses.push("width_in <= ?");
+            parameters.push(filters.max_width);
+        }
+        if (filters.min_height) { // filter by minimum height
+            whereClauses.push("height_in >= ?");
+            parameters.push(filters.min_height);
+        }
+        if (filters.max_height) { // filter by maximum height
+            whereClauses.push("height_in <= ?");
+            parameters.push(filters.max_height);
+        }
+        if (filters.min_weight) { // filter by minimum weight
+            whereClauses.push("weight_oz >= ?");
+            parameters.push(filters.min_weight);
+        }
+        if (filters.max_weight) { // filter by maximum weight
+            whereClauses.push("weight_oz <= ?");
+            parameters.push(filters.max_weight);
+        }
+        if (filters.length_in) { // filter by length
+            whereClauses.push("length_in = ?");
+            parameters.push(filters.length_in);
+        }
+        if (filters.width_in) { // filter by width
+            whereClauses.push("width_in = ?");
+            parameters.push(filters.width_in);
+        }
+        if (filters.height_in) { // filter by height
+            whereClauses.push("height_in = ?");
+            parameters.push(filters.height_in);
+        }
+        if (filters.weight_oz) { // filter by weight
+            whereClauses.push("weight_oz = ?");
+            parameters.push(filters.weight_oz);
+        }
     }
-    await dBCon.promise().query(searchQuery).then(([ result ]) => {
+    let searchQuery = baseQuery + " where " + whereClauses.join(" and ");
+    await dBCon.promise().query(searchQuery, parameters).then(([ result ]) => {
         resMsg.code = 200;
         resMsg.hdrs = {"Content-Type" : "application/json"};
         resMsg.body = result;
@@ -370,7 +434,7 @@ async function productCatalog(req, body, urlParts) {
                 keyword = param.key;
             else
                 return {};
-            return await searchProducts(req, body, keyword);
+            return await searchProducts(req, param, keyword);
         } else {
             let product_ID = urlParts[1];
             return await getProductInfo(req, body, product_ID);
