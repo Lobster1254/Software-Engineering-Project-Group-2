@@ -71,6 +71,9 @@ const server = http.createServer((req, res) => {
                         case 'product-reviews':
                             resMsg = await productReviews(req, body, urlParts);
                             break;
+                        case 'view-orders':
+                            resMsg = await viewOrders(urlParts);
+                            break;
                         default:
                             break;
                     }
@@ -416,6 +419,30 @@ async function productReviews(req, body, urlParts) {
         return {};
     }
 } 
+
+async function viewOrders(urlParts) {
+    let resMsg = {};
+    if (urlParts[1]) {
+        let user_ID = urlParts[1];
+        let query = "select * from orders where user_ID = '" + user_ID + "'";
+        const getOrderHistory = async() => {
+            let resMsg = {};
+            await dBCon.promise().query(query).then(([ result ]) => {
+                if (result[0]) {
+                    resMsg.code = 200;
+                    resMsg.hdrs = {"Content-Type" : "application/json"};
+                    resMsg.body = JSON.stringify(result);
+                }
+            }).catch(error => {
+                resMsg = failedDB();
+            });
+            return resMsg;
+        }
+        return getOrderHistory();
+    } else {
+        return resMsg;
+    }
+}
 
 async function getUserID(req) {
     let cookies = parseCookies(req);
