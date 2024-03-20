@@ -97,7 +97,7 @@ const server = http.createServer((req, res) => {
                             validID = await verify(body).catch(validID = Error);
                             if (validID instanceof Error) {
                                 return failed();
-                            } else if (validID) {
+                            } else if (validID != -1) {
                                 resMsg.code = 200;
                                 resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
                             }
@@ -149,12 +149,12 @@ async function verify(user_ID) {
         return;
     });
     if (!ticket)
-        return false;
+        return -1;
     const payload = ticket.getPayload();
     if (payload)
-        return true;
+        return payload.email;
     else
-        return false;
+        return -1;
 }
 
 server.once('error', function(err) {
@@ -244,10 +244,10 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
 
 const getProductInfo = async(req, body, product_ID) => { // returns stringified JSON of product info
     let productQuery = "select * from products where product_ID = '" + product_ID + "'";
-    let user_ID = await getUserID(req);
-    if (user_ID instanceof Error)
+    let email = await getEmail(req);
+    if (email instanceof Error)
         return failed();
-    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + user_ID + "' and p.product_ID = '" + product_ID + "'";
+    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
@@ -270,7 +270,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             resMsg.body.discounts = discounts[1];
         }
     }
-    if (user_ID != -1) {
+    if (email != -1) {
         await dBCon.promise().query(ordersQuery).then(([ result ]) => {
             if (result[0]) {
                 resMsg.body.orders = result;
@@ -423,10 +423,22 @@ async function getUserID(req) {
         let user_ID = cookies.user_ID;
         let validID;
         validID = await verify(user_ID).catch(validID = Error);
-        if (validID instanceof Error) {
+        if (validID instanceof Error)
             return validID;
-        } else if (validID)
+        else if (validID != -1) {
             return user_ID;
+        }
+    }
+    return -1;
+}
+
+async function getEmail(req) {
+    let cookies = parseCookies(req);
+    if (cookies.hasOwnProperty("user_ID")) {
+        let user_ID = cookies.user_ID;
+        let validID;
+        validID = await verify(user_ID).catch(validID = Error);
+        return validID;
     }
     return -1;
 }
