@@ -324,8 +324,10 @@ async function searchProducts(req, filters, keyword) {
     let baseQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID";
     let whereClauses = [];
     let parameters = [];
-    whereClauses.push("match(name, description, category) against(?)");
-    parameters.push(keyword);
+    if (keyword) {
+        whereClauses.push("MATCH(name, description, category) AGAINST(?)");
+        parameters.push(keyword);
+    }
     let min_price = -1;
     if (filters) {
         if (filters.category) { // filter by category
@@ -405,8 +407,15 @@ async function searchProducts(req, filters, keyword) {
             whereClauses.push("weight_oz = ?");
             parameters.push(filters.weight_oz);
         }
+        if (filters.price) { // filter by specific price
+            whereClauses.push("price = ?");
+            parameters.push(filters.price);
+        }
     }
-    let searchQuery = baseQuery + " where " + whereClauses.join(" and ");
+    let searchQuery = baseQuery;
+    if (whereClauses.length > 0) {
+        searchQuery += " WHERE " + whereClauses.join(" AND ");
+    }
     try {
         const [result] = await dBCon.promise().query(searchQuery, parameters);
         resMsg.code = 200;
@@ -436,7 +445,9 @@ async function searchProducts(req, filters, keyword) {
                 for (let i = 1; i < resMsg.body.length; i++)
                     resMsg.body[i] = resMsg.body[i-1];
     }
-    resMsg.body = resMsg.body.filter((product) => product != null);
+    if (Array.isArray(resMsg.body)) {
+        resMsg.body = resMsg.body.filter((product) => product != null);
+    }
     resMsg.body = JSON.stringify(resMsg.body);
     return resMsg;
 }
@@ -445,11 +456,7 @@ async function productCatalog(req, body, urlParts) {
     if (urlParts[1]) {
         if (urlParts[1].startsWith("search?")) {
             let param = querystring.decode(urlParts[1].substring(7));
-            let keyword;
-            if (param.key)
-                keyword = param.key;
-            else
-                return {};
+            let keyword = param.key || null;
             return await searchProducts(req, param, keyword);
         } else {
             let product_ID = urlParts[1];
@@ -458,7 +465,6 @@ async function productCatalog(req, body, urlParts) {
     } else {
         return {};
     }
-    
 }
 
 
