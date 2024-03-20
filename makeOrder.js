@@ -6,8 +6,9 @@
         3. it will send response notifying you that order has been placed
 
 const http = require('http'); // for using stripe later....
-const stripe = require('stripe')('API_KEY_HERE');
-              
+const api_key = 'YOUR_API_KEY_HERE';
+const stripe = require('stripe')(api_key);
+
 /* NOTE:
 "orderInfoArray" format: 
 [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
