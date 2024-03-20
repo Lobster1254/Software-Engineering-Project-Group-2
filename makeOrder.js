@@ -8,7 +8,7 @@
 const http = require('http'); // for using stripe later....
 const api_key = 'YOUR_API_KEY_HERE';
 const stripe = require('stripe')(api_key);
-
+              
 /* NOTE:
 "orderInfoArray" format: 
 [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
@@ -26,13 +26,16 @@ async function createOrder(orderInfoArray) {
         console.log(order); // for testing (to see what's being returned as "order")
         body = order;
     } else {
-        body = "not enough stock, please remove out-of-stock items to place an order";
+        body = "Either there is not enough stock of certain products in your cart, or there are too many items in your cart.\nPlease remove out-of-stock items and ensure that you have no more than 50 products in your cart to place an order";
     }
     return body;
 }
 
 //function checks if there are products in cart & if the requested quantity is in stock
 async function enoughStock(shoppingCartProducts, products) {
+    if(shoppingCartProducts[i].quantity > 50) {
+        return false; //there are too many products in your cart!
+    }
     let outOfStockCount = 0;
     if(shoppingCartProducts) {
         for(let i = 0; i < products.length; i++) {
