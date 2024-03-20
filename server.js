@@ -312,6 +312,14 @@ function failed() { // can be called when the server fails to connect to an API 
 }
 
 async function searchProducts(req, filters, keyword) {
+    if (keyword && keyword.length > 50) {
+        return {
+            code: 400,
+            hdrs: {"Content-Type" : "text/html"},
+            body: "Keyword length must not exceed 50 characters"
+        };
+    }
+
     resMsg = {};
     let baseQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID";
     let whereClauses = [];
@@ -399,14 +407,22 @@ async function searchProducts(req, filters, keyword) {
         }
     }
     let searchQuery = baseQuery + " where " + whereClauses.join(" and ");
-    await dBCon.promise().query(searchQuery, parameters).then(([ result ]) => {
+    try {
+        const [result] = await dBCon.promise().query(searchQuery, parameters);
         resMsg.code = 200;
         resMsg.hdrs = {"Content-Type" : "application/json"};
         resMsg.body = result;
-        
-    }).catch(error => {
-        return failed();
-    });
+    } catch (error) {
+        if (error.code === 'ER_CON_COUNT_ERROR') {
+            resMsg.code = 500;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Error connecting to the database";
+        } else {
+            resMsg.code = 503;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "An error occurred while retrieving products";
+        }
+    }
     let discountInfo;
     for (let i = 0; i < resMsg.body.length; i++) {
         let currentProduct = resMsg.body[i];
