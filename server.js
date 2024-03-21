@@ -73,7 +73,7 @@ const server = http.createServer((req, res) => {
                             resMsg = await productReviews(req, body, urlParts);
                             break;
                         case 'view-orders':
-                            resMsg = await viewOrders(urlParts);
+                            resMsg = await viewOrders(req urlParts);
                             break;
                         default:
                             break;
@@ -424,10 +424,10 @@ async function productReviews(req, body, urlParts) {
     }
 } 
 
-async function viewOrders(urlParts) {
+async function viewOrders(req, urlParts) {
     let resMsg = {};
     if (urlParts[1]) {
-        let user_ID = urlParts[1];
+        let user_ID = getEmail(req); // use urlParts[1] and add the user_ID to the request for testing if necessary
         let query = "select * from orders where user_ID = '" + user_ID + "'";
         const getOrderHistory = async() => {
             let resMsg = {};
@@ -462,8 +462,15 @@ async function getUserID(req) {
     return -1;
 }
 
-function roundPrice(num) {
-    return Math.ceil(num * 100) / 100;
+async function getEmail(req) { // returns error if error, returns -1 if not logged in, returns email if logged in
+    let cookies = parseCookies(req);
+    if (cookies.hasOwnProperty("user_ID")) {
+        let user_ID = cookies.user_ID;
+        let validID;
+        validID = await verify(user_ID).catch(validID = Error);
+        return validID;
+    }
+    return -1;
 }
 
 function roundPrice(num) {
