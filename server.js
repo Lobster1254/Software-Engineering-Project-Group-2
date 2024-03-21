@@ -71,9 +71,14 @@ const server = http.createServer((req, res) => {
                         case 'product-reviews':
                             resMsg = await productReviews(req, body, urlParts);
                             break;
-                        case 'view-orders':
-                            resMsg = await viewOrders(req, urlParts);
-                            break;
+                        case 'orders':
+                            if(!urlParts[1]) {
+                                resMsg = await viewOrders(req, body, urlParts);
+                                break;
+                            } /* else { //function in progress. See branch "main-with-makeOrder" for details
+                                resMsg = await makeOrder(req, urlParts);
+                                break;
+                            } */
                         default:
                             break;
                     }
@@ -506,7 +511,7 @@ async function productReviews(req, body, urlParts) {
     }
 } 
 
-async function viewOrders(req, urlParts) {
+async function viewOrders(req, body, urlParts) {
     let resMsg = {};
     let user_ID = getEmail(req); 
     let query = "select * from orders where user_ID = '" + user_ID + "'";
