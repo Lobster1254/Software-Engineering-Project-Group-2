@@ -99,7 +99,7 @@ const server = http.createServer((req, res) => {
                             let validID;
                             validID = await verify(body).catch(validID = Error);
                             if (validID instanceof Error) {
-                                return failed();
+                                resMsg = failed();
                             } else if (validID != -1) {
                                 resMsg.code = 200;
                                 resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
@@ -508,26 +508,22 @@ async function productReviews(req, body, urlParts) {
 
 async function viewOrders(req, urlParts) {
     let resMsg = {};
-    if (urlParts[1]) {
-        let user_ID = getEmail(req); 
-        let query = "select * from orders where user_ID = '" + user_ID + "'";
-        const getOrderHistory = async() => {
-            let resMsg = {};
-            await dBCon.promise().query(query).then(([ result ]) => {
-                if (result[0]) {
-                    resMsg.code = 200;
-                    resMsg.hdrs = {"Content-Type" : "application/json"};
-                    resMsg.body = JSON.stringify(result);
-                }
-            }).catch(error => {
-                resMsg = failedDB();
-            });
-            return resMsg;
-        }
-        return getOrderHistory();
-    } else {
+    let user_ID = getEmail(req); 
+    let query = "select * from orders where user_ID = '" + user_ID + "'";
+    const getOrderHistory = async() => {
+        let resMsg = {};
+        await dBCon.promise().query(query).then(([ result ]) => {
+            if (result[0]) {
+                resMsg.code = 200;
+                resMsg.hdrs = {"Content-Type" : "application/json"};
+                resMsg.body = JSON.stringify(result);
+            }
+        }).catch(error => {
+            resMsg = failedDB();
+        });
         return resMsg;
     }
+    return await getOrderHistory();
 }
 
 async function getUserID(req) {  // returns error if error, returns -1 if not logged in, returns userID if logged in
