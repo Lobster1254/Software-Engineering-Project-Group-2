@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
                             resMsg = await productReviews(req, body, urlParts);
                             break;
                         case 'view-orders':
-                            resMsg = await viewOrders(urlParts);
+                            resMsg = await viewOrders(req, urlParts);
                             break;
                         default:
                             break;
@@ -506,10 +506,10 @@ async function productReviews(req, body, urlParts) {
     }
 } 
 
-async function viewOrders(urlParts) {
+async function viewOrders(req, urlParts) {
     let resMsg = {};
     if (urlParts[1]) {
-        let user_ID = urlParts[1];
+        let user_ID = getEmail(req); 
         let query = "select * from orders where user_ID = '" + user_ID + "'";
         const getOrderHistory = async() => {
             let resMsg = {};
