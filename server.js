@@ -72,9 +72,14 @@ const server = http.createServer((req, res) => {
                         case 'product-reviews':
                             resMsg = await productReviews(req, body, urlParts);
                             break;
-                        case 'view-orders':
-                            resMsg = await viewOrders(req urlParts);
-                            break;
+                         case 'orders':
+                            if(!urlParts[1]) {
+                                resMsg = await viewOrders(req, body, urlParts);
+                                break;
+                            } else { 
+                                resMsg = await makeOrder(req, body, urlParts);
+                                break;
+                            }
                         default:
                             break;
                     }
@@ -109,9 +114,6 @@ const server = http.createServer((req, res) => {
                         case 'logout':
                             resMsg.code = 200;
                             resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
-                            break;
-                        case 'make-order':
-                            resMsg = await makeOrder(urlParts);
                             break;
                         default:
                             break;
@@ -424,9 +426,9 @@ async function productReviews(req, body, urlParts) {
     }
 } 
 
-async function viewOrders(req, urlParts) {
+async function viewOrders(req, body, urlParts) {
     let resMsg = {};
-    if (urlParts[1]) {
+    if (urlParts[0]) {
         let user_ID = getEmail(req); // use urlParts[1] and add the user_ID to the request for testing if necessary
         let query = "select * from orders where user_ID = '" + user_ID + "'";
         const getOrderHistory = async() => {
@@ -477,10 +479,10 @@ function roundPrice(num) {
     return Math.ceil(num * 100) / 100;
 }
 
-async function makeOrder(urlParts) {
+async function makeOrder(req, body, urlParts) {
     let resMsg = {};
 
-    let user_ID = urlParts[1];
+    let user_ID = getEmail(req); //remeber: user must be *logged in* to use this function, otherwise you must test manually
     const queries = [
         "select * from shoppingcarts where user_ID = '" + user_ID + "'",
         "select * from shoppingcartproducts where user_ID = '" + user_ID + "'",
