@@ -1,48 +1,49 @@
-const fs = require('fs');
-const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
+const http = require('http');
+const url = require('url');
+const mysql = require('mysql2/promise');
+
+const port = 8000;
 let dBCon;
 
-// Prompt for database password and establish connection
-readline.question('Enter password: ', pass => {
-    const mysql = require("mysql2");
-    dBCon = mysql.createConnection({
+(async () => {
+    dBCon = await mysql.createConnection({
         host: "localhost",
         user: "root",
         database: "lifesynchub",
         password: pass
     });
-    dBCon.connect(function(err) {
-        if (err) throw err;
-        console.log("Connected to the database.");
-        promptDeleteReview();
-    });
+})();
+
+const server = http.createServer(async (req, res) => {
+    const reqUrl = url.parse(req.url, true);
+    // Assuming deletion request is sent to /delete-review with a POST method
+    if (req.method === 'POST' && reqUrl.pathname === '/delete-review') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString(); // Convert Buffer to string
+        });
+        req.on('end', async () => {
+            try {
+                const { reviewID, userID } = JSON.parse(body);
+                // Authenticate user here. For now, let's assume userID is enough
+                const [reviews] = await dBCon.execute('SELECT * FROM ProductReviews WHERE review_ID = ? AND user_ID = ?', [reviewID, userID]);
+                if (reviews.length === 0) {
+                    res.writeHead(404, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Review not found or you are not authorized to delete this review.' }));
+                    return;
+                }
+                await dBCon.execute('DELETE FROM ProductReviews WHERE review_ID = ?', [reviewID]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Review deleted successfully.' }));
+            } catch (error) {
+                console.error(error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Internal Server Error' }));
+            }
+        });
+    }
 });
 
-// Function to prompt for review ID and delete the review
-function promptDeleteReview() {
-    readline.question('Enter review ID to delete: ', reviewID => {
-        deleteReview(reviewID).then(() => {
-            console.log("Review deleted successfully.");
-            readline.close(); // Close the readline interface after deletion
-        }).catch(error => {
-            console.error("An error occurred:", error.message);
-            readline.close(); // Ensure readline interface is closed on error
-        });
-    });
-}
-
-// Async function to delete a review by ID
-async function deleteReview(reviewID) {
-    try {
-        const query = "DELETE FROM ProductReviews WHERE review_ID = ?";
-        const [result] = await dBCon.promise().query(query, [reviewID]);
-        if (result.affectedRows === 0) {
-            throw new Error("Review not found or already deleted.");
-        }
-    } catch (error) {
-        throw error; // Rethrow the error to be caught in the calling function
-    }
-}
+server.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
