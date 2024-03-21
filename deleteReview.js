@@ -1,6 +1,6 @@
 const http = require('http');
 const url = require('url');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
 const port = 8000;
 let dBCon;
