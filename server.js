@@ -141,6 +141,30 @@ const server = http.createServer((req, res) => {
             case 'DELETE':
                 if (urlParts[0]) {
                     switch(urlParts[0]) {
+                        case 'product-reviews':
+                            //deleteReview
+                            // Check if the request is for deleting a review
+                            if (urlParts[1] === 'delete') {
+                                // Parse the request body to get the review ID
+                                let parsedBody;
+                                try {
+                                    parsedBody = JSON.parse(body);
+                                } catch (error) {
+                                    return failed(); 
+                                }
+                                const reviewID = parsedBody.reviewID;
+                                const userEmail = await getEmail(req); 
+
+                                if (userEmail instanceof Error) {
+                                    resMsg = { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
+                                } else if (userEmail === -1) {
+                                    resMsg = { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
+                                }
+
+                                // Delete review
+                                resMsg = await deleteReview(reviewID, userEmail); 
+                            }
+                            break;
                         case 'shopping-cart':
                             if (urlParts[2] === 'products' && urlParts[3]) {
                                 let userEmail = await getEmail(req);
@@ -545,29 +569,6 @@ async function productCatalog(req, body, urlParts) {
 
 
 async function productReviews(req, body, urlParts) {
-    //deleteReview
-    // Check if the request is for deleting a review
-    if (urlParts[1] === 'delete') {
-        // Parse the request body to get the review ID
-        let parsedBody;
-        try {
-            parsedBody = JSON.parse(body);
-        } catch (error) {
-            return failed(); 
-        }
-        const reviewID = parsedBody.reviewID;
-        const userEmail = await getEmail(req); 
-
-        if (userEmail instanceof Error) {
-            return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
-        } else if (userEmail === -1) {
-            return { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
-        }
-
-        // Delete review
-        return await deleteReview(reviewID, userEmail); 
-    }
-    //
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
