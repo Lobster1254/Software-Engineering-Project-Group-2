@@ -85,7 +85,9 @@ const server = http.createServer((req, res) => {
                             let validID;
                             validID = await verify(body).catch(validID = Error);
                             if (validID instanceof Error) {
-                                resMsg = failed();
+                                resMsg.code = 503;
+                                resMsg.hdrs = {"Content-Type" : "text/html"};
+                                resMsg.body = "Failure while accessing Google API";
                             } else if (validID != -1) {
                                 resMsg.code = 200;
                                 resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
@@ -113,7 +115,7 @@ const server = http.createServer((req, res) => {
                 case 'GET':
                     let user_ID = await getUserID(req);
                     if (user_ID instanceof Error)
-                        resMsg = failed();
+                        resMsg = failedDB();
                     else if (user_ID == -1) {
                         resMsg.code = 200;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
@@ -281,8 +283,9 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
 const getProductInfo = async(req, body, product_ID) => { // returns stringified JSON of product info
     let productQuery = "select * from products where product_ID = '" + product_ID + "'";
     let email = await getEmail(req);
-    if (email instanceof Error)
-        return failed();
+    if (email instanceof Error) {
+        email = -1;
+    }
     let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and email = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
@@ -293,7 +296,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             isProduct = false;
         }
     }).catch(error => {
-        return failed();
+        return failedDB();
     });
     if (!isProduct)
         return resMsg;
@@ -336,11 +339,11 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     return resMsg;
 }
 
-function failed() { // can be called when the server fails to connect to an API or the database and that failure is fatal to the use case's function
+function failedDB() { // can be called when the server fails to connect to the database and that failure is fatal to the use case's function
     resMsg = {};
     resMsg.code = 503;
     resMsg.hdrs = {"Content-Type" : "text/html"};
-    resMsg.body = "Failed access to vital service. Please try again later.";
+    resMsg.body = "Failed access to mySQL.";
     return resMsg;
 }
 
@@ -464,21 +467,17 @@ async function searchProducts(req, body, keyword) {
         resMsg.hdrs = {"Content-Type" : "application/json"};
         resMsg.body = result;
     } catch (error) {
-        if (error.code === 'ER_CON_COUNT_ERROR') {
-            resMsg.code = 500;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = "Error connecting to the database";
-        } else {
-            resMsg.code = 503;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = "An error occurred while retrieving products";
-        }
+        return failedDB();
     }
     let discountInfo;
     for (let i = 0; i < resMsg.body.length; i++) {
         let currentProduct = resMsg.body[i];
         discountInfo = await getDiscounts(currentProduct.product_ID, currentProduct.price);
-        currentProduct.discounted_price = discountInfo[0];
+        if (typeof discounts === "string") {
+            currentProduct.discounted_price = currentProduct.price;
+        } else {
+            currentProduct.discounted_price = discountInfo[0];
+        }
         resMsg.body[i] = currentProduct;
         if (min_price > discountInfo[0])
             if (i == 0) 
@@ -526,14 +525,14 @@ async function productReviews(req, body, urlParts) {
                     if (!result[0])
                         isProduct = false;
                 }).catch(error => {
-                    return failed();
+                    return failedDB();
                 });
                 if (!isProduct)
                     return resMsg;
                 let reviewInfo = await getProductReviews(req, body, product_ID);
                 if (reviewInfo) {
                     if (typeof reviewInfo === "string") {
-                        return failed();
+                        return failedDB();
                     } else if (reviewInfo instanceof Error) {
                         resMsg.code = 400;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
@@ -596,7 +595,7 @@ async function shoppingCart(req, body, urlParts) {
         case 'POST':
             let userEmail = await getEmail(req);
             if (userEmail instanceof Error || userEmail === -1) {
-                return userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
+                return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
             }
             if (urlParts[1] && urlParts[2] === 'products') {
                 return await handleAddProductToCart(req, userEmail, body);
@@ -606,7 +605,7 @@ async function shoppingCart(req, body, urlParts) {
             if (urlParts[2] === 'products' && urlParts[3]) {
                 let userEmail = await getEmail(req);
                 if (userEmail instanceof Error || userEmail === -1) {
-                    return userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
+                    return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
                 } else {
                     // Assuming userEmail is valid, handle product removal
                     return await removeProductFromCart(userEmail, urlParts[3]);
@@ -675,7 +674,7 @@ async function viewShoppingCart(req) {
     let resMsg = { hdrs: {"Content-Type": "application/json"} };
     let userEmail = await getEmail(req);
     if (userEmail instanceof Error) {
-        return failed();
+        return failedDB();
     }
 
     try {
