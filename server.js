@@ -724,7 +724,6 @@ async function handleAddProductToCart(req, userEmail, body) {
             resMsg.body = JSON.stringify({ message: availability.exists ? "Insufficient stock." : "Product does not exist." });
             return resMsg;
         }
-        // Optionally, check the cart quantity if needed
         const cartStatus = await checkCartQuantity(userEmail);
         if (cartStatus.error) {
             resMsg.code = 500;
@@ -732,13 +731,12 @@ async function handleAddProductToCart(req, userEmail, body) {
             return resMsg;
         }
 
-        // Proceed with adding or updating product in the cart based on helpers' outcomes
+        // Add or updating product in the cart based on helpers' outcomes
         const updateCartResponse = await updateCartWithProduct(userEmail, productDetails.product_ID, productDetails.quantity, availability.stock);
         if (!updateCartResponse.success) {
             throw new Error(updateCartResponse.message); // Or handle more gracefully
         }
 
-        // Assuming updateCartWithProduct handles cart and product update logic
         resMsg.code = 200;
         resMsg.body = JSON.stringify({ message: "Product added to shopping cart successfully." });
         
