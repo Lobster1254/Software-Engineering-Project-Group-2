@@ -487,8 +487,10 @@ async function productReviews(req, body, urlParts) {
         const reviewID = parsedBody.reviewID;
         const userEmail = await getEmail(req); 
 
-        if (userEmail === -1) {
-            return { code: 403, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Unauthorized" }) };
+        if (userEmail instanceof Error) {
+            return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
+        } else if (userEmail === -1) {
+            return { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
         }
 
         // Delete review
