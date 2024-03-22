@@ -64,33 +64,53 @@ const server = http.createServer((req, res) => {
         // Initialize a variable to store the parsed body 
         // (USED FOR POST OR ANY CALL THAT REQUIRES THE BODY ^)
         let parsedBody = null;
-        switch(req.method) {
-            case 'GET':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'product-catalog':
-                            resMsg = await productCatalog(req, body, urlParts);
-                            break;
-                        case 'product-reviews':
-                            resMsg = await productReviews(req, body, urlParts);
-                            break;
-                        case 'orders':
-                            if(!urlParts[1]) {
-                                resMsg = await viewOrders(req, body, urlParts);
-                                break;
-                            } /* else { //function in progress. See branch "main-with-makeOrder" for details
-                                resMsg = await makeOrder(req, urlParts);
-                                break;
-                            } */
-                        case 'shopping-cart':
-                            if (urlParts[1]) {
-                                resMsg = await viewShoppingCart(req);
+        
+        if (urlParts[0]) {
+            switch(urlParts[0]) {
+                case 'product-catalog':
+                    resMsg = await productCatalog(req, body, urlParts);
+                    break;
+                case 'product-reviews':
+                    resMsg = await productReviews(req, body, urlParts);
+                    break;
+                case 'shopping-cart':
+                    resMsg = await shoppingCart(req, body, urlParts);
+                    break;
+                case 'orders':
+                    resMsg = await orders(req, body, urlParts);
+                    break;
+                case 'login':
+                    switch(req.method) {
+                        case 'POST':
+                            let validID;
+                            validID = await verify(body).catch(validID = Error);
+                            if (validID instanceof Error) {
+                                resMsg = failed();
+                            } else if (validID != -1) {
+                                resMsg.code = 200;
+                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
                             }
                             break;
                         default:
                             break;
                     }
-                } else {
+                    break;
+                case 'logout':
+                    switch(req.method) {
+                        case 'POST':
+                            resMsg.code = 200;
+                            resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch(req.method) {
+                case 'GET':
                     let user_ID = await getUserID(req);
                     if (user_ID instanceof Error)
                         resMsg = failed();
@@ -103,94 +123,16 @@ const server = http.createServer((req, res) => {
                         resMsg.hdrs = {"Content-Type" : "text/html"};
                         resMsg.body = logouthtml;
                     }
-                }
-                break;
-            case 'POST':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'login':
-                            let validID;
-                            validID = await verify(body).catch(validID = Error);
-                            if (validID instanceof Error) {
-                                resMsg = failed();
-                            } else if (validID != -1) {
-                                resMsg.code = 200;
-                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
-                            }
-                            break;
-                        case 'logout':
-                            resMsg.code = 200;
-                            resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
-                            break;
-                        case 'shopping-cart':
-                            let userEmail = await getEmail(req);
-                            if (userEmail instanceof Error || userEmail === -1) {
-                                resMsg = userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-                                break;
-                            }
-                            
-                            if (urlParts[1] && urlParts[2] === 'products') {
-                                resMsg = await handleAddProductToCart(req, userEmail, body);
-                            } 
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-            case 'DELETE':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'product-reviews':
-                            //deleteReview
-                            // Check if the request is for deleting a review
-                            if (urlParts[1] === 'delete') {
-                                // Parse the request body to get the review ID
-                                let parsedBody;
-                                try {
-                                    parsedBody = JSON.parse(body);
-                                } catch (error) {
-                                    return failed(); 
-                                }
-                                const reviewID = parsedBody.reviewID;
-                                const userEmail = await getEmail(req); 
-
-                                if (userEmail instanceof Error) {
-                                    resMsg = { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
-                                } else if (userEmail === -1) {
-                                    resMsg = { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
-                                }
-
-                                // Delete review
-                                resMsg = await deleteReview(reviewID, userEmail); 
-                            }
-                            break;
-                        case 'shopping-cart':
-                            if (urlParts[2] === 'products' && urlParts[3]) {
-                                let userEmail = await getEmail(req);
-                                if (userEmail instanceof Error || userEmail === -1) {
-                                    resMsg = userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-                                    break;
-                                } else {
-                                    // Assuming userEmail is valid, handle product removal
-                                    resMsg = await removeProductFromCart(userEmail, urlParts[3]);
-                                }
-                            } else {
-                                resMsg.code = 400;
-                                resMsg.hdrs = { "Content-Type": "text/html" };
-                                resMsg.body = "Bad Request";
-                            }
-                            break;
-                        }
-                    }
-            default:
-                break;
+                    break;
+                default:
+                    break;
             }
-            if (!resMsg.code) {
-                resMsg.code = 404;
-                resMsg.hdrs = {"Content-Type" : "text/html"};
-                resMsg.body = "404 Not Found";
-            }
+        }
+        if (!resMsg.code) {
+            resMsg.code = 404;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "404 Not Found";
+        }
         res.writeHead(resMsg.code, resMsg.hdrs);
         res.end(resMsg.body);
     });
@@ -260,7 +202,7 @@ server.once('error', function(err) {
 
 const getProductReviews = async(req, body, product_ID) => { // returns array, index 0 = avg rating, index 1 = score distribution index 2 = JSON of reviews
     let reviewInfo = [];
-    let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.user_ID = h.review_user_ID and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by user_ID, product_ID";
+    let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.email = h.review_email and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by email, product_ID";
     if (body != "") {
         let sorter;
         try {
@@ -341,7 +283,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     let email = await getEmail(req);
     if (email instanceof Error)
         return failed();
-    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and email = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
@@ -357,7 +299,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
         return resMsg;
     let discounts = await getDiscounts(product_ID, resMsg.body.price);
     if (discounts) {
-        if (discounts instanceof String) {
+        if (typeof discounts === "string") {
             resMsg.body.discounts = discounts;
         } else {
             resMsg.body.discounted_price = discounts[0];
@@ -375,7 +317,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     }
     let reviewInfo = await getProductReviews(req, body, product_ID);
     if (reviewInfo) {
-        if (reviewInfo instanceof String) {
+        if (typeof reviewInfo === "string") {
             resMsg.body.reviews = reviewInfo;
         } else if (reviewInfo instanceof Error) {
             resMsg.code = 400;
@@ -553,58 +495,142 @@ async function searchProducts(req, body, keyword) {
 }
 
 async function productCatalog(req, body, urlParts) {
-    if (urlParts[1]) {
-        if (urlParts[1].startsWith("search?")) {
-            let param = querystring.decode(urlParts[1].substring(7));
-            let keyword = param.key || null;
-            return await searchProducts(req, body, keyword);
-        } else {
-            let product_ID = urlParts[1];
-            return await getProductInfo(req, body, product_ID);
-        }
-    } else {
-        return {};
+    switch(req.method) {
+        case 'GET':
+            if (urlParts[1]) {
+                if (urlParts[1].startsWith("search?")) {
+                    let param = querystring.decode(urlParts[1].substring(7));
+                    let keyword = param.key || null;
+                    return await searchProducts(req, body, keyword);
+                } else {
+                    let product_ID = urlParts[1];
+                    return await getProductInfo(req, body, product_ID);
+                }
+            } else {
+                return {};
+            }
+        default:
+            return {};
     }
 }
 
 
 async function productReviews(req, body, urlParts) {
-    if (urlParts[1]) {
-        let resMsg = {};
-        let product_ID = urlParts[1];
-        let isProduct = true;
-        await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
-            if (!result[0])
-                isProduct = false;
-        }).catch(error => {
-            return failed();
-        });
-        if (!isProduct)
-            return resMsg;
-        let reviewInfo = await getProductReviews(req, body, product_ID);
-        if (reviewInfo) {
-            if (reviewInfo instanceof String) {
-                return failed();
-            } else if (reviewInfo instanceof Error) {
-                resMsg.code = 400;
-                resMsg.hdrs = {"Content-Type" : "text/html"};
-                resMsg.body = reviewInfo.toString();
+    switch(req.method) {
+        case 'GET':
+            if (urlParts[1]) {
+                let resMsg = {};
+                let product_ID = urlParts[1];
+                let isProduct = true;
+                await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
+                    if (!result[0])
+                        isProduct = false;
+                }).catch(error => {
+                    return failed();
+                });
+                if (!isProduct)
+                    return resMsg;
+                let reviewInfo = await getProductReviews(req, body, product_ID);
+                if (reviewInfo) {
+                    if (typeof reviewInfo === "string") {
+                        return failed();
+                    } else if (reviewInfo instanceof Error) {
+                        resMsg.code = 400;
+                        resMsg.hdrs = {"Content-Type" : "text/html"};
+                        resMsg.body = reviewInfo.toString();
+                        return resMsg;
+                    } else {
+                        resMsg.body = {};
+                        resMsg.body.average_rating = reviewInfo[0];
+                        resMsg.body.distribution = reviewInfo[1];
+                        resMsg.body.reviews = reviewInfo[2];
+                    }
+                }
+                resMsg.code = 200;
+                resMsg.hdrs = {"Content-Type" : "application/json"};
+                resMsg.body = JSON.stringify(resMsg.body);
                 return resMsg;
             } else {
-                resMsg.body = {};
-                resMsg.body.average_rating = reviewInfo[0];
-                resMsg.body.distribution = reviewInfo[1];
-                resMsg.body.reviews = reviewInfo[2];
+                return {};
             }
-        }
-        resMsg.code = 200;
-        resMsg.hdrs = {"Content-Type" : "application/json"};
-        resMsg.body = JSON.stringify(resMsg.body);
-        return resMsg;
-    } else {
-        return {};
+        case 'DELETE':
+            if (urlParts[1] === 'delete') {
+                // Parse the request body to get the review ID
+                let parsedBody;
+                try {
+                    parsedBody = JSON.parse(body);
+                } catch (error) {
+                    let resMsg = {};
+                    resMsg.code = 400;
+                    resMsg.hdrs = {"Content-Type" : "text/html"};
+                    resMsg.body = error.toString();
+                    return resMsg; 
+                }
+                const reviewID = parsedBody.reviewID;
+                const userEmail = await getEmail(req); 
+
+                if (userEmail instanceof Error) {
+                    return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
+                } else if (userEmail === -1) {
+                    return { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
+                }
+
+                // Delete review
+                return await deleteReview(reviewID, userEmail); 
+            }
+            return {};
+        default:
+            return {};
     }
+    
 } 
+
+async function shoppingCart(req, body, urlParts) {
+    switch(req.method) {
+        case 'GET':
+            if (urlParts[1]) {
+                return await viewShoppingCart(req);
+            } else {
+                return {};
+            }
+        case 'POST':
+            let userEmail = await getEmail(req);
+            if (userEmail instanceof Error || userEmail === -1) {
+                return userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
+            }
+            if (urlParts[1] && urlParts[2] === 'products') {
+                return await handleAddProductToCart(req, userEmail, body);
+            } 
+            return {};
+        case 'DELETE':
+            if (urlParts[2] === 'products' && urlParts[3]) {
+                let userEmail = await getEmail(req);
+                if (userEmail instanceof Error || userEmail === -1) {
+                    return userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
+                } else {
+                    // Assuming userEmail is valid, handle product removal
+                    return await removeProductFromCart(userEmail, urlParts[3]);
+                }
+            } else {
+                return {};
+            }
+
+    }
+}
+
+async function orders(req, body, urlParts) {
+    switch(req.method) {
+        case 'GET':
+            if(!urlParts[1])
+                return await viewOrders(req, body, urlParts);
+            else
+                return {};
+        case 'POST':
+            // makeOrder will go here
+        default:
+            return {};
+    }
+}
 
 // Implementation for deleteReview function
 async function deleteReview(reviewID, userEmail) {
@@ -627,8 +653,8 @@ async function deleteReview(reviewID, userEmail) {
 
 async function viewOrders(req, body, urlParts) {
     let resMsg = {};
-    let user_ID = getEmail(req); 
-    let query = "select * from orders where user_ID = '" + user_ID + "'";
+    let user_ID = await getEmail(req); 
+    let query = "select * from orders where email = '" + user_ID + "'";
     const getOrderHistory = async() => {
         let resMsg = {};
         await dBCon.promise().query(query).then(([ result ]) => {
@@ -712,7 +738,6 @@ async function removeProductFromCart(userEmail, productID) {
 
 async function handleAddProductToCart(req, userEmail, body) {
     let productDetails;
-    console.log(body); 
     try {
         productDetails = JSON.parse(body);
     } catch (error) {
