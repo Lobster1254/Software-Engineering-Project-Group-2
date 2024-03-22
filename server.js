@@ -316,7 +316,7 @@ function failed() { // can be called when the server fails to connect to an API 
     return resMsg;
 }
 
-async function searchProducts(req, filters, keyword) {
+async function searchProducts(req, body, keyword) {
     if (keyword && keyword.length > 50) {
         return {
             code: 400,
@@ -334,7 +334,16 @@ async function searchProducts(req, filters, keyword) {
         parameters.push(keyword);
     }
     let min_price = -1;
-    if (filters) {
+    if (body != "") {
+            let filters;
+        try {
+            filters = JSON.parse(body);
+        } catch (error) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = error.toString();
+            return resMsg;
+        }
         if (filters.category) { // filter by category
             whereClauses.push("category = ?");
             parameters.push(filters.category);
@@ -462,7 +471,7 @@ async function productCatalog(req, body, urlParts) {
         if (urlParts[1].startsWith("search?")) {
             let param = querystring.decode(urlParts[1].substring(7));
             let keyword = param.key || null;
-            return await searchProducts(req, param, keyword);
+            return await searchProducts(req, body, keyword);
         } else {
             let product_ID = urlParts[1];
             return await getProductInfo(req, body, product_ID);
