@@ -536,6 +536,29 @@ async function productCatalog(req, body, urlParts) {
 
 
 async function productReviews(req, body, urlParts) {
+    //deleteReview
+    // Check if the request is for deleting a review
+    if (urlParts[1] === 'delete') {
+        // Parse the request body to get the review ID
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(body);
+        } catch (error) {
+            return failed(); 
+        }
+        const reviewID = parsedBody.reviewID;
+        const userEmail = await getEmail(req); 
+
+        if (userEmail instanceof Error) {
+            return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
+        } else if (userEmail === -1) {
+            return { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
+        }
+
+        // Delete review
+        return await deleteReview(reviewID, userEmail); 
+    }
+    //
     if (urlParts[1]) {
         let resMsg = {};
         let product_ID = urlParts[1];
@@ -572,6 +595,25 @@ async function productReviews(req, body, urlParts) {
         return {};
     }
 } 
+
+// Implementation for deleteReview function
+async function deleteReview(reviewID, userEmail) {
+    try {
+        // Verify the review belongs to the user attempting to delete it
+        const [review] = await dBCon.promise().query('SELECT * FROM ProductReviews WHERE review_ID = ? AND userEmail = ?', [reviewID, userEmail]);
+        if (review.length === 0) {
+            return { code: 404, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Review not found or not authorized to delete" }) };
+        }
+
+        // Proceed to delete the review
+        await dBCon.promise().query('DELETE FROM ProductReviews WHERE review_ID = ?', [reviewID]);
+        return { code: 200, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "Review deleted successfully" }) };
+    } catch (error) {
+        console.error('Error during review deletion:', error);
+        return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: 'Internal server error' }) };
+    }
+}
+//
 
 async function viewOrders(req, body, urlParts) {
     let resMsg = {};
