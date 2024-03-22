@@ -1,0 +1,3 @@
+node_modules/
+package-lock.json
+# Include any files or programs that you do not want to commit to the main branch
