@@ -587,28 +587,24 @@ async function productReviews(req, body, urlParts) {
 async function shoppingCart(req, body, urlParts) {
     switch(req.method) {
         case 'GET':
-            if (urlParts[1]) {
-                return await viewShoppingCart(req);
-            } else {
-                return {};
-            }
+            return await viewShoppingCart(req);
         case 'POST':
             let userEmail = await getEmail(req);
             if (userEmail instanceof Error || userEmail === -1) {
                 return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
             }
-            if (urlParts[1] && urlParts[2] === 'products') {
+            if (urlParts[1] === 'products') {
                 return await handleAddProductToCart(req, userEmail, body);
             } 
             return {};
         case 'DELETE':
-            if (urlParts[2] === 'products' && urlParts[3]) {
+            if (urlParts[1] === 'products' && urlParts[2]) {
                 let userEmail = await getEmail(req);
                 if (userEmail instanceof Error || userEmail === -1) {
                     return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
                 } else {
                     // Assuming userEmail is valid, handle product removal
-                    return await removeProductFromCart(userEmail, urlParts[3]);
+                    return await removeProductFromCart(userEmail, urlParts[2]);
                 }
             } else {
                 return {};
