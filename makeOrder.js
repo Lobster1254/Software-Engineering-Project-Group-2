@@ -1,4 +1,23 @@
 //This file is for Make Order (Use case 7)
+
+/*
+to run makeOrder from postman:
+1. POST http://localhost:8000/orders/create
+  the body of your request should be as follows: (JSON)
+  {
+      "payment_method": "{payment_method -- i.e. "pm_card_visa" (NOT a card number)}",  
+      "name": "{name}",
+      "shipping_address": {
+          "city": "{city}", 
+          "country": "US", 
+          "line1": "{street address}", 
+          "line2": "{apt/unit# if necessary}",
+          "postal_code": "{postal code}",
+          "state": "{state, i.e. "NJ"}"
+        },
+        "billing_address_same_as_shipping_address": true
+}
+*/ 
               
 /* NOTE:
 "orderInfoArray" format: 
