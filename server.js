@@ -286,7 +286,8 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     if (email instanceof Error) {
         email = -1;
     }
-    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and email = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and o.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let cartQuery = "select p.quantity from shoppingcartproducts p where p.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
@@ -310,12 +311,21 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
         }
     }
     if (email != -1) {
+        await dBCon.promise().query(cartQuery).then(([ result ]) => {
+            if (result[0]) {
+                resMsg.body.in_cart = result[0].quantity;
+            } else {
+                resMsg.body.in_cart = 0;
+            }
+        }).catch(error => {
+            resMsg.body.cart = "Failed to load cart.";
+        })
         await dBCon.promise().query(ordersQuery).then(([ result ]) => {
             if (result[0]) {
                 resMsg.body.orders = result;
             }
         }).catch(error => {
-            resMsg.body.reviews = "Failed to load orders.";
+            resMsg.body.orders = "Failed to load orders.";
         });
     }
     let reviewInfo = await getProductReviews(req, body, product_ID);
@@ -329,7 +339,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             return resMsg;
         } else {
             resMsg.body.average_rating = reviewInfo[0];
-            resMsg.body.distribution = reviewInfo[1];
+            resMsg.body.rating_distribution = reviewInfo[1];
             resMsg.body.reviews = reviewInfo[2];
         }
     }
@@ -541,7 +551,7 @@ async function productReviews(req, body, urlParts) {
                     } else {
                         resMsg.body = {};
                         resMsg.body.average_rating = reviewInfo[0];
-                        resMsg.body.distribution = reviewInfo[1];
+                        resMsg.body.rating_distribution = reviewInfo[1];
                         resMsg.body.reviews = reviewInfo[2];
                     }
                 }
