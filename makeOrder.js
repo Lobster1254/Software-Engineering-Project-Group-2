@@ -5,7 +5,7 @@
 [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
 */
 const http = require('http'); // for using stripe later....
-const api_key= 'sk_test_51OvkRMLzLOmc1QtSZk44CqTryArf3YS6PfdSDEGLdURC2QYZ2iRMF8B3x1qMzrBO51drq0vh65bp3KOq7OPZrVMa003jOO32Pe';
+const api_key= 'YOUR_API_KEY_HERE';
 const stripe = require('stripe')(api_key);
 const { validateAddress } = require('../src/validateAddresses.js');
 const { getDiscounts } = require('../server.js');
