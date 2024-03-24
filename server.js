@@ -553,33 +553,41 @@ async function productReviews(req, body, urlParts) {
                 return {};
             }
         case 'DELETE':
+            // Handle DELETE requests to delete reviews
             if (urlParts[1] === 'delete') {
-                // Parse the request body to get the review ID
-                let parsedBody;
                 try {
-                    parsedBody = JSON.parse(body);
+                    // Parse the request body to extract productID
+                    const parsedBody = JSON.parse(body);
+                    const productID = parsedBody.productID;
+
+                    // Retrieve the user's email
+                    const email = await getEmail(req);
+
+                    // Check if user is logged in
+                    if (email === -1) {
+                        return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
+                    }
+
+                    // Delete review based on productID and user's email
+                    const deleteResult = await deleteReview(productID, email);
+
+                    // Handle the result of review deletion
+                    if (deleteResult.success) {
+                        // Return success response
+                        return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review deleted successfully" }) };
+                    } else {
+                        // Return error response
+                        return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Review not found or user does not have permission to delete" }) };
+                    }
                 } catch (error) {
-                    let resMsg = {};
-                    resMsg.code = 400;
-                    resMsg.hdrs = {"Content-Type" : "text/html"};
-                    resMsg.body = error.toString();
-                    return resMsg; 
+                    // Return error response if parsing body fails
+                    return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
                 }
-                const reviewID = parsedBody.reviewID;
-                const userEmail = await getEmail(req); 
-
-                if (userEmail instanceof Error) {
-                    return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
-                } else if (userEmail === -1) {
-                    return { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
-                }
-
-                // Delete review
-                return await deleteReview(reviewID, userEmail); 
+            } else {
+                // Return empty response for unsupported DELETE requests
+                return {};
             }
-            return {};
-        default:
-            return {};
+
     }
     
 } 
@@ -628,20 +636,21 @@ async function orders(req, body, urlParts) {
 }
 
 // Implementation for deleteReview function
-async function deleteReview(reviewID, userEmail) {
+async function deleteReview(productID, email) {
     try {
-        // Verify the review belongs to the user attempting to delete it
-        const [review] = await dBCon.promise().query('SELECT * FROM ProductReviews WHERE review_ID = ? AND userEmail = ?', [reviewID, userEmail]);
-        if (review.length === 0) {
-            return { code: 404, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Review not found or not authorized to delete" }) };
-        }
+        // Attempt to delete the review based on productID and email
+        await dBCon.promise().query('DELETE FROM productreviews WHERE product_ID = ? AND email = ?', [productID, email]);
 
-        // Proceed to delete the review
-        await dBCon.promise().query('DELETE FROM ProductReviews WHERE review_ID = ?', [reviewID]);
-        return { code: 200, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "Review deleted successfully" }) };
+        // Check if the review was successfully deleted
+        const result = await dBCon.promise().query('SELECT * FROM productreviews WHERE product_ID = ? AND email = ?', [productID, email]);
+        if (result[0].length === 0) {
+            return { success: true }; // Return success response
+        } else {
+            return { success: false, error: "Review not found or not authorized to delete" }; // Return error response
+        }
     } catch (error) {
         console.error('Error during review deletion:', error);
-        return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: 'Internal server error' }) };
+        return { success: false, error: 'Internal server error' }; // Return error response
     }
 }
 //
