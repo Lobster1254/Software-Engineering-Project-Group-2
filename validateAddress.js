@@ -5,7 +5,6 @@ const Lookup = SmartyStreetsSDK.usStreet.Lookup;
  let authId = 'YOUR_AUTH_ID_HERE'; // YOUR Auth id here
  let authToken = 'YOUR_AUTH_TOKEN_HERE'; // YOUR Auth token here
 
-//Step 0: Wire up the client with your key-pair
 let clientBuilder = new SmartyStreetsCore.ClientBuilder(new SmartyStreetsCore.StaticCredentials(authId, authToken));
 let client = clientBuilder.buildUsStreetApiClient();
 
