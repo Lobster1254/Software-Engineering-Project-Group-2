@@ -250,7 +250,7 @@ const getProductReviews = async(req, body, product_ID) => { // returns array, in
 }
 
 const getDiscounts = async(product_ID, base_price) => { // returns array, index 0 = discounted price, index 1 = JSON of discounts
-    let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE()";
+    let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE() and IFNULL(d.start_date, CURDATE()) <= CURDATE()";
     let discounts = [];
     await dBCon.promise().query(discountQuery).then(([ result ]) => {
         if (result[0]) {
