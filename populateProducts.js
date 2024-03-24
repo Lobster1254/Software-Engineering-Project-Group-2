@@ -31,12 +31,10 @@ async function loadProducts(productType) {
     for (let i = 0; i < products.category_results.length; i++) {
         let product_ID = products.category_results[i].product.product_id;
         let name = products.category_results[i].product.title;
-        name = "`" + name + "`";
         name = name.replaceAll("'", "\\'");
         let description;
         if (products.category_results[i].product.description) {
             description = products.category_results[i].product.description;
-            description = "`" + description + "`";
             description = description.replaceAll("'", "\\'");
         } else
             description = null;
