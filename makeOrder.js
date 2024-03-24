@@ -27,7 +27,6 @@ const http = require('http'); // for using stripe later....
 const api_key= 'YOUR_API_KEY_HERE';
 const stripe = require('stripe')(api_key);
 const { validateAddress } = require('../src/validateAddresses.js'); 
-const { getDiscounts } = require('../server.js');
 
 async function createOrder(req, body, orderInfoArray, discounted_price) {
     body = JSON.parse(body);
@@ -118,20 +117,6 @@ async function getpaymentIntent(body, order) {
     });
     return paymentIntent;
     }
-
-// apply discounts
-async function applyDiscounts(order, shoppingCartProducts) {
-    let discountedPrices = {};
-    let discounted_total_cost = 0;
-    for(let i = 0; i < shoppingCartProducts.length; i++) {
-        let discountedPrice = getDiscounts(shoppingCartProducts[i].product_ID, shoppingCartProducts[i].cost);
-        discountedPrices.push(discountedPrice);
-        discounted_total_cost += discountedPrice;
-    }
-    order.total_cost = discounted_total_cost;
-    return  order;
-
-}
 
 //get & format date for orders table
 async function getDate() {
