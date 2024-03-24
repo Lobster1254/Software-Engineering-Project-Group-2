@@ -40,7 +40,7 @@ async function createOrder(req, body, orderInfoArray, discounted_price) {
     const validCart = await enoughStock(shoppingCartProducts, products);
     if(validCart) {
         order = await makeOrder(req, body, shoppingCart, shoppingCartProducts, discounted_price);
-        console.log(order); // for testing (to see what's being returned as "order")
+        //console.log(order); // for testing (to see what's being returned as "order")
         body = order;
     } else {
         body = "Either there is not enough stock of certain products in your cart, or there are too many items in your cart.\nPlease remove out-of-stock items and ensure that you have no more than 50 products in your cart to place an order";
@@ -95,7 +95,7 @@ async function makeOrder(req, body, shoppingCart, shoppingCartProduct, discounte
 //stripe controller
 async function controller(req, order) {
     let pi = await getpaymentIntent(req, order);
-    console.log(pi);
+    //console.log(pi); //for testing (to see what's being returned as a new paymentIntent "pi")
 }
 
 // stripe payment intent (for confirming billing details and processing transaction)
