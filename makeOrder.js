@@ -26,27 +26,30 @@ to run makeOrder from postman:
 const http = require('http'); // for using stripe later....
 const api_key= 'YOUR_API_KEY_HERE';
 const stripe = require('stripe')(api_key);
-const { validateAddress } = require('../src/validateAddresses.js'); 
+const { addressValidation_controller } = require('../src/validateAddresses.js');
 
 async function createOrder(req, body, orderInfoArray, discounted_price) {
     body = JSON.parse(body);
     let orderProducts = {}; //for updating the orderProducts table as result of the new order -- will be implemented later
     let order = {};
-    //let body = "";
     let shoppingCart = orderInfoArray[0];
     let shoppingCartProducts = orderInfoArray[1];
     let products = orderInfoArray[2];
+    let validAddress = true;
+    validAddress = await addressValidation_controller(body);
+    if(validAddress != 1) {
+      return body = "invalid shipping address";
+    }
     const validCart = await enoughStock(shoppingCartProducts, products);
-    if(validCart) {
+    if(validCart && validAddress) {
         order = await makeOrder(req, body, shoppingCart, shoppingCartProducts, discounted_price);
-        //console.log(order); // for testing (to see what's being returned as "order")
+        console.log(order); // for testing (to see what's being returned as "order")
         body = order;
-    } else {
-        body = "Either there is not enough stock of certain products in your cart, or there are too many items in your cart.\nPlease remove out-of-stock items and ensure that you have no more than 50 products in your cart to place an order";
+    } else  { 
+        body = "please remove out of stock items from your cart & ensure that you have no more than 50 items in your cart.";
     }
     return body;
 }
-
 //function checks if there are products in cart & if the requested quantity is in stock
 async function enoughStock(shoppingCartProducts, products) {
     let outOfStockCount = 0;
