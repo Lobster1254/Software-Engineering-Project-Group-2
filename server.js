@@ -79,6 +79,9 @@ const server = http.createServer((req, res) => {
                 case 'orders':
                     resMsg = await orders(req, body, urlParts);
                     break;
+                case 'post-review': // New case for posting a review
+                    resMsg = await postReview(req, body);
+                    break;
                 case 'login':
                     switch(req.method) {
                         case 'POST':
@@ -966,4 +969,42 @@ async function insertOrder(order) {
     });
     
 }
+async function postReview(req, requestBody) {
+    let reviewData;
+    try {
+        reviewData = JSON.parse(requestBody);
+    } catch (error) {
+        return {
+            code: 400,
+            hdrs: {"Content-Type": "text/html"},
+            body: "Invalid request body - JSON parsing failed."
+        };
+    }
 
+    // Ensure that reviewData contains email, product_ID, score, description, and created fields
+    // The 'created' field will need to be generated here, as an example:
+    const created = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    const insertQuery = "INSERT INTO productreviews (product_ID, email, score, description, created) VALUES (?, ?, ?, ?, ?)";
+
+    try {
+        const [result] = await dBCon.promise().execute(insertQuery, [reviewData.product_ID, reviewData.email, reviewData.score, reviewData.review_text, created]);
+
+        if (result.affectedRows > 0) {
+            return {
+                code: 200,
+                hdrs: {"Content-Type": "text/html"},
+                body: "Review successfully posted."
+            };
+        } else {
+            return {
+                code: 500,
+                hdrs: {"Content-Type": "text/html"},
+                body: "Failed to post review for an unknown reason."
+            };
+        }
+    } catch (error) {
+        console.error(error);
+        return failed(); // Make sure the failed() function correctly reflects this context
+    }
+}
