@@ -42,7 +42,7 @@ readline.question('Enter password: ', pass => { // read password
 
 });
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((req, res) => { 
     let urlParts = [];
     let segments = req.url.split('/');
     for (let i = 0, num = segments.length; i < num; i++) {
@@ -50,16 +50,18 @@ const server = http.createServer((req, res) => {
         urlParts.push(segments[i]);
       }
     }
+    
     let resMsg = {}, body = '';
     req.on('data', function (data) {
       body += data.toString();
-      if (body.length > 1e6) {
+    if (body.length > 1e6) {
         res.writeHead(413); // 413 payload too large
         res.write("Payload too large.");
         res.end();
         req.destroy();
       }
     });
+    console.log(body);
     req.on('end', async function () {
         // Initialize a variable to store the parsed body 
         // (USED FOR POST OR ANY CALL THAT REQUIRES THE BODY ^)
@@ -593,33 +595,46 @@ async function productReviews(req, body, urlParts) {
 } 
 
 async function shoppingCart(req, body, urlParts) {
-    switch(req.method) {
+    let userEmail;
+
+    userEmail = await getEmail(req);
+    if (userEmail instanceof Error) {
+        return failedDB();
+    } else if (userEmail === -1) {
+        // If userEmail is -1, it indicates the user is not authenticated.
+        // TODO: make Guest able to interact with shopping cart
+        return {
+            code: 401,
+            hdrs: { "Content-Type": "text/html" },
+            body: "Unauthorized: Please login to view or modify the shopping cart."
+        };
+    }
+
+    switch (req.method) {
         case 'GET':
             return await viewShoppingCart(req);
         case 'POST':
-            let userEmail = await getEmail(req);
-            if (userEmail instanceof Error || userEmail === -1) {
-                return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-            }
             if (urlParts[1] === 'products') {
-                return await handleAddProductToCart(req, userEmail, body);
+                return await handleAddProductToCart(userEmail, body);
             } 
+            return {};
+        case 'PUT':
+            if (urlParts[1] === 'products') {
+                return await editCartQuantity(userEmail, urlParts[2], body);
+            }
             return {};
         case 'DELETE':
             if (urlParts[1] === 'products' && urlParts[2]) {
-                let userEmail = await getEmail(req);
-                if (userEmail instanceof Error || userEmail === -1) {
-                    return userEmail instanceof Error ? failedDB() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-                } else {
-                    // Assuming userEmail is valid, handle product removal
-                    return await removeProductFromCart(userEmail, urlParts[2]);
-                }
-            } else {
-                return {};
+                return await removeProductFromCart(userEmail, urlParts[2]);
+            } else if (urlParts[1] === 'items') {
+                return await clearCart(userEmail);
             }
-
+            return {};
+        default:
+            return { code: 400, hdrs: { "Content-Type": "text/html" }, body: "Bad Request" };
     }
 }
+
 
 async function orders(req, body, urlParts) {
     switch(req.method) {
@@ -653,7 +668,6 @@ async function deleteReview(productID, email) {
         return { success: false, error: 'Internal server error' }; // Return error response
     }
 }
-//
 
 async function viewOrders(req, body, urlParts) {
     let resMsg = {};
@@ -709,13 +723,59 @@ async function viewShoppingCart(req) {
 
     return resMsg;
 }
+
+async function editCartQuantity(userEmail, productID, body) {
+    let newQuantity;
+    try {
+        const productDetails = JSON.parse(body);
+        newQuantity = productDetails.quantity;
+        if (typeof newQuantity !== 'number' || newQuantity < 0) {
+            throw new Error("Invalid quantity specified.");
+        }
+    } catch (error) {
+        return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Invalid request body. Please specify a valid quantity." }) };
+    }
+    if (newQuantity === 0) {
+        return await removeProductFromCart(userEmail, productID);
+    }
+    try {
+        const [updateResult] = await dBCon.promise().query(
+            'UPDATE shoppingcartproducts SET quantity = ? WHERE email = ? AND product_ID = ?',
+            [newQuantity, userEmail, productID]
+        );
+        if (updateResult.affectedRows === 0) {
+            return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Product not found in cart." }) };
+        }
+        const [productInfo] = await dBCon.promise().query(
+            'SELECT price FROM products WHERE product_ID = ?', 
+            [productID]
+        );
+        if (productInfo.length === 0) {
+            throw new Error('Product not found.');
+        }
+        const productPrice = productInfo[0].price;
+        const costDifference = productPrice * newQuantity; 
+
+        await dBCon.promise().query(
+            'UPDATE shoppingcarts SET cost = cost + ? WHERE email = ?', 
+            [costDifference, userEmail] 
+        );
+
+        return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Cart updated successfully." }) };
+    } catch (error) {
+        console.error('Failed to update cart:', error);
+        return { code: 500, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Internal server error." }) };
+    }
+}
+
+
 async function removeProductFromCart(userEmail, productID) {
-    const [exists] = await dBCon.promise().query(
-        'SELECT quantity FROM shoppingcartproducts WHERE email = ? AND product_ID = ?', 
+
+    const [result] = await dBCon.promise().query(
+        'SELECT p.price, scp.quantity FROM products p JOIN shoppingcartproducts scp ON p.product_ID = scp.product_ID WHERE scp.email = ? AND scp.product_ID = ?',
         [userEmail, productID]
     );
-    
-    if (exists.length === 0) {
+    if (result.length === 0) {
         // Product not found in the user's cart
         return {
             code: 404,
@@ -723,6 +783,9 @@ async function removeProductFromCart(userEmail, productID) {
             body: "Product not found in cart."
         };
     }
+    const { price: productPrice, quantity: quantityToRemove } = result[0];
+
+    const costReduction = productPrice * quantityToRemove;
 
     // Proceed with deletion
     await dBCon.promise().query(
@@ -730,8 +793,13 @@ async function removeProductFromCart(userEmail, productID) {
         [userEmail, productID]
     );
     
-    // TODO: Update the total cost in the shoppingcarts table here
+    // Update the total cost in the shoppingcarts table here
+    await dBCon.promise().query(
+        'UPDATE shoppingcarts SET cost = cost - ? WHERE email = ?', 
+        [costReduction, userEmail]
+    );
     
+
     return {
         code: 200,
         hdrs: { "Content-Type": "application/json" },
@@ -739,8 +807,55 @@ async function removeProductFromCart(userEmail, productID) {
     };
 }
 
+async function clearCart(userEmail) {
+    try {
+        await dBCon.promise().beginTransaction();
 
-async function handleAddProductToCart(req, userEmail, body) {
+        // Check if the user has a shopping cart with items
+        const [cartExists] = await dBCon.promise().query(
+            'SELECT email FROM shoppingcarts WHERE email = ?', 
+            [userEmail]
+        );
+
+        if (cartExists.length === 0) {
+            return {
+                code: 404,
+                hdrs: { "Content-Type": "text/html" },
+                body: "Shopping cart does not exist."
+            };
+        }
+
+        // Clear all items from the user's shopping cart
+        await dBCon.promise().query(
+            'DELETE FROM shoppingcartproducts WHERE email = ?', 
+            [userEmail]
+        );
+
+        // Update the total cost in the shoppingcarts table to 0
+        await dBCon.promise().query(
+            'UPDATE shoppingcarts SET cost = 0 WHERE email = ?', 
+            [userEmail]
+        );
+
+        await dBCon.promise().commit(); // Commit the transaction
+        return {
+            code: 200,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Shopping cart cleared." })
+        };
+    } catch (error) {
+        await dBCon.promise().rollback(); 
+        console.error('Error clearing the shopping cart:', error);
+        return {
+            code: 500,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Internal server error. Could not clear the shopping cart." })
+        };
+    }
+}
+
+
+async function handleAddProductToCart(userEmail, body) {
     let productDetails;
     try {
         productDetails = JSON.parse(body);
