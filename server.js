@@ -288,7 +288,8 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     if (email instanceof Error) {
         email = -1;
     }
-    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and email = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and o.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let cartQuery = "select p.quantity from shoppingcartproducts p where p.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
@@ -312,12 +313,21 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
         }
     }
     if (email != -1) {
+        await dBCon.promise().query(cartQuery).then(([ result ]) => {
+            if (result[0]) {
+                resMsg.body.in_cart = result[0].quantity;
+            } else {
+                resMsg.body.in_cart = 0;
+            }
+        }).catch(error => {
+            resMsg.body.cart = "Failed to load cart.";
+        })
         await dBCon.promise().query(ordersQuery).then(([ result ]) => {
             if (result[0]) {
                 resMsg.body.orders = result;
             }
         }).catch(error => {
-            resMsg.body.reviews = "Failed to load orders.";
+            resMsg.body.orders = "Failed to load orders.";
         });
     }
     let reviewInfo = await getProductReviews(req, body, product_ID);
@@ -331,7 +341,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             return resMsg;
         } else {
             resMsg.body.average_rating = reviewInfo[0];
-            resMsg.body.distribution = reviewInfo[1];
+            resMsg.body.rating_distribution = reviewInfo[1];
             resMsg.body.reviews = reviewInfo[2];
         }
     }
@@ -543,7 +553,7 @@ async function productReviews(req, body, urlParts) {
                     } else {
                         resMsg.body = {};
                         resMsg.body.average_rating = reviewInfo[0];
-                        resMsg.body.distribution = reviewInfo[1];
+                        resMsg.body.rating_distribution = reviewInfo[1];
                         resMsg.body.reviews = reviewInfo[2];
                     }
                 }
@@ -589,10 +599,71 @@ async function productReviews(req, body, urlParts) {
                 // Return empty response for unsupported DELETE requests
                 return {};
             }
+        case 'POST':
+            if (urlParts[1]) {
+                try {
+                    let product_ID = urlParts[1];
+                    let isProduct = true;
+                    // Make sure product exists
+                    await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
+                        if (!result[0])
+                            isProduct = false;
+                    }).catch(error => {
+                        return failedDB();
+                    })
 
+                    // Make sure user is logged in to be able to use review options
+                    let userEmail = await getEmail(req);
+                    
+                    if (userEmail === -1) {
+                        return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
+                    }
+
+                    // Parse the request body to get productID, reviewID, and helpfulness rating
+                    const parsedBody = JSON.parse(body);
+                    const helpfulRating = parsedBody.helpfulRating;
+                    const description = parsedBody.description;
+
+                    if (urlParts[2] === 'rate-helpful'){
+                        // Rate review given the helpfulness rating, email, description, and productID
+                        const rateHelpResult = await rateReview(helpfulRating, userEmail, description, product_ID);
+
+                        if (rateHelpResult.success) {
+                            // Return success response
+                            return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review helpfulness rated successfully" }) };
+                        } else {
+                            // Return error response
+                            return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Review not found or user does not have permission to rate" }) };
+                        }
+                    }else {
+                        return {}
+                    }
+                } catch (error) {
+                    // Return error response if parsing body error
+                    console.log(error);
+                    return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
+                }
+            } else {
+                return {};
+            }
     }
     
 } 
+
+// Rate Review Helpfulness function
+async function rateReview(rating, email, description, productID) {
+    try {
+        // Attempt to insert the review rating helpfulness
+        await dBCon.promise().query(
+            'INSERT INTO helpfulnessratings (rating, email, review_email, product_ID) VALUES (?, ?, ?, ?)', 
+            [rating, description, email, productID]
+        );
+        return { success: true }; // Return success
+    } catch (error) {
+        console.error('Error during review insertion:', error);
+        return { success: false, error: 'Internal server error' }; // Return error response
+    }
+}
 
 async function shoppingCart(req, body, urlParts) {
     let userEmail;
@@ -644,7 +715,7 @@ async function orders(req, body, urlParts) {
             else
                 return {};
         case 'POST':
-            // makeOrder will go here
+            return await makeOrder(req, body, urlParts);
         default:
             return {};
     }
@@ -996,4 +1067,77 @@ async function getEmail(req) { // returns error if error, returns -1 if not logg
 
 function roundPrice(num) {
     return Math.ceil(num * 100) / 100;
+}
+
+async function makeOrder(req, body, urlParts) {
+    let resMsg = {};
+    
+    let user_ID = getEmail(req);
+    const queries = [
+        "select * from shoppingcarts where user_ID = '" + user_ID + "'",
+        "select * from shoppingcartproducts where user_ID = '" + user_ID + "'",
+        "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.user_ID = '" + user_ID + "'",
+      ];
+    const results = []; //results format = [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
+    for(let i = 0; i < queries.length; i++) {
+        try {
+            // Execute SQL queries asynchronously
+            let temp = await executeQueries(queries[i]);
+            results.push(temp);
+        } catch (error) {
+            resMsg.code = 200;
+            resMsg.writeHead(500, { 'Content-Type': 'text/plain' });
+            resMsg.end(`Error executing queries: ${error.message}`);
+        }
+    }
+    let discounted_price = await applyDiscounts(results);
+    let result = await createOrder(req, body, results, discounted_price);
+   
+   
+    await insertOrder(result);
+    if(insertOrder) {
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "successfully placed order :D\norder_ID: " + result.order_ID; 
+        return resMsg;
+    }
+    return;
+}
+
+async function applyDiscounts(orderInfoArray) {
+    let discounted_price = 0;
+    for(let i = 0; i < orderInfoArray[2].length; i++) {
+       let new_price = await getDiscounts(orderInfoArray[2][i].product_ID, orderInfoArray[2][i].cost);
+       discounted_price += new_price[0];
+    }
+    discounted_price = parseInt("FF", 16);
+    return  discounted_price;
+}
+
+async function executeQueries(query) {
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(result);
+        });
+    });
+}
+
+async function insertOrder(order) {
+    let body = "";
+    const orderAttributes = "(order_ID, user_ID, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)";
+    let orderValues = `(${order.order_ID}, '${order.user_ID}', '${order.date_made}', '${order.payment_method}', ${order.products_cost}, ${order.tax_cost}, ${order.shipping_cost}, '${order.delivery_address}', '${order.billing_address}', '${order.status}')`;
+    let query = "insert into orders " + orderAttributes + " values "  + orderValues;
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return body;
+            }
+            resolve(result);
+        });
+    });
 }

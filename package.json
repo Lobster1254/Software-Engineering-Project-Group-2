@@ -5,6 +5,8 @@
     "google-auth-library": "^9.7.0",
     "mysql2": "^3.9.2",
     "querystring": "^0.2.1",
-    "stripe": "^14.21.0"
+    "smarty": "^1.0.5",
+    "smartystreets-javascript-sdk": "^5.1.0",
+    "stripe": "^14.22.0"
   }
 }
