@@ -597,10 +597,71 @@ async function productReviews(req, body, urlParts) {
                 // Return empty response for unsupported DELETE requests
                 return {};
             }
+        case 'POST':
+            if (urlParts[1]) {
+                try {
+                    let product_ID = urlParts[1];
+                    let isProduct = true;
+                    // Make sure product exists
+                    await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
+                        if (!result[0])
+                            isProduct = false;
+                    }).catch(error => {
+                        return failedDB();
+                    })
 
+                    // Make sure user is logged in to be able to use review options
+                    let userEmail = await getEmail(req);
+                    
+                    if (userEmail === -1) {
+                        return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
+                    }
+
+                    // Parse the request body to get productID, reviewID, and helpfulness rating
+                    const parsedBody = JSON.parse(body);
+                    const helpfulRating = parsedBody.helpfulRating;
+                    const description = parsedBody.description;
+
+                    if (urlParts[2] === 'rate-helpful'){
+                        // Rate review given the helpfulness rating, email, description, and productID
+                        const rateHelpResult = await rateReview(helpfulRating, userEmail, description, product_ID);
+
+                        if (rateHelpResult.success) {
+                            // Return success response
+                            return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review helpfulness rated successfully" }) };
+                        } else {
+                            // Return error response
+                            return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Review not found or user does not have permission to rate" }) };
+                        }
+                    }else {
+                        return {}
+                    }
+                } catch (error) {
+                    // Return error response if parsing body error
+                    console.log(error);
+                    return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
+                }
+            } else {
+                return {};
+            }
     }
     
 } 
+
+// Rate Review Helpfulness function
+async function rateReview(rating, email, description, productID) {
+    try {
+        // Attempt to insert the review rating helpfulness
+        await dBCon.promise().query(
+            'INSERT INTO helpfulnessratings (rating, email, review_email, product_ID) VALUES (?, ?, ?, ?)', 
+            [rating, description, email, productID]
+        );
+        return { success: true }; // Return success
+    } catch (error) {
+        console.error('Error during review insertion:', error);
+        return { success: false, error: 'Internal server error' }; // Return error response
+    }
+}
 
 async function shoppingCart(req, body, urlParts) {
     switch(req.method) {
@@ -964,6 +1025,4 @@ async function insertOrder(order) {
             resolve(result);
         });
     });
-    
 }
-
