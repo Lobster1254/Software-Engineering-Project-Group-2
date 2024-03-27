@@ -716,6 +716,8 @@ async function orders(req, body, urlParts) {
                 return {};
         case 'POST':
             return await makeOrder(req, body, urlParts);
+            if (urlParts[1] == "cancel")
+                return cancelOrder(req, body, urlParts);
         default:
             return {};
     }
@@ -1141,3 +1143,53 @@ async function insertOrder(order) {
         });
     });
 }
+
+async function cancelOrder(req, body, urlParts) {
+    let resMsg = {};
+  
+    try {
+      const parsedBody = JSON.parse(body);
+      const orderID = parsedBody.orderID;
+  
+      // Verify that the order exists in the database
+      const orderExists = await dBCon.promise().query('SELECT order_ID, status, products_cost FROM orders WHERE order_ID = ?', [orderID]);
+      if (orderExists[0].length === 0) {
+        return {
+          code: 404,
+          hdrs: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Order not found." })
+        };
+      }
+  
+      const order = orderExists[0][0];
+  
+      // Check the status of the order to ensure it has not been shipped yet
+      if (order.status === 'shipped') {
+        return {
+          code: 409,
+          hdrs: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Order has already been shipped and cannot be cancelled." })
+        };
+      }
+  
+      // Proceed with the cancellation
+      await dBCon.promise().query('UPDATE orders SET status = ? WHERE order_ID = ?', ['cancelled', orderID]);
+  
+      // Output the order ID and total refund
+      resMsg = {
+        code: 200,
+        hdrs: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Order cancelled successfully.", orderID: order.order_ID, totalRefund: order.products_cost })
+      };
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      resMsg = {
+        code: 500,
+        hdrs: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Internal server error while cancelling order." })
+      };
+    }
+  
+    return resMsg;
+  }
+
