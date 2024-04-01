@@ -1092,6 +1092,12 @@ async function makeOrder(req, body, urlParts) {
     }
     let discounted_price = await applyDiscounts(results);
     let result = await createOrder(req, body, results, discounted_price);
+    if(result == "invalid shipping address") {
+        resMsg.code = 403;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = result; 
+        return resMsg;
+    }
    
    
     await insertOrder(result);
