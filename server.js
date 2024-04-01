@@ -1087,9 +1087,7 @@ async function makeOrder(req, body, urlParts) {
             let temp = await executeQueries(queries[i]);
             results.push(temp);
         } catch (error) {
-            resMsg.code = 200;
-            resMsg.writeHead(500, { 'Content-Type': 'text/plain' });
-            resMsg.end(`Error executing queries: ${error.message}`);
+            failedDB();
         }
     }
     let discounted_price = await applyDiscounts(results);
