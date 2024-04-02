@@ -73,16 +73,17 @@ const server = http.createServer((req, res) => {
                     resMsg = await productCatalog(req, body, urlParts);
                     break;
                 case 'product-reviews':
-                    resMsg = await productReviews(req, body, urlParts);
-                    break;
+                    if (urlParts.length > 1 && urlParts[1] === 'post' && req.method === 'POST') {
+                            resMsg = await postReview(req, body);
+                     } else {
+                            resMsg = await productReviews(req, body, urlParts);
+                     }
+                        break;
                 case 'shopping-cart':
                     resMsg = await shoppingCart(req, body, urlParts);
                     break;
                 case 'orders':
                     resMsg = await orders(req, body, urlParts);
-                    break;
-                 case 'post-review': 
-                    resMsg = await postReview(req, body);
                     break;
                 case 'login':
                     switch(req.method) {
