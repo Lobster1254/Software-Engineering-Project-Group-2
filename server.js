@@ -748,8 +748,8 @@ async function deleteReview(productID, email) {
 
 async function viewOrders(req, body, urlParts) {
     let resMsg = {};
-    let user_ID = await getEmail(req); 
-    let query = "select * from orders where email = '" + user_ID + "'";
+    let email = await getEmail(req); 
+    let query = "select * from orders where email = '" + email + "'";
     const getOrderHistory = async() => {
         let resMsg = {};
         await dBCon.promise().query(query).then(([ result ]) => {
@@ -1078,11 +1078,11 @@ function roundPrice(num) {
 async function makeOrder(req, body, urlParts) {
     let resMsg = {};
     
-    let user_ID = getEmail(req);
+    let email = getEmail(req);
     const queries = [
-        "select * from shoppingcarts where user_ID = '" + user_ID + "'",
-        "select * from shoppingcartproducts where user_ID = '" + user_ID + "'",
-        "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.user_ID = '" + user_ID + "'",
+        "select * from shoppingcarts where user_ID = '" + email + "'",
+        "select * from shoppingcartproducts where user_ID = '" + email + "'",
+        "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.email = '" + email + "'",
       ];
     const results = []; //results format = [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
     for(let i = 0; i < queries.length; i++) {
@@ -1138,8 +1138,8 @@ async function executeQueries(query) {
 
 async function insertOrder(order) {
     let body = "";
-    const orderAttributes = "(order_ID, user_ID, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)";
-    let orderValues = `(${order.order_ID}, '${order.user_ID}', '${order.date_made}', '${order.payment_method}', ${order.products_cost}, ${order.tax_cost}, ${order.shipping_cost}, '${order.delivery_address}', '${order.billing_address}', '${order.status}')`;
+    const orderAttributes = "(order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)";
+    let orderValues = `(${order.order_ID}, '${order.email}', '${order.date_made}', '${order.payment_method}', ${order.products_cost}, ${order.tax_cost}, ${order.shipping_cost}, '${order.delivery_address}', '${order.billing_address}', '${order.status}')`;
     let query = "insert into orders " + orderAttributes + " values "  + orderValues;
     return new Promise((resolve, reject) => {
         dBCon.query(query, (err, result) => {
