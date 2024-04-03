@@ -73,7 +73,7 @@ async function makeOrder(req, body, shoppingCart, shoppingCartProduct, discounte
         
     let order = { 
         order_ID: await getOrder_ID(), 
-        user_ID: shoppingCart[0].user_ID, 
+        email: shoppingCart[0].email, 
         date_made: await getDate(), 
         payment_method: body.payment_method, 
         products_cost: discounted_prices, // to run without applying discounts: shoppingCart[0].cost, 
@@ -113,7 +113,7 @@ async function getpaymentIntent(body, order) {
             tracking_number: null,
         },
       currency: 'usd',
-      receipt_email: order.user_ID,
+      receipt_email: order.email,
       automatic_payment_methods: {
         enabled: true,
       },
