@@ -806,7 +806,7 @@ async function orders(req, body, urlParts) {
                 let keyword = param.key || null;
                 return await searchOrders(req, body, keyword);
             } else {
-                return {}
+                return {};
             }
         case 'POST':
             return await makeOrder(req, body, urlParts);
