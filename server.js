@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
+const MiniSearch = require('minisearch')
 const port = 8000;
 let dBCon = {};
 let loginhtml;
@@ -57,7 +58,6 @@ const server = http.createServer((req, res) => {
         req.destroy();
       }
     });
-    console.log(body);
     req.on('end', async function () {
         // Initialize a variable to store the parsed body 
         // (USED FOR POST OR ANY CALL THAT REQUIRES THE BODY ^)
@@ -372,10 +372,6 @@ async function searchProducts(req, body, keyword) {
     let baseQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID";
     let whereClauses = [];
     let parameters = [];
-    if (keyword) {
-        whereClauses.push("MATCH(name, description, category) AGAINST(?)");
-        parameters.push(keyword);
-    }
     let min_price = -1;
     if (body != "") {
             let filters;
@@ -473,35 +469,63 @@ async function searchProducts(req, body, keyword) {
     if (whereClauses.length > 0) {
         searchQuery += " WHERE " + whereClauses.join(" AND ");
     }
+    let products;
     try {
         const [result] = await dBCon.promise().query(searchQuery, parameters);
-        resMsg.code = 200;
-        resMsg.hdrs = {"Content-Type" : "application/json"};
-        resMsg.body = result;
+        products = result;
     } catch (error) {
         return failedDB();
     }
+
+    if (keyword) {
+        let miniSearch = new MiniSearch({
+            idField: 'product_ID',
+            fields: ['name', 'description', 'category'], // fields to index for full-text search
+            searchOptions: {
+                boost: { 'name': 3,  'description': 2},
+                fuzzy: 0.2
+              }
+        });
+        miniSearch.addAll(products);
+        let searchResults = miniSearch.search(keyword);
+        products = searchResults.map(t1 => ({...t1, ...products.find(t2 => t2.product_ID === t1.id)}));
+        products.forEach(
+            function removeProperties(p) {
+                delete p.id;
+                delete p.score;
+                delete p.terms;
+                delete p.queryTerms;
+                delete p.match;
+            }
+        )
+    }
+
     let discountInfo;
-    for (let i = 0; i < resMsg.body.length; i++) {
-        let currentProduct = resMsg.body[i];
+    for (let i = 0; i < products.length; i++) {
+        let currentProduct = products[i];
         discountInfo = await getDiscounts(currentProduct.product_ID, currentProduct.price);
         if (typeof discounts === "string") {
             currentProduct.discounted_price = currentProduct.price;
         } else {
             currentProduct.discounted_price = discountInfo[0];
         }
-        resMsg.body[i] = currentProduct;
+        products[i] = currentProduct;
         if (min_price > discountInfo[0])
             if (i == 0) 
-                resMsg.body[0] = null;
+            products[0] = null;
             else
-                for (let i = 1; i < resMsg.body.length; i++)
-                    resMsg.body[i] = resMsg.body[i-1];
+                for (let i = 1; i < products.length; i++)
+                    products[i] = products[i-1];
     }
-    if (Array.isArray(resMsg.body)) {
-        resMsg.body = resMsg.body.filter((product) => product != null);
+    if (Array.isArray(products)) {
+        products = products.filter((product) => product != null);
     }
-    resMsg.body = JSON.stringify(resMsg.body);
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "application/json"};
+    let results = {};
+    results.result_count = products.length;
+    results.result = products;
+    resMsg.body = JSON.stringify(results);
     return resMsg;
 }
 
@@ -640,7 +664,6 @@ async function productReviews(req, body, urlParts) {
                     }
                 } catch (error) {
                     // Return error response if parsing body error
-                    console.log(error);
                     return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
                 }
             } else {
