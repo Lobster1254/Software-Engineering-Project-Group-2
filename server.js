@@ -359,6 +359,82 @@ function failedDB() { // can be called when the server fails to connect to the d
     return resMsg;
 }
 
+async function searchOrders(req, body, keyword) {
+    if (keyword && keyword.length > 50) {
+        return {
+            code: 400,
+            hdrs: {"Content-Type" : "text/html"},
+            body: "Keyword length must not exceed 50 characters"
+        };
+    }
+    let email = await getEmail(req); 
+    if (email instanceof Error || email === -1)
+        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to search orders." };
+    let products;
+    try {
+        const [result] = await dBCon.promise().query("select p.product_ID, p.name, p.description, p.category from orders o, orderproducts op, products p where o.order_ID = op.order_ID and op.product_ID = p.product_ID and o.email = '" + email + "' GROUP BY(product_ID)");
+        products = result;
+    } catch (error) {
+        return failedDB();
+    }
+    let searchResults;
+    if (keyword) {
+        let miniSearch = new MiniSearch({
+            idField: 'product_ID',
+            fields: ['name', 'description', 'category'], // fields to index for full-text search
+            searchOptions: {
+                boost: { 'name': 3,  'description': 2},
+                fuzzy: 0.2
+              }
+        });
+        miniSearch.addAll(products);
+        searchResults = miniSearch.search(keyword);
+    }
+    
+    let query = "select o.* from orders o where email = '" + email + "'";
+    let orders;
+    try {
+        const [result] = await dBCon.promise().query(query);
+        orders = result;
+    } catch (error) {
+        return failedDB();
+    }
+
+    for (o of orders) {
+        o.score = 0;
+        try {
+            const [result] = await dBCon.promise().query("select p.product_ID, p.name, p.description, p.category, o.quantity from orderproducts o, products p where order_ID = '" + o.order_ID + "' and o.product_ID = p.product_ID");
+            if (keyword)
+                for (r of result) {
+                    for (sr of searchResults) {
+                        if (r.product_ID == sr.id) {
+                            o.score+=sr.score;
+                            break;
+                        }
+                    }
+                }
+            o.products = result;
+        } catch (error) {
+            return failedDB();
+        }
+
+        if (o.score < 0.2) 
+            o.order_ID = null;
+        delete o.score;
+    }
+    if (Array.isArray(products))
+        orders = orders.filter((o) => o.order_ID != null);
+    orders.sort((a,b) => b.score - a.score);
+    let resMsg = {};
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "application/json"};
+    let results = {};
+    results.result_count = orders.length;
+    results.results = orders;
+    resMsg.body = JSON.stringify(results);
+    return resMsg;
+}
+
 async function searchProducts(req, body, keyword) {
     if (keyword && keyword.length > 50) {
         return {
@@ -489,15 +565,6 @@ async function searchProducts(req, body, keyword) {
         miniSearch.addAll(products);
         let searchResults = miniSearch.search(keyword);
         products = searchResults.map(t1 => ({...t1, ...products.find(t2 => t2.product_ID === t1.id)}));
-        products.forEach(
-            function removeProperties(p) {
-                delete p.id;
-                delete p.score;
-                delete p.terms;
-                delete p.queryTerms;
-                delete p.match;
-            }
-        )
     }
 
     let discountInfo;
@@ -524,7 +591,7 @@ async function searchProducts(req, body, keyword) {
     resMsg.hdrs = {"Content-Type" : "application/json"};
     let results = {};
     results.result_count = products.length;
-    results.result = products;
+    results.results = products;
     resMsg.body = JSON.stringify(results);
     return resMsg;
 }
@@ -692,9 +759,8 @@ async function shoppingCart(req, body, urlParts) {
     let userEmail;
 
     userEmail = await getEmail(req);
-    if (userEmail instanceof Error) {
-        return failedDB();
-    } else if (userEmail === -1) {
+  
+    if (userEmail instanceof Error || userEmail === -1) {
         // If userEmail is -1, it indicates the user is not authenticated.
         // TODO: make Guest able to interact with shopping cart
         return {
@@ -735,8 +801,11 @@ async function orders(req, body, urlParts) {
         case 'GET':
             if(!urlParts[1])
                 return await viewOrders(req, body, urlParts);
-            else
-                return {};
+            else if (urlParts[1].startsWith("search?")) {
+                let param = querystring.decode(urlParts[1].substring(7));
+                let keyword = param.key || null;
+                return await searchOrders(req, body, keyword);
+            }
         case 'POST':
             return await makeOrder(req, body, urlParts);
             if (urlParts[1] == "cancel")
@@ -788,8 +857,8 @@ async function viewOrders(req, body, urlParts) {
 async function viewShoppingCart(req) {
     let resMsg = { hdrs: {"Content-Type": "application/json"} };
     let userEmail = await getEmail(req);
-    if (userEmail instanceof Error) {
-        return failedDB();
+    if (userEmail instanceof Error || userEmail === -1) {
+        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to view cart." };
     }
 
     try {
