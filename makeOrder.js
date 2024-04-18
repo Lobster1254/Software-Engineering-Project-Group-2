@@ -18,19 +18,25 @@ to run makeOrder from postman:
         "billing_address_same_as_shipping_address": true
 }
 */ 
+
+
+//This file is for Make Order (Use case 7)
               
 /* NOTE:
 "orderInfoArray" format: 
 [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
 */
-const http = require('http'); // for using stripe later....
-const api_key= 'YOUR_API_KEY_HERE';
-const stripe = require('stripe')(api_key);
+//const http = require('http'); // for using stripe later....
+//const api_key= 'YOUR_API_KEY_HERE';
+//const stripe = require('stripe')(api_key);
 const { addressValidation_controller } = require('../src/validateAddresses.js');
+//const url = require('url');
+//const fs = require('fs');
+const { stripeServer } = require('../stripeServer.js');
+//const { sendEmail } = require('./send_email.js'); // for implementing email recipts - TODO
 
 async function createOrder(req, body, orderInfoArray, discounted_price) {
     body = JSON.parse(body);
-    let orderProducts = {}; //for updating the orderProducts table as result of the new order -- will be implemented later
     let order = {};
     let shoppingCart = orderInfoArray[0];
     let shoppingCartProducts = orderInfoArray[1];
@@ -41,7 +47,7 @@ async function createOrder(req, body, orderInfoArray, discounted_price) {
       return body = "invalid shipping address";
     }
     const validCart = await enoughStock(shoppingCartProducts, products);
-    if(validCart && validAddress) {
+    if(validCart && validAddress) { 
         order = await makeOrder(req, body, shoppingCart, shoppingCartProducts, discounted_price);
         console.log(order); // for testing (to see what's being returned as "order")
         body = order;
@@ -50,6 +56,7 @@ async function createOrder(req, body, orderInfoArray, discounted_price) {
     }
     return body;
 }
+
 //function checks if there are products in cart & if the requested quantity is in stock
 async function enoughStock(shoppingCartProducts, products) {
     let outOfStockCount = 0;
@@ -69,7 +76,6 @@ async function enoughStock(shoppingCartProducts, products) {
 
 //create order with given info (to be inserted into orders table)
 async function makeOrder(req, body, shoppingCart, shoppingCartProduct, discounted_prices) {
-   // if(await validateAddress(body) == true) { // implement address validation hereeeeeee
         
     let order = { 
         order_ID: await getOrder_ID(), 
@@ -84,42 +90,12 @@ async function makeOrder(req, body, shoppingCart, shoppingCartProduct, discounte
         billing_address: await getBillingAddress(body),
         status: 'not shipped'
     };
-    
-    //get payment intent if possible  ---> this is sent to stripe 
-   // however, in current state transactions are NOT complete, we don't want to handle sensitive info through our server for security reasons at this point
-   let newPaymentIntent = controller(body, order);
-    
-    //let order = stripeCreateCheckoutSession(shoppingCart); // this line is for if we decide to use stripe checkout instead of payment intents later on...
-    return order;
+
+    let result = await stripeServer(order); //initiates stripe checkout
+    //sendEmail(); // if stripeServer successfully processes payment, send emil IMPLEMEN
+   return order;
 
 }
-
-//stripe controller
-async function controller(req, order) {
-    let pi = await getpaymentIntent(req, order);
-    //console.log(pi); //for testing (to see what's being returned as a new paymentIntent "pi")
-}
-
-// stripe payment intent (for confirming billing details and processing transaction)
-async function getpaymentIntent(body, order) {
-    let taxCalculation = await calculateTax(order);
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: taxCalculation.amount_total,
-      payment_method: body.payment_method, 
-      shipping: 
-        {
-            address: JSON.parse(order.delivery_address),
-            name: body.name,
-            tracking_number: null,
-        },
-      currency: 'usd',
-      receipt_email: order.email,
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
-    return paymentIntent;
-    }
 
 //get & format date for orders table
 async function getDate() {
@@ -148,23 +124,6 @@ async function getBillingAddress(body){
     }
 }
 
-async function calculateTax(order) {
-    const calculation = await stripe.tax.calculations.create({
-        currency: 'usd',
-        line_items: [
-          {
-            amount: (order.products_cost)*100, //minimum purchase is $10
-            reference: 'L1',
-          },
-        ],
-        customer_details: {
-          address: JSON.parse(order.delivery_address),
-          address_source: 'shipping',
-        },
-      });
-      return calculation;
-}
-
 //function to generate random integer between min and max (inclusive) for orders_ID
 const usedNumbers = new Set();
 async function getRandomUniqueInt(min, max) {
@@ -178,118 +137,4 @@ async function getRandomUniqueInt(min, max) {
   return randomInt;
 }
 
-/*
-//This is the in-progress stripe checkout workflow (opted to use paymentIntents instead for demo 1 for more workflow customization (i.e. using discounts w/o subscription etc))
-async function getShippingRate(shoppingCartProducts) {
-    for(let i = 0; i < )
-}
-*/
-
-/*
-//function uses Stripe API complete checkout
-async function stripeCreateCheckoutSession(cart) {
-// NOT COMPLETE WHATSOEVER 
-stripe.checkout.sessions.create({
-
-    // shipping rate(s)
-    shipping_address_collection: {
-        allowed_countries: ['US'],
-      },
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 0,
-              currency: 'usd',
-            },
-            display_name: 'Free shipping',
-            tax_behavior: 'exclusive',
-            tax_code: 'txcd_10000000',
-            delivery_estimate: {
-              minimum: {
-                unit: 'business_day',
-                value: 5,
-              },
-              maximum: {
-                unit: 'business_day',
-                value: 7,
-              },
-            },
-          },
-        },
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 1500,
-              currency: 'usd',
-            },
-            display_name: 'Next day air',
-            delivery_estimate: {
-              minimum: {
-                unit: 'business_day',
-                value: 1,
-              },
-              maximum: {
-                unit: 'business_day',
-                value: 1,
-              },
-            },
-          },
-        },
-      ],
-    //line item(s)
-    line_items: [
-        {
-            // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-            price: cart.price,
-            quantity: cart.quantity,
-        }
-    ],
-    // custom fields
-    custom_fields: [
-        {
-          key: 'engraving',
-          label: {
-            type: 'custom',
-            custom: 'Personalized engraving',
-          },
-          type: 'text',
-        },
-      ],
-  mode: 'payment',
-  success_url: `${YOUR_DOMAIN}/success.html`,
-  cancel_url: `${YOUR_DOMAIN}/cancel.html`,
-}).then(session => {
-  res.writeHead(303, { 'Location': session.url });
-  body = session;
-  res.end();
-  //return body;
-}).catch(error => {
-  console.error('Error creating checkout session:', error);
-  res.writeHead(500, { 'Content-Type': 'text/plain' });
-  res.end('Internal Server Error');
-});
-} 
-// Serve static files
-const filePath = './public' + (pathname === '/' ? '/index.html' : pathname);
-fs.readFile(filePath, (err, data) => {
-  if (err) {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('404 Not Found');
-  } else {
-    res.writeHead(200);
-    res.end(data);
-    console.log(body.payment_method);
-  }
-});
-
-   // else {
-   // res.writeHead(404, { 'Content-Type': 'text/plain' });
-   // res.end('Not Found');
-   // }
-
-
-    */
 module.exports = { createOrder };
