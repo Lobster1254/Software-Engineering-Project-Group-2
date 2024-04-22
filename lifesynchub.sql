@@ -135,7 +135,7 @@ DROP TABLE IF EXISTS `orders`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
   `order_ID` int NOT NULL,
-  `email` varchar(1500) NOT NULL,
+  `email` varchar(320) NOT NULL,
   `date_made` date NOT NULL,
   `payment_method` varchar(50) NOT NULL,
   `products_cost` float(12,2) NOT NULL,
