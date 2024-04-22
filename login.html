@@ -3,7 +3,7 @@
     <script src="https://accounts.google.com/gsi/client" async></script>
     <script>
         async function handleCredentialResponse(response) {
-            await fetch("http://localhost:8000/login", {
+            await fetch("http://localhost:8000/google-login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "test/html",
