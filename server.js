@@ -809,9 +809,12 @@ async function orders(req, body, urlParts) {
                 return {};
             }
         case 'POST':
-            return await makeOrder(req, body, urlParts);
-            if (urlParts[1] == "cancel")
+            if (urlParts[1] == "create")
+                return await makeOrder(req, body, urlParts);
+            else if (urlParts[1] == "cancel")
                 return cancelOrder(req, body, urlParts);
+            else if (urlParts[1] == "return")
+                return returnOrder(req, body, urlParts);
         default:
             return {};
     }
@@ -1173,7 +1176,7 @@ async function makeOrder(req, body, urlParts) {
         "select * from shoppingcarts where user_ID = '" + email + "'",
         "select * from shoppingcartproducts where user_ID = '" + email + "'",
         "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.email = '" + email + "'",
-      ];
+    ];
     const results = []; //results format = [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
     for(let i = 0; i < queries.length; i++) {
         try {
@@ -1289,7 +1292,80 @@ async function cancelOrder(req, body, urlParts) {
     }
   
     return resMsg;
-  }
+}
+
+//Body is a JSON with the order number (the order has to be made by the user)
+async function returnOrder(req, body, urlParts){
+    let userEmail = await getEmail(req);
+    body = JSON.parse(body);
+    let orderID = body.orderID;
+    
+    const [returnStatus] = await dBCon.promise().query(
+        'SELECT status FROM orders WHERE email = ? AND order_ID = ?', 
+        [userEmail, orderID]
+    );
+
+    if(typeof returnStatus[0] === "undefined"){
+        return {
+            code: 404,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order not found."})
+        };
+    }
+    else if(returnStatus[0].status !== "delivered"){
+        return {
+            code: 409,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order has not been delivered yet and cannot be returned"})
+        };
+    }
+    else{
+        const currentDate = new Date();
+        const [date] = await dBCon.promise().query(
+            'SELECT date_made FROM orders WHERE email = ? AND order_ID = ?', 
+            [userEmail, orderID]
+        );
+        const orderDate = new Date(date[0].date_made);
+
+        let differenceTime = currentDate.getTime() - orderDate.getTime();
+        let differenceDays = Math.round(differenceTime / (1000 * 3600 * 24));
+
+        if(differenceDays > 30){
+            return {
+                code: 409,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order has been delivered for longer than 30 days and cannot be returned"})
+            };
+        }
+        else{
+            const [productCost] = await dBCon.promise().query(
+                'SELECT products_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const [taxCost] = await dBCon.promise().query(
+                'SELECT tax_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const [shippingCost] = await dBCon.promise().query(
+                'SELECT shipping_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const totalCost = parseFloat(productCost[0].products_cost) + parseFloat(taxCost[0].tax_cost) + parseFloat(shippingCost[0].shipping_cost);
+
+            await dBCon.promise().query(
+                "UPDATE orders SET status = ? WHERE order_ID = ?;", 
+                ["returned", orderID]
+            );
+
+            return {
+                code: 200,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "A refund of " + totalCost + " dollars has been refunded to your card"})
+            };
+        }
+    }
+}
+
 async function postReview(req, requestBody) {
     let reviewData;
     try {
