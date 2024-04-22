@@ -152,7 +152,12 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
+
 LOCK TABLES `orders` WRITE;
+INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
+VALUES ('12345678', 'rick.patel03@gmail.com', current_date(), 'VISA 1001', 21.99, 2.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'shipped');
+INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
+VALUES ('123456789', 'rick.patel03@gmail.com', current_date(), 'VISA 1002', 20.99, 1.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'not shipped');
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -280,31 +285,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-04-02 19:58:04
-
-DROP TABLE IF EXISTS `orders`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `orders` (
-  `order_ID` int NOT NULL,
-  `email` varchar(1500) NOT NULL,
-  `date_made` date NOT NULL,
-  `payment_method` varchar(50) NOT NULL,
-  `products_cost` float(12,2) NOT NULL,
-  `tax_cost` float(12,2) NOT NULL,
-  `shipping_cost` float(12,2) NOT NULL,
-  `delivery_address` varchar(200) NOT NULL,
-  `billing_address` varchar(200) NOT NULL,
-  `status` enum('not shipped','shipped','delivered','returned','canceled') NOT NULL,
-  PRIMARY KEY (`order_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `productreviews`
---
-INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
-VALUES ('12345678', 'rick.patel03@gmail.com', current_date(), 'VISA 1001', 21.99, 2.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'shipped');
-
-INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
-VALUES ('123456789', 'rick.patel03@gmail.com', current_date(), 'VISA 1002', 20.99, 1.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'not shipped');
 
