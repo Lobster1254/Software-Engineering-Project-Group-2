@@ -84,6 +84,13 @@ const server = http.createServer((req, res) => {
                 case 'login':
                     switch(req.method) {
                         case 'POST':
+                            break;
+                        default:
+                            break;
+                    }
+                case 'google-login':
+                    switch(req.method) {
+                        case 'POST':
                             let validID;
                             validID = await verify(body).catch(validID = Error);
                             if (validID instanceof Error) {
