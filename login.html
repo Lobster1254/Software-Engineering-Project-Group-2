@@ -3,14 +3,18 @@
     <script src="https://accounts.google.com/gsi/client" async></script>
     <script>
         async function handleCredentialResponse(response) {
-            await fetch("http://localhost:8000/google-login", {
+            let a = await fetch("http://localhost:8000/google-login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "test/html",
                 },
                 body: response.credential
             });
-            document.write("Successfully logged in.");
+            if (a.status == 200) {
+                document.write("Successfully logged in.");
+            } else {
+                document.write("Failed to log in.");
+            }
         }
         window.onload = function () {
             google.accounts.id.initialize({

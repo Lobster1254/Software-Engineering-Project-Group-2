@@ -1,7 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
-const MiniSearch = require('minisearch')
+const MiniSearch = require('minisearch');
+const validator = require("email-validator");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const port = 8000;
 let dBCon = {};
 let loginhtml;
@@ -81,16 +85,27 @@ const server = http.createServer((req, res) => {
                 case 'orders':
                     resMsg = await orders(req, body, urlParts);
                     break;
-                case 'login':
+                case 'user':
                     switch(req.method) {
                         case 'POST':
+                            if (urlParts[1]) {
+                                resMsg = await user(req, body, urlParts);
+                            }
                             break;
                         default:
                             break;
                     }
+                    break;
                 case 'google-login':
                     switch(req.method) {
                         case 'POST':
+                            let email = await getEmail(req);
+                            if (!(email instanceof Error) && email != -1) {
+                                resMsg.code = 400;
+                                resMsg.hdrs = {"Content-Type" : "text/html"};
+                                resMsg.body = "Please log out first.";
+                                break;
+                            }
                             let validID;
                             validID = await verify(body).catch(validID = Error);
                             if (validID instanceof Error) {
@@ -99,7 +114,11 @@ const server = http.createServer((req, res) => {
                                 resMsg.body = "Failure while accessing Google API";
                             } else if (validID != -1) {
                                 resMsg.code = 200;
-                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
+                                let now = new Date(); 
+                                let time = now.getTime(); 
+                                let expireTime = time + 1000*3600;
+                                now.setTime(expireTime);
+                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; path=/; expires="+now.toUTCString()+"; HttpOnly"};
                             }
                             break;
                         default:
@@ -123,9 +142,7 @@ const server = http.createServer((req, res) => {
             switch(req.method) {
                 case 'GET':
                     let user_ID = await getUserID(req);
-                    if (user_ID instanceof Error)
-                        resMsg = failedDB();
-                    else if (user_ID == -1) {
+                    if (user_ID instanceof Error || user_ID == -1) {
                         resMsg.code = 200;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
                         resMsg.body = loginhtml;
@@ -148,6 +165,117 @@ const server = http.createServer((req, res) => {
         res.end(resMsg.body);
     });
 });
+
+async function user(req, body, urlParts) {
+    let resMsg = {};
+    if (urlParts[1] != "login" && urlParts[1] != "register")
+        return resMsg;
+    let email = await getEmail(req);
+    if (!(email instanceof Error) && email != -1) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Please log out first.";
+        return resMsg;
+    }
+    let userInfo;
+    
+    try {
+        userInfo = JSON.parse(body);
+    } catch (error) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = error.toString();
+        return resMsg;
+    }
+    if (!userInfo.hasOwnProperty("email")||!userInfo.hasOwnProperty("password")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing email and/or password.";
+        return resMsg;
+    }
+    if (userInfo.email.length > 320) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Email is too long.";
+        return resMsg;
+    }
+    if (!validator.validate(userInfo.email)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid email address.";
+        return resMsg;
+    }
+    if (userInfo.password.length > 20) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password is too long.";
+        return resMsg;
+    } 
+    switch (urlParts[1]) {
+        case "login":
+            resMsg = await loginNoGoogle(req, userInfo);
+            break;
+        case "register":
+            resMsg = await register(req, userInfo);
+            break;
+        default:
+            break;
+    }
+    return resMsg;
+}
+
+async function loginNoGoogle(req, userInfo) {
+    let resMsg = {};
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length == 0 || !bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Incorrect username or password.";
+        return resMsg;
+    }
+    let token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60), data: userInfo.email}, 'thisisthesecretkeythatihavedecidedtouse');
+    resMsg.code = 200;
+    let now = new Date(); 
+    let time = now.getTime();
+    let expireTime = time + 1000*3600; 
+    now.setTime(expireTime);
+    resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + token + "; path=/; expires="+now.toUTCString()+"; HttpOnly"};
+    resMsg.body = "Successfully logged in.";
+    return resMsg;
+}
+
+async function register(req, userInfo) {
+    let resMsg = {};
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length > 0) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "User already exists.";
+        return resMsg;
+    }
+    const hash = bcrypt.hashSync(userInfo.password, saltRounds);
+    try {
+        await dBCon.promise().query('INSERT INTO users VALUES (?, ?)', [userInfo.email, hash]);
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Successfully registered user.";
+    } catch (error) {
+        resMsg = failedDB();
+    }
+    return resMsg;
+}
 
 function parseCookies (req) {
     const list = {};
@@ -189,19 +317,25 @@ async function checkCartQuantity(userEmail) {
 
 
 async function verify(user_ID) { // returns error if error, -1 if invalid ID, email if valid ID
-    const ticket = await client.verifyIdToken({
-        idToken: user_ID,
-        audience: CLIENT_ID,
-    }).catch(error => {
-        return error;
-    });
-    if (!ticket)
-        return -1;
-    const payload = ticket.getPayload();
-    if (payload)
-        return payload.email;
-    else
-        return -1;
+    let decoded;
+    try {
+        decoded = jwt.verify(user_ID, 'thisisthesecretkeythatihavedecidedtouse');
+    } catch (err) {
+        const ticket = await client.verifyIdToken({
+            idToken: user_ID,
+            audience: CLIENT_ID,
+        }).catch(error => {
+            return error;
+        });
+        if (!ticket)
+            return -1;
+        const payload = ticket.getPayload();
+        if (payload)
+            return payload.email;
+        else
+            return -1;
+    }
+    return decoded.data;
 }
 
 server.once('error', function(err) {
