@@ -152,13 +152,9 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-
 LOCK TABLES `orders` WRITE;
-INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
-VALUES ('12345678', 'rick.patel03@gmail.com', current_date(), 'VISA 1001', 21.99, 2.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'shipped');
-INSERT INTO orders (order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)
-VALUES ('123456789', 'rick.patel03@gmail.com', current_date(), 'VISA 1002', 20.99, 1.01, 0.00, '100 Sicard St, New Brunswick, NJ, 08901', '100 Sicard St, New Brunswick, NJ, 08901', 'not shipped');
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (12345678,'rick.patel03@gmail.com','2024-04-22','VISA 1001',21.99,2.01,0.00,'100 Sicard St, New Brunswick, NJ, 08901','100 Sicard St, New Brunswick, NJ, 08901','shipped'),(123456789,'rick.patel03@gmail.com','2024-04-22','VISA 1002',20.99,1.01,0.00,'100 Sicard St, New Brunswick, NJ, 08901','100 Sicard St, New Brunswick, NJ, 08901','not shipped');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -274,6 +270,31 @@ LOCK TABLES `shoppingcarts` WRITE;
 /*!40000 ALTER TABLE `shoppingcarts` DISABLE KEYS */;
 /*!40000 ALTER TABLE `shoppingcarts` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `email` varchar(320) NOT NULL,
+  `passhash` char(60) NOT NULL,
+  `temppasshash` char(60) DEFAULT NULL,
+  `temppassdt` datetime DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -284,5 +305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-02 19:58:04
-
+-- Dump completed on 2024-04-22 22:40:59
