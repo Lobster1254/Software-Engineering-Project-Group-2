@@ -261,6 +261,19 @@ async function changePassword(email, body) {
         resMsg.body = "Invalid request. Missing new password.";
         return resMsg;
     }
+    if (userInfo.new_password.length < 8) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "New password must be 8 or more characters.";
+        return resMsg;
+    }
+    let numRegex = /\d/;
+    if (!numRegex.test(userInfo.new_password)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "New password must contain a number.";
+        return resMsg;
+    }
     let user;
     try {
         const [result] = await dBCon.promise().query("select * from users where email = '" + email + "'");
@@ -430,6 +443,19 @@ async function register(userInfo) {
         resMsg.code = 400;
         resMsg.hdrs = {"Content-Type" : "text/html"};
         resMsg.body = "User already exists.";
+        return resMsg;
+    }
+    if (userInfo.password.length < 8) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password must be 8 or more characters.";
+        return resMsg;
+    }
+    let numRegex = /\d/;
+    if (!numRegex.test(userInfo.password)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password must contain a number.";
         return resMsg;
     }
     const hash = bcrypt.hashSync(userInfo.password, saltRounds);
