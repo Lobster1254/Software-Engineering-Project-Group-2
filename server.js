@@ -98,14 +98,8 @@ const server = http.createServer((req, res) => {
                     resMsg = await orders(req, body, urlParts);
                     break;
                 case 'user':
-                    switch(req.method) {
-                        case 'POST':
-                            if (urlParts[1]) {
-                                resMsg = await user(req, body, urlParts);
-                            }
-                            break;
-                        default:
-                            break;
+                    if (urlParts[1]) {
+                        resMsg = await user(req, body, urlParts);
                     }
                     break;
                 case 'google-login':
@@ -182,8 +176,16 @@ const server = http.createServer((req, res) => {
 
 async function user(req, body, urlParts) {
     let resMsg = {};
-    if (urlParts[1] != "login" && urlParts[1] != "register" && urlParts[1] != "forgot-password" && urlParts[1] != "change-password")
+    if (req.method == "POST") {
+        if (urlParts[1] != "login" && urlParts[1] != "register" && urlParts[1] != "change-password")
+            return resMsg;
+    } else if (req.method == "GET") {
+        if (urlParts[1] != "forgot-password")
+            return resMsg;
+    } else {
         return resMsg;
+    }
+    
     let email = await getEmail(req);
     if (!(email instanceof Error) && email != -1) {
         if (urlParts[1] == "change-password") {
@@ -196,6 +198,13 @@ async function user(req, body, urlParts) {
     }
     let userInfo;
     
+    if (urlParts[1] == "change-password") {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Must be logged in to change password.";
+        return resMsg;
+    }
+        
     try {
         userInfo = JSON.parse(body);
     } catch (error) {
@@ -225,18 +234,13 @@ async function user(req, body, urlParts) {
         resMsg.hdrs = {"Content-Type" : "text/html"};
         resMsg.body = "Password is too long.";
         return resMsg;
-    } 
+    }
     switch (urlParts[1]) {
         case "login":
             resMsg = await loginNoGoogle(userInfo);
             break;
         case "register":
             resMsg = await register(userInfo);
-            break;
-        case "change-password":
-            resMsg.code = 400;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = "Must be logged in to change password.";
             break;
         default:
             break;
@@ -903,6 +907,11 @@ async function searchProducts(req, body, keyword) {
 
     let discountInfo;
     for (let i = 0; i < products.length; i++) {
+        delete products[i].score;
+        delete products[i].id;
+        delete products[i].terms;
+        delete products[i].queryTerms;
+        delete products[i].match;
         let currentProduct = products[i];
         discountInfo = await getDiscounts(currentProduct.product_ID, currentProduct.price);
         if (typeof discounts === "string") {
