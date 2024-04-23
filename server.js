@@ -199,7 +199,7 @@ async function user(req, body, urlParts) {
     let userInfo;
     
     if (urlParts[1] == "change-password") {
-        resMsg.code = 400;
+        resMsg.code = 401;
         resMsg.hdrs = {"Content-Type" : "text/html"};
         resMsg.body = "Must be logged in to change password.";
         return resMsg;
@@ -698,6 +698,9 @@ function failedDB() { // can be called when the server fails to connect to the d
 }
 
 async function searchOrders(req, body, keyword) {
+    let email = await getEmail(req); 
+    if (email instanceof Error || email === -1)
+        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to search orders." };
     if (keyword && keyword.length > 50) {
         return {
             code: 400,
@@ -705,9 +708,6 @@ async function searchOrders(req, body, keyword) {
             body: "Keyword length must not exceed 50 characters"
         };
     }
-    let email = await getEmail(req); 
-    if (email instanceof Error || email === -1)
-        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to search orders." };
     let products;
     try {
         const [result] = await dBCon.promise().query("select p.product_ID, p.name, p.description, p.category from orders o, orderproducts op, products p where o.order_ID = op.order_ID and op.product_ID = p.product_ID and o.email = '" + email + "' GROUP BY(product_ID)");
