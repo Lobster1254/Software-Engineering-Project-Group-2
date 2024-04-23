@@ -3,6 +3,8 @@ const fs = require('fs');
 const querystring = require('querystring');
 const MiniSearch = require('minisearch');
 const validator = require("email-validator");
+const generator = require('generate-password');
+const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -13,6 +15,16 @@ let logouthtml;
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com";
+
+const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: "ryley.aufderhar@ethereal.email",
+      pass: "s1wrhzDgAamrER2Rqb",
+    },
+});
 
 const minReviewScore = 1;
 const maxReviewScore = 5;
@@ -119,6 +131,7 @@ const server = http.createServer((req, res) => {
                                 let expireTime = time + 1000*3600;
                                 now.setTime(expireTime);
                                 resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; path=/; expires="+now.toUTCString()+"; HttpOnly"};
+                                resMsg.body = "Successfully logged in.";
                             }
                             break;
                         default:
@@ -130,6 +143,7 @@ const server = http.createServer((req, res) => {
                         case 'POST':
                             resMsg.code = 200;
                             resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+                            resMsg.body = "Successfully logged out.";
                             break;
                         default:
                             break;
@@ -168,13 +182,16 @@ const server = http.createServer((req, res) => {
 
 async function user(req, body, urlParts) {
     let resMsg = {};
-    if (urlParts[1] != "login" && urlParts[1] != "register")
+    if (urlParts[1] != "login" && urlParts[1] != "register" && urlParts[1] != "forgot-password" && urlParts[1] != "change-password")
         return resMsg;
     let email = await getEmail(req);
     if (!(email instanceof Error) && email != -1) {
+        if (urlParts[1] == "change-password") {
+            return changePassword(email, body);
+        }
         resMsg.code = 400;
         resMsg.hdrs = {"Content-Type" : "text/html"};
-        resMsg.body = "Please log out first.";
+        resMsg.body = "Already logged in.";
         return resMsg;
     }
     let userInfo;
@@ -187,16 +204,14 @@ async function user(req, body, urlParts) {
         resMsg.body = error.toString();
         return resMsg;
     }
+    if (urlParts[1] == 'forgot-password') {
+        return await forgotPassword(userInfo);
+    }
+
     if (!userInfo.hasOwnProperty("email")||!userInfo.hasOwnProperty("password")) {
         resMsg.code = 400;
         resMsg.hdrs = {"Content-Type" : "text/html"};
         resMsg.body = "Invalid request. Missing email and/or password.";
-        return resMsg;
-    }
-    if (userInfo.email.length > 320) {
-        resMsg.code = 400;
-        resMsg.hdrs = {"Content-Type" : "text/html"};
-        resMsg.body = "Email is too long.";
         return resMsg;
     }
     if (!validator.validate(userInfo.email)) {
@@ -213,10 +228,15 @@ async function user(req, body, urlParts) {
     } 
     switch (urlParts[1]) {
         case "login":
-            resMsg = await loginNoGoogle(req, userInfo);
+            resMsg = await loginNoGoogle(userInfo);
             break;
         case "register":
-            resMsg = await register(req, userInfo);
+            resMsg = await register(userInfo);
+            break;
+        case "change-password":
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Must be logged in to change password.";
             break;
         default:
             break;
@@ -224,7 +244,138 @@ async function user(req, body, urlParts) {
     return resMsg;
 }
 
-async function loginNoGoogle(req, userInfo) {
+async function changePassword(email, body) {
+    let resMsg = {};
+    let userInfo;
+    try {
+        userInfo = JSON.parse(body);
+    } catch (error) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = error.toString();
+        return resMsg;
+    }
+    if (!userInfo.hasOwnProperty("new_password")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing new password.";
+        return resMsg;
+    }
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    let hasTempPass = false;
+    if (user.length != 0) {
+        if (!userInfo.hasOwnProperty("password")) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Invalid request. Missing old/temporary password.";
+            return resMsg;
+        }
+        if (userInfo.password == userInfo.new_password) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Old password and new password cannot be identical.";
+            return resMsg;
+        }
+        if (user[0].temppasshash != null) {
+            hasTempPass = true;
+            if (!bcrypt.compareSync(userInfo.password, user[0].passhash)
+                && !(bcrypt.compareSync(userInfo.password, user[0].temppasshash) && new Date((new Date(user[0].temppassdt)).getTime() + 15*60000) > new Date())) {
+                resMsg.code = 400;
+                resMsg.hdrs = {"Content-Type" : "text/html"};
+                resMsg.body = "Incorrect old/temporary password.";
+                return resMsg;
+            }
+        } else {
+            if (!bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+                resMsg.code = 400;
+                resMsg.hdrs = {"Content-Type" : "text/html"};
+                resMsg.body = "Incorrect old/temporary password.";
+                return resMsg;
+            }
+        }
+        const hash = bcrypt.hashSync(userInfo.new_password, saltRounds);
+        try {
+            await dBCon.promise().query("UPDATE users SET passhash = '" + hash + "', temppasshash = NULL, temppassdt = NULL where email = '" + email + "'");
+        } catch (error) {
+            return failedDB();
+        }
+    } else {
+        const hash = bcrypt.hashSync(userInfo.new_password, saltRounds);
+        try {
+            await dBCon.promise().query('INSERT INTO users (email, passhash) VALUES (?, ?)', [email, hash]);
+        } catch (error) {
+            return failedDB();
+        }
+    }
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "text/html"};
+    resMsg.body = "Password successfully changed."
+    if (hasTempPass) resMsg.body += " Temporary password cleared.";
+    return resMsg;
+}
+
+async function forgotPassword(userInfo) {
+    let resMsg = {};
+    if (!userInfo.hasOwnProperty("email")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing email.";
+        return resMsg;
+    }
+    if (!validator.validate(userInfo.email)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid email address.";
+        return resMsg;
+    }
+    let temppass = generator.generate({
+        length: 10,
+        numbers: true
+    });
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length == 0) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "No account associated with email. Either register an account or sign-in with Google.";
+        return resMsg;
+    }
+    let now = new Date(); 
+    const hash = bcrypt.hashSync(temppass, saltRounds);
+    try {
+        await dBCon.promise().query("UPDATE users SET temppasshash = '" + hash + "', temppassdt = '" + datetimeToSQL(now) + "' where email = '" + userInfo.email + "'");
+    } catch (error) {
+        return failedDB();
+    }
+    await transporter.sendMail({
+        from: '"LifeSyncHub" <ryley.aufderhar@ethereal.email>', // sender address
+        to: userInfo.email, // list of receivers
+        subject: "LifeSyncHub Temporary Password", // Subject line
+        text: "Temporary Password: " + temppass + "\n\nThis password will work for exactly 15 minutes, unless replaced by a new temporary password.", // plain text body
+    });
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "text/html"};
+    resMsg.body = "Email sent.";
+    return resMsg;
+}
+
+function datetimeToSQL(datetime) {
+    return (datetime.getFullYear().toString().padStart(4,'0') + "-" + (datetime.getMonth()+1).toString().padStart(2,'0') + "-" + datetime.getDate().toString().padStart(2,'0')
+      + 'T' + datetime.getHours().toString().padStart(2,'0') + ":" + datetime.getMinutes().toString().padStart(2,'0') + ":" + datetime.getSeconds().toString().padStart(2,'0'));
+  }
+
+async function loginNoGoogle(userInfo) {
     let resMsg = {};
     let user;
     try {
@@ -233,11 +384,27 @@ async function loginNoGoogle(req, userInfo) {
     } catch (error) {
         return failedDB();
     }
-    if (user.length == 0 || !bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+    if (user.length == 0) {
         resMsg.code = 400;
         resMsg.hdrs = {"Content-Type" : "text/html"};
-        resMsg.body = "Incorrect username or password.";
+        resMsg.body = "Incorrect email or password.";
         return resMsg;
+    }
+    if (user[0].temppasshash != null) {
+        if (!bcrypt.compareSync(userInfo.password, user[0].passhash) 
+            && !(bcrypt.compareSync(userInfo.password, user[0].temppasshash) && new Date((new Date(user[0].temppassdt)).getTime() + 15*60000) > new Date())) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Incorrect email or password.";
+            return resMsg;
+        }
+    } else { 
+        if (!bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Incorrect email or password.";
+            return resMsg;
+        }
     }
     let token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60), data: userInfo.email}, 'thisisthesecretkeythatihavedecidedtouse');
     resMsg.code = 200;
@@ -250,7 +417,7 @@ async function loginNoGoogle(req, userInfo) {
     return resMsg;
 }
 
-async function register(req, userInfo) {
+async function register(userInfo) {
     let resMsg = {};
     let user;
     try {
@@ -267,7 +434,7 @@ async function register(req, userInfo) {
     }
     const hash = bcrypt.hashSync(userInfo.password, saltRounds);
     try {
-        await dBCon.promise().query('INSERT INTO users VALUES (?, ?)', [userInfo.email, hash]);
+        await dBCon.promise().query('INSERT INTO users (email, passhash) VALUES (?, ?)', [userInfo.email, hash]);
         resMsg.code = 200;
         resMsg.hdrs = {"Content-Type" : "text/html"};
         resMsg.body = "Successfully registered user.";
