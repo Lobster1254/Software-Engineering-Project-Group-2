@@ -15,6 +15,8 @@ let logouthtml;
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com";
+const stripe = require('stripe')('sk_test_51P8St3RqBSq1p5cwbhtHznk4oCu8oEFzRsQXuvPKdnDRjYRyhms7O22ou6E8HgwRzRMFxaGUlnZNoAon9JjqeJI000EI7Oq7o9');
+
 
 const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -1590,50 +1592,61 @@ async function insertOrder(order) {
 
 async function cancelOrder(req, body, urlParts) {
     let resMsg = {};
-  
+
     try {
-      const parsedBody = JSON.parse(body);
-      const orderID = parsedBody.orderID;
-  
-      // Verify that the order exists in the database
-      const orderExists = await dBCon.promise().query('SELECT order_ID, status, products_cost FROM orders WHERE order_ID = ?', [orderID]);
-      if (orderExists[0].length === 0) {
-        return {
-          code: 404,
-          hdrs: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "Order not found." })
+        const parsedBody = JSON.parse(body);
+        const orderID = parsedBody.order_ID;
+
+        // Verify that the order exists in the database
+        const [orderStatus] = await dBCon.promise().query(
+            'SELECT status FROM orders WHERE  order_ID = ?', 
+            [orderID]
+        );
+
+        if (typeof orderStatus[0] == "undefined") {
+            return {
+                code: 404,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order not found." })
+            };
+        } 
+
+        // Check the status of the order to ensure it has not been shipped yet
+        if (orderStatus[0].status != 'not shipped') {
+            return {
+                code: 409,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order has already been shipped and cannot be canceled." })
+            };
+        } 
+       const refund = await stripe.refunds.create({
+          charge: '',
+            });
+       
+        // Proceed with the cancellation
+        await dBCon.promise().query(
+            "UPDATE orders SET status = ? WHERE order_ID = ?;", 
+            ["canceled", parseInt(orderID)]
+        );
+        
+    
+    
+        // Output the order ID and total refund
+        resMsg = {
+            code: 200,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order cancelled successfully and refund processed.", orderID: order.order_ID, totalRefund: order.products_cost})
         };
-      }
-  
-      const order = orderExists[0][0];
-  
-      // Check the status of the order to ensure it has not been shipped yet
-      if (order.status === 'shipped') {
-        return {
-          code: 409,
-          hdrs: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "Order has already been shipped and cannot be cancelled." })
-        };
-      }
-  
-      // Proceed with the cancellation
-      await dBCon.promise().query('UPDATE orders SET status = ? WHERE order_ID = ?', ['cancelled', orderID]);
-  
-      // Output the order ID and total refund
-      resMsg = {
-        code: 200,
-        hdrs: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Order cancelled successfully.", orderID: order.order_ID, totalRefund: order.products_cost })
-      };
+        
     } catch (error) {
-      console.error('Error cancelling order:', error);
-      resMsg = {
-        code: 500,
-        hdrs: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Internal server error while cancelling order." })
-      };
+        console.error('Error cancelling order or processing refund:', error);
+        resMsg = {
+            code: 500,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Internal server error while cancelling order or processing refund." })
+        };
     }
-  
+
     return resMsg;
 }
 
