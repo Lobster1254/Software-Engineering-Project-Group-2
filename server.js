@@ -1058,12 +1058,16 @@ async function productReviews(req, body, urlParts) {
                     // Parse the request body to get productID, reviewID, and helpfulness rating
                     const parsedBody = JSON.parse(body);
                     const helpfulRating = parsedBody.helpfulRating;
-                    const description = parsedBody.description;
+                    const review_email = parsedBody.review_email;
+
+                    if((helpfulRating != 1) && (helpfulRating != 0)){
+                        return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Helpfulness rating must be a 0 or 1" }) };
+                    }
 
                     if (urlParts[2] === 'rate-helpful'){
                         // Rate review given the helpfulness rating, email, description, and productID
-                        const rateHelpResult = await rateReview(helpfulRating, userEmail, description, product_ID);
-
+                        const rateHelpResult = await rateReview(helpfulRating, userEmail, review_email, product_ID);
+                        
                         if (rateHelpResult.success) {
                             // Return success response
                             return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review helpfulness rated successfully" }) };
@@ -1086,12 +1090,12 @@ async function productReviews(req, body, urlParts) {
 } 
 
 // Rate Review Helpfulness function
-async function rateReview(rating, email, description, productID) {
+async function rateReview(rating, email, review_email, productID) {
     try {
         // Attempt to insert the review rating helpfulness
         await dBCon.promise().query(
             'INSERT INTO helpfulnessratings (rating, email, review_email, product_ID) VALUES (?, ?, ?, ?)', 
-            [rating, description, email, productID]
+            [rating, email, review_email, productID]
         );
         return { success: true }; // Return success
     } catch (error) {
