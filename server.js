@@ -1055,6 +1055,13 @@ async function productReviews(req, body, urlParts) {
                         return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
                     }
 
+                    const hasPurchased = await checkIfPurchased(userEmail, product_ID);
+                    if (!hasPurchased) {
+                        return { code: 403, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User must have previously purchased the product to write a review. If you have already purchased the product, you must wait for it to be delivered." }) };
+                    }
+
+                    
+
                     // Parse the request body to get productID, reviewID, and helpfulness rating
                     const parsedBody = JSON.parse(body);
                     const helpfulRating = parsedBody.helpfulRating;
@@ -1088,6 +1095,23 @@ async function productReviews(req, body, urlParts) {
     }
     
 } 
+
+async function checkIfPurchased(userEmail, productID) {
+    try {
+        // Query the database to check if the user has previously purchased the product
+        const [rows, fields] = await dBCon.promise().query("SELECT * FROM orders o JOIN orderproducts op ON o.order_ID = op.order_ID WHERE o.email = ? AND op.product_ID = ? AND o.status IN ('delivered', 'returned')" , [userEmail, productID]);
+
+        // If there are rows returned, the user has purchased the product
+        if (rows.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error("Error checking if purchased:", error);
+        return false;
+    }
+}
 
 // Rate Review Helpfulness function
 async function rateReview(rating, email, review_email, productID) {
