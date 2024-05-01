@@ -1,6 +1,13 @@
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
+const MiniSearch = require('minisearch');
+const validator = require("email-validator");
+const generator = require('generate-password');
+const nodemailer = require("nodemailer");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const port = 8000;
 let dBCon = {};
 let loginhtml;
@@ -8,6 +15,18 @@ let logouthtml;
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = "391687210332-d60o4n8rp92estqtv9ejsugmo2ohpqj0.apps.googleusercontent.com";
+const stripe = require('stripe')('sk_test_51P8St3RqBSq1p5cwbhtHznk4oCu8oEFzRsQXuvPKdnDRjYRyhms7O22ou6E8HgwRzRMFxaGUlnZNoAon9JjqeJI000EI7Oq7o9');
+
+
+const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: "ryley.aufderhar@ethereal.email",
+      pass: "s1wrhzDgAamrER2Rqb",
+    },
+});
 
 const minReviewScore = 1;
 const maxReviewScore = 5;
@@ -18,10 +37,6 @@ try {
 } catch (error) {
     throw error;
 }
-
-
-
-let pass = "";
 
 const readline = require('readline').createInterface({
     input: process.stdin,
@@ -42,7 +57,7 @@ readline.question('Enter password: ', pass => { // read password
 
 });
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((req, res) => { 
     let urlParts = [];
     let segments = req.url.split('/');
     for (let i = 0, num = segments.length; i < num; i++) {
@@ -50,10 +65,11 @@ const server = http.createServer((req, res) => {
         urlParts.push(segments[i]);
       }
     }
+    
     let resMsg = {}, body = '';
     req.on('data', function (data) {
       body += data.toString();
-      if (body.length > 1e6) {
+    if (body.length > 1e6) {
         res.writeHead(413); // 413 payload too large
         res.write("Payload too large.");
         res.end();
@@ -64,37 +80,79 @@ const server = http.createServer((req, res) => {
         // Initialize a variable to store the parsed body 
         // (USED FOR POST OR ANY CALL THAT REQUIRES THE BODY ^)
         let parsedBody = null;
-        switch(req.method) {
-            case 'GET':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'product-catalog':
-                            resMsg = await productCatalog(req, body, urlParts);
-                            break;
-                        case 'product-reviews':
+        
+        if (urlParts[0]) {
+            switch(urlParts[0]) {
+                case 'product-catalog':
+                    resMsg = await productCatalog(req, body, urlParts);
+                    break;
+                case 'product-reviews':
+                    if (urlParts.length > 1 && urlParts[1] === 'post' && req.method === 'POST') {
+                            resMsg = await postReview(req, body);
+                     } else {
                             resMsg = await productReviews(req, body, urlParts);
-                            break;
-                        case 'orders':
-                            if(!urlParts[1]) {
-                                resMsg = await viewOrders(req, body, urlParts);
+                     }
+                        break;
+                case 'shopping-cart':
+                    resMsg = await shoppingCart(req, body, urlParts);
+                    break;
+                case 'orders':
+                    resMsg = await orders(req, body, urlParts);
+                    break;
+                case 'user':
+                    if (urlParts[1]) {
+                        resMsg = await user(req, body, urlParts);
+                    }
+                    break;
+                case 'google-login':
+                    switch(req.method) {
+                        case 'POST':
+                            let email = await getEmail(req);
+                            if (!(email instanceof Error) && email != -1) {
+                                resMsg.code = 400;
+                                resMsg.hdrs = {"Content-Type" : "text/html"};
+                                resMsg.body = "Please log out first.";
                                 break;
-                            } /* else { //function in progress. See branch "main-with-makeOrder" for details
-                                resMsg = await makeOrder(req, urlParts);
-                                break;
-                            } */
-                        case 'shopping-cart':
-                            if (urlParts[1]) {
-                                resMsg = await viewShoppingCart(req);
+                            }
+                            let validID;
+                            validID = await verify(body).catch(validID = Error);
+                            if (validID instanceof Error) {
+                                resMsg.code = 503;
+                                resMsg.hdrs = {"Content-Type" : "text/html"};
+                                resMsg.body = "Failure while accessing Google API";
+                            } else if (validID != -1) {
+                                resMsg.code = 200;
+                                let now = new Date(); 
+                                let time = now.getTime(); 
+                                let expireTime = time + 1000*3600;
+                                now.setTime(expireTime);
+                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; path=/; expires="+now.toUTCString()+"; HttpOnly"};
+                                resMsg.body = "Successfully logged in.";
                             }
                             break;
                         default:
                             break;
                     }
-                } else {
+                    break;
+                case 'logout':
+                    switch(req.method) {
+                        case 'POST':
+                            resMsg.code = 200;
+                            resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+                            resMsg.body = "Successfully logged out.";
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch(req.method) {
+                case 'GET':
                     let user_ID = await getUserID(req);
-                    if (user_ID instanceof Error)
-                        resMsg = failed();
-                    else if (user_ID == -1) {
+                    if (user_ID instanceof Error || user_ID == -1) {
                         resMsg.code = 200;
                         resMsg.hdrs = {"Content-Type" : "text/html"};
                         resMsg.body = loginhtml;
@@ -103,98 +161,320 @@ const server = http.createServer((req, res) => {
                         resMsg.hdrs = {"Content-Type" : "text/html"};
                         resMsg.body = logouthtml;
                     }
-                }
-                break;
-            case 'POST':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'login':
-                            let validID;
-                            validID = await verify(body).catch(validID = Error);
-                            if (validID instanceof Error) {
-                                resMsg = failed();
-                            } else if (validID != -1) {
-                                resMsg.code = 200;
-                                resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + body + "; HttpOnly"};
-                            }
-                            break;
-                        case 'logout':
-                            resMsg.code = 200;
-                            resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie": "user_ID=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"};
-                            break;
-                        case 'shopping-cart':
-                            let userEmail = await getEmail(req);
-                            if (userEmail instanceof Error || userEmail === -1) {
-                                resMsg = userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-                                break;
-                            }
-                            
-                            if (urlParts[1] && urlParts[2] === 'products') {
-                                resMsg = await handleAddProductToCart(req, userEmail, body);
-                            } 
-
-                        default:
-                            break;
-                    }
-                }
-                break;
-            case 'DELETE':
-                if (urlParts[0]) {
-                    switch(urlParts[0]) {
-                        case 'product-reviews':
-                            //deleteReview
-                            // Check if the request is for deleting a review
-                            if (urlParts[1] === 'delete') {
-                                // Parse the request body to get the review ID
-                                let parsedBody;
-                                try {
-                                    parsedBody = JSON.parse(body);
-                                } catch (error) {
-                                    return failed(); 
-                                }
-                                const reviewID = parsedBody.reviewID;
-                                const userEmail = await getEmail(req); 
-
-                                if (userEmail instanceof Error) {
-                                    resMsg = { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Error fetching user email" }) };
-                                } else if (userEmail === -1) {
-                                    resMsg = { code: 401, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "User not logged in" }) };
-                                }
-
-                                // Delete review
-                                resMsg = await deleteReview(reviewID, userEmail); 
-                            }
-                            break;
-                        case 'shopping-cart':
-                            if (urlParts[2] === 'products' && urlParts[3]) {
-                                let userEmail = await getEmail(req);
-                                if (userEmail instanceof Error || userEmail === -1) {
-                                    resMsg = userEmail instanceof Error ? failed() : { code: 401, hdrs: { "Content-Type": "text/html" }, body: "Unauthorized: Please login to view or modify the shopping cart." };
-                                    break;
-                                } else {
-                                    // Assuming userEmail is valid, handle product removal
-                                    resMsg = await removeProductFromCart(userEmail, urlParts[3]);
-                                }
-                            } else {
-                                resMsg.code = 400;
-                                resMsg.hdrs = { "Content-Type": "text/html" };
-                                resMsg.body = "Bad Request";
-                            }
-                            break;
-                        }
-                    }
-            default:
-                break;
+                    break;
+                default:
+                    break;
             }
-            if (!resMsg.code) {
-                resMsg.code = 404;
-                resMsg.hdrs = {"Content-Type" : "text/html"};
-                resMsg.body = "404 Not Found";
-            }
+        }
+        if (!resMsg.code) {
+            resMsg.code = 404;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "404 Not Found";
+        }
         res.writeHead(resMsg.code, resMsg.hdrs);
         res.end(resMsg.body);
     });
 });
+
+async function user(req, body, urlParts) {
+    let resMsg = {};
+    if (req.method == "POST") {
+        if (urlParts[1] != "login" && urlParts[1] != "register" && urlParts[1] != "change-password")
+            return resMsg;
+    } else if (req.method == "GET") {
+        if (urlParts[1] != "forgot-password")
+            return resMsg;
+    } else {
+        return resMsg;
+    }
+    
+    let email = await getEmail(req);
+    if (!(email instanceof Error) && email != -1) {
+        if (urlParts[1] == "change-password") {
+            return changePassword(email, body);
+        }
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Already logged in.";
+        return resMsg;
+    }
+    let userInfo;
+    
+    if (urlParts[1] == "change-password") {
+        resMsg.code = 401;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Must be logged in to change password.";
+        return resMsg;
+    }
+        
+    try {
+        userInfo = JSON.parse(body);
+    } catch (error) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = error.toString();
+        return resMsg;
+    }
+    if (urlParts[1] == 'forgot-password') {
+        return await forgotPassword(userInfo);
+    }
+
+    if (!userInfo.hasOwnProperty("email")||!userInfo.hasOwnProperty("password")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing email and/or password.";
+        return resMsg;
+    }
+    if (!validator.validate(userInfo.email)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid email address.";
+        return resMsg;
+    }
+    if (userInfo.password.length > 20) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password is too long.";
+        return resMsg;
+    }
+    switch (urlParts[1]) {
+        case "login":
+            resMsg = await loginNoGoogle(userInfo);
+            break;
+        case "register":
+            resMsg = await register(userInfo);
+            break;
+        default:
+            break;
+    }
+    return resMsg;
+}
+
+async function changePassword(email, body) {
+    let resMsg = {};
+    let userInfo;
+    try {
+        userInfo = JSON.parse(body);
+    } catch (error) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = error.toString();
+        return resMsg;
+    }
+    if (!userInfo.hasOwnProperty("new_password")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing new password.";
+        return resMsg;
+    }
+    if (userInfo.new_password.length < 8) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "New password must be 8 or more characters.";
+        return resMsg;
+    }
+    let numRegex = /\d/;
+    if (!numRegex.test(userInfo.new_password)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "New password must contain a number.";
+        return resMsg;
+    }
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    let hasTempPass = false;
+    if (user.length != 0) {
+        if (!userInfo.hasOwnProperty("password")) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Invalid request. Missing old/temporary password.";
+            return resMsg;
+        }
+        if (userInfo.password == userInfo.new_password) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Old password and new password cannot be identical.";
+            return resMsg;
+        }
+        if (user[0].temppasshash != null) {
+            hasTempPass = true;
+            if (!bcrypt.compareSync(userInfo.password, user[0].passhash)
+                && !(bcrypt.compareSync(userInfo.password, user[0].temppasshash) && new Date((new Date(user[0].temppassdt)).getTime() + 15*60000) > new Date())) {
+                resMsg.code = 400;
+                resMsg.hdrs = {"Content-Type" : "text/html"};
+                resMsg.body = "Incorrect old/temporary password.";
+                return resMsg;
+            }
+        } else {
+            if (!bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+                resMsg.code = 400;
+                resMsg.hdrs = {"Content-Type" : "text/html"};
+                resMsg.body = "Incorrect old/temporary password.";
+                return resMsg;
+            }
+        }
+        const hash = bcrypt.hashSync(userInfo.new_password, saltRounds);
+        try {
+            await dBCon.promise().query("UPDATE users SET passhash = '" + hash + "', temppasshash = NULL, temppassdt = NULL where email = '" + email + "'");
+        } catch (error) {
+            return failedDB();
+        }
+    } else {
+        const hash = bcrypt.hashSync(userInfo.new_password, saltRounds);
+        try {
+            await dBCon.promise().query('INSERT INTO users (email, passhash) VALUES (?, ?)', [email, hash]);
+        } catch (error) {
+            return failedDB();
+        }
+    }
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "text/html"};
+    resMsg.body = "Password successfully changed."
+    if (hasTempPass) resMsg.body += " Temporary password cleared.";
+    return resMsg;
+}
+
+async function forgotPassword(userInfo) {
+    let resMsg = {};
+    if (!userInfo.hasOwnProperty("email")) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid request. Missing email.";
+        return resMsg;
+    }
+    if (!validator.validate(userInfo.email)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Invalid email address.";
+        return resMsg;
+    }
+    let temppass = generator.generate({
+        length: 10,
+        numbers: true
+    });
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length == 0) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "No account associated with email. Either register an account or sign-in with Google.";
+        return resMsg;
+    }
+    let now = new Date(); 
+    const hash = bcrypt.hashSync(temppass, saltRounds);
+    try {
+        await dBCon.promise().query("UPDATE users SET temppasshash = '" + hash + "', temppassdt = '" + datetimeToSQL(now) + "' where email = '" + userInfo.email + "'");
+    } catch (error) {
+        return failedDB();
+    }
+    await transporter.sendMail({
+        from: '"LifeSyncHub" <ryley.aufderhar@ethereal.email>', // sender address
+        to: userInfo.email, // list of receivers
+        subject: "LifeSyncHub Temporary Password", // Subject line
+        text: "Temporary Password: " + temppass + "\n\nThis password will work for exactly 15 minutes, unless replaced by a new temporary password.", // plain text body
+    });
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "text/html"};
+    resMsg.body = "Email sent.";
+    return resMsg;
+}
+
+function datetimeToSQL(datetime) {
+    return (datetime.getFullYear().toString().padStart(4,'0') + "-" + (datetime.getMonth()+1).toString().padStart(2,'0') + "-" + datetime.getDate().toString().padStart(2,'0')
+      + 'T' + datetime.getHours().toString().padStart(2,'0') + ":" + datetime.getMinutes().toString().padStart(2,'0') + ":" + datetime.getSeconds().toString().padStart(2,'0'));
+  }
+
+async function loginNoGoogle(userInfo) {
+    let resMsg = {};
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length == 0) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Incorrect email or password.";
+        return resMsg;
+    }
+    if (user[0].temppasshash != null) {
+        if (!bcrypt.compareSync(userInfo.password, user[0].passhash) 
+            && !(bcrypt.compareSync(userInfo.password, user[0].temppasshash) && new Date((new Date(user[0].temppassdt)).getTime() + 15*60000) > new Date())) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Incorrect email or password.";
+            return resMsg;
+        }
+    } else { 
+        if (!bcrypt.compareSync(userInfo.password, user[0].passhash)) {
+            resMsg.code = 400;
+            resMsg.hdrs = {"Content-Type" : "text/html"};
+            resMsg.body = "Incorrect email or password.";
+            return resMsg;
+        }
+    }
+    let token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60), data: userInfo.email}, 'thisisthesecretkeythatihavedecidedtouse');
+    resMsg.code = 200;
+    let now = new Date(); 
+    let time = now.getTime();
+    let expireTime = time + 1000*3600; 
+    now.setTime(expireTime);
+    resMsg.hdrs = {"Content-Type" : "text/html", "Set-Cookie":"user_ID=" + token + "; path=/; expires="+now.toUTCString()+"; HttpOnly"};
+    resMsg.body = "Successfully logged in.";
+    return resMsg;
+}
+
+async function register(userInfo) {
+    let resMsg = {};
+    let user;
+    try {
+        const [result] = await dBCon.promise().query("select * from users where email = '" + userInfo.email + "'");
+        user = result;
+    } catch (error) {
+        return failedDB();
+    }
+    if (user.length > 0) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "User already exists.";
+        return resMsg;
+    }
+    if (userInfo.password.length < 8) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password must be 8 or more characters.";
+        return resMsg;
+    }
+    let numRegex = /\d/;
+    if (!numRegex.test(userInfo.password)) {
+        resMsg.code = 400;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Password must contain a number.";
+        return resMsg;
+    }
+    const hash = bcrypt.hashSync(userInfo.password, saltRounds);
+    try {
+        await dBCon.promise().query('INSERT INTO users (email, passhash) VALUES (?, ?)', [userInfo.email, hash]);
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "Successfully registered user.";
+    } catch (error) {
+        resMsg = failedDB();
+    }
+    return resMsg;
+}
 
 function parseCookies (req) {
     const list = {};
@@ -236,19 +516,25 @@ async function checkCartQuantity(userEmail) {
 
 
 async function verify(user_ID) { // returns error if error, -1 if invalid ID, email if valid ID
-    const ticket = await client.verifyIdToken({
-        idToken: user_ID,
-        audience: CLIENT_ID,
-    }).catch(error => {
-        return error;
-    });
-    if (!ticket)
-        return -1;
-    const payload = ticket.getPayload();
-    if (payload)
-        return payload.email;
-    else
-        return -1;
+    let decoded;
+    try {
+        decoded = jwt.verify(user_ID, 'thisisthesecretkeythatihavedecidedtouse');
+    } catch (err) {
+        const ticket = await client.verifyIdToken({
+            idToken: user_ID,
+            audience: CLIENT_ID,
+        }).catch(error => {
+            return error;
+        });
+        if (!ticket)
+            return -1;
+        const payload = ticket.getPayload();
+        if (payload)
+            return payload.email;
+        else
+            return -1;
+    }
+    return decoded.data;
 }
 
 server.once('error', function(err) {
@@ -260,7 +546,7 @@ server.once('error', function(err) {
 
 const getProductReviews = async(req, body, product_ID) => { // returns array, index 0 = avg rating, index 1 = score distribution index 2 = JSON of reviews
     let reviewInfo = [];
-    let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.user_ID = h.review_user_ID and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by user_ID, product_ID";
+    let reviewQuery = "select r.*, IFNULL(2*sum(h.rating)-count(h.rating), 0) helpfulness from productreviews r left join helpfulnessratings h on r.email = h.review_email and r.product_ID = h.product_ID where r.product_ID = '" + product_ID + "'group by email, product_ID";
     if (body != "") {
         let sorter;
         try {
@@ -306,7 +592,7 @@ const getProductReviews = async(req, body, product_ID) => { // returns array, in
 }
 
 const getDiscounts = async(product_ID, base_price) => { // returns array, index 0 = discounted price, index 1 = JSON of discounts
-    let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE()";
+    let discountQuery = "select d.* from discounts d, discountedproducts p where ((d.discount_ID = p.discount_ID and p.product_ID = '" + product_ID + "' and d.scope = 'product_list') or (d.category = (select category from products where product_ID = '" + product_ID + "') and d.scope = 'category')) and d.end_date >= CURDATE() and IFNULL(d.start_date, CURDATE()) <= CURDATE()";
     let discounts = [];
     await dBCon.promise().query(discountQuery).then(([ result ]) => {
         if (result[0]) {
@@ -339,9 +625,11 @@ const getDiscounts = async(product_ID, base_price) => { // returns array, index 
 const getProductInfo = async(req, body, product_ID) => { // returns stringified JSON of product info
     let productQuery = "select * from products where product_ID = '" + product_ID + "'";
     let email = await getEmail(req);
-    if (email instanceof Error)
-        return failed();
-    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and user_ID = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    if (email instanceof Error) {
+        email = -1;
+    }
+    let ordersQuery = "select o.order_ID, o.date_made, p.quantity, o.status from orders o, orderproducts p where o.order_ID = p.order_ID and o.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
+    let cartQuery = "select p.quantity from shoppingcartproducts p where p.email = '" + email + "' and p.product_ID = '" + product_ID + "'";
     let resMsg = {};
     let isProduct = true;
     await dBCon.promise().query(productQuery).then(([ result ]) => {
@@ -351,13 +639,13 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             isProduct = false;
         }
     }).catch(error => {
-        return failed();
+        return failedDB();
     });
     if (!isProduct)
         return resMsg;
     let discounts = await getDiscounts(product_ID, resMsg.body.price);
     if (discounts) {
-        if (discounts instanceof String) {
+        if (typeof discounts === "string") {
             resMsg.body.discounts = discounts;
         } else {
             resMsg.body.discounted_price = discounts[0];
@@ -365,17 +653,26 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
         }
     }
     if (email != -1) {
+        await dBCon.promise().query(cartQuery).then(([ result ]) => {
+            if (result[0]) {
+                resMsg.body.in_cart = result[0].quantity;
+            } else {
+                resMsg.body.in_cart = 0;
+            }
+        }).catch(error => {
+            resMsg.body.cart = "Failed to load cart.";
+        })
         await dBCon.promise().query(ordersQuery).then(([ result ]) => {
             if (result[0]) {
                 resMsg.body.orders = result;
             }
         }).catch(error => {
-            resMsg.body.reviews = "Failed to load orders.";
+            resMsg.body.orders = "Failed to load orders.";
         });
     }
     let reviewInfo = await getProductReviews(req, body, product_ID);
     if (reviewInfo) {
-        if (reviewInfo instanceof String) {
+        if (typeof reviewInfo === "string") {
             resMsg.body.reviews = reviewInfo;
         } else if (reviewInfo instanceof Error) {
             resMsg.code = 400;
@@ -384,7 +681,7 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
             return resMsg;
         } else {
             resMsg.body.average_rating = reviewInfo[0];
-            resMsg.body.distribution = reviewInfo[1];
+            resMsg.body.rating_distribution = reviewInfo[1];
             resMsg.body.reviews = reviewInfo[2];
         }
     }
@@ -394,11 +691,87 @@ const getProductInfo = async(req, body, product_ID) => { // returns stringified 
     return resMsg;
 }
 
-function failed() { // can be called when the server fails to connect to an API or the database and that failure is fatal to the use case's function
+function failedDB() { // can be called when the server fails to connect to the database and that failure is fatal to the use case's function
     resMsg = {};
     resMsg.code = 503;
     resMsg.hdrs = {"Content-Type" : "text/html"};
-    resMsg.body = "Failed access to vital service. Please try again later.";
+    resMsg.body = "Failed access to mySQL.";
+    return resMsg;
+}
+
+async function searchOrders(req, body, keyword) {
+    let email = await getEmail(req); 
+    if (email instanceof Error || email === -1)
+        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to search orders." };
+    if (keyword && keyword.length > 50) {
+        return {
+            code: 400,
+            hdrs: {"Content-Type" : "text/html"},
+            body: "Keyword length must not exceed 50 characters"
+        };
+    }
+    let products;
+    try {
+        const [result] = await dBCon.promise().query("select p.product_ID, p.name, p.description, p.category from orders o, orderproducts op, products p where o.order_ID = op.order_ID and op.product_ID = p.product_ID and o.email = '" + email + "' GROUP BY(product_ID)");
+        products = result;
+    } catch (error) {
+        return failedDB();
+    }
+    let searchResults;
+    if (keyword) {
+        let miniSearch = new MiniSearch({
+            idField: 'product_ID',
+            fields: ['name', 'description', 'category'], // fields to index for full-text search
+            searchOptions: {
+                boost: { 'name': 3,  'description': 2},
+                fuzzy: 0.2
+              }
+        });
+        miniSearch.addAll(products);
+        searchResults = miniSearch.search(keyword);
+    }
+    
+    let query = "select o.* from orders o where email = '" + email + "'";
+    let orders;
+    try {
+        const [result] = await dBCon.promise().query(query);
+        orders = result;
+    } catch (error) {
+        return failedDB();
+    }
+
+    for (o of orders) {
+        o.score = 0;
+        try {
+            const [result] = await dBCon.promise().query("select p.product_ID, p.name, p.description, p.category, o.quantity from orderproducts o, products p where order_ID = '" + o.order_ID + "' and o.product_ID = p.product_ID");
+            if (keyword)
+                for (r of result) {
+                    for (sr of searchResults) {
+                        if (r.product_ID == sr.id) {
+                            o.score+=sr.score;
+                            break;
+                        }
+                    }
+                }
+            o.products = result;
+        } catch (error) {
+            return failedDB();
+        }
+
+        if (o.score < 0.2) 
+            o.order_ID = null;
+        delete o.score;
+    }
+    if (Array.isArray(products))
+        orders = orders.filter((o) => o.order_ID != null);
+    orders.sort((a,b) => b.score - a.score);
+    let resMsg = {};
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "application/json"};
+    let results = {};
+    results.result_count = orders.length;
+    results.results = orders;
+    resMsg.body = JSON.stringify(results);
     return resMsg;
 }
 
@@ -415,10 +788,6 @@ async function searchProducts(req, body, keyword) {
     let baseQuery = "select p.*, IFNULL(rating.average_rating, 0) average_rating from products p left join (select avg(r.score) average_rating, p.product_ID from products p, productreviews r where p.product_ID = r.product_ID group by p.product_ID) rating on rating.product_ID = p.product_ID";
     let whereClauses = [];
     let parameters = [];
-    if (keyword) {
-        whereClauses.push("MATCH(name, description, category) AGAINST(?)");
-        parameters.push(keyword);
-    }
     let min_price = -1;
     if (body != "") {
             let filters;
@@ -516,119 +885,309 @@ async function searchProducts(req, body, keyword) {
     if (whereClauses.length > 0) {
         searchQuery += " WHERE " + whereClauses.join(" AND ");
     }
+    let products;
     try {
         const [result] = await dBCon.promise().query(searchQuery, parameters);
-        resMsg.code = 200;
-        resMsg.hdrs = {"Content-Type" : "application/json"};
-        resMsg.body = result;
+        products = result;
     } catch (error) {
-        if (error.code === 'ER_CON_COUNT_ERROR') {
-            resMsg.code = 500;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = "Error connecting to the database";
-        } else {
-            resMsg.code = 503;
-            resMsg.hdrs = {"Content-Type" : "text/html"};
-            resMsg.body = "An error occurred while retrieving products";
-        }
+        return failedDB();
     }
+
+    if (keyword) {
+        let miniSearch = new MiniSearch({
+            idField: 'product_ID',
+            fields: ['name', 'description', 'category'], // fields to index for full-text search
+            searchOptions: {
+                boost: { 'name': 3,  'description': 2},
+                fuzzy: 0.2
+              }
+        });
+        miniSearch.addAll(products);
+        let searchResults = miniSearch.search(keyword);
+        products = searchResults.map(t1 => ({...t1, ...products.find(t2 => t2.product_ID === t1.id)}));
+    }
+
     let discountInfo;
-    for (let i = 0; i < resMsg.body.length; i++) {
-        let currentProduct = resMsg.body[i];
+    for (let i = 0; i < products.length; i++) {
+        delete products[i].score;
+        delete products[i].id;
+        delete products[i].terms;
+        delete products[i].queryTerms;
+        delete products[i].match;
+        let currentProduct = products[i];
         discountInfo = await getDiscounts(currentProduct.product_ID, currentProduct.price);
-        currentProduct.discounted_price = discountInfo[0];
-        resMsg.body[i] = currentProduct;
+        if (typeof discounts === "string") {
+            currentProduct.discounted_price = currentProduct.price;
+        } else {
+            currentProduct.discounted_price = discountInfo[0];
+        }
+        products[i] = currentProduct;
         if (min_price > discountInfo[0])
             if (i == 0) 
-                resMsg.body[0] = null;
+            products[0] = null;
             else
-                for (let i = 1; i < resMsg.body.length; i++)
-                    resMsg.body[i] = resMsg.body[i-1];
+                for (let i = 1; i < products.length; i++)
+                    products[i] = products[i-1];
     }
-    if (Array.isArray(resMsg.body)) {
-        resMsg.body = resMsg.body.filter((product) => product != null);
+    if (Array.isArray(products)) {
+        products = products.filter((product) => product != null);
     }
-    resMsg.body = JSON.stringify(resMsg.body);
+    resMsg.code = 200;
+    resMsg.hdrs = {"Content-Type" : "application/json"};
+    let results = {};
+    results.result_count = products.length;
+    results.results = products;
+    resMsg.body = JSON.stringify(results);
     return resMsg;
 }
 
 async function productCatalog(req, body, urlParts) {
-    if (urlParts[1]) {
-        if (urlParts[1].startsWith("search?")) {
-            let param = querystring.decode(urlParts[1].substring(7));
-            let keyword = param.key || null;
-            return await searchProducts(req, body, keyword);
-        } else {
-            let product_ID = urlParts[1];
-            return await getProductInfo(req, body, product_ID);
-        }
-    } else {
-        return {};
+    switch(req.method) {
+        case 'GET':
+            if (urlParts[1]) {
+                if (urlParts[1].startsWith("search?")) {
+                    let param = querystring.decode(urlParts[1].substring(7));
+                    let keyword = param.key || null;
+                    return await searchProducts(req, body, keyword);
+                } else {
+                    let product_ID = urlParts[1];
+                    return await getProductInfo(req, body, product_ID);
+                }
+            } else {
+                return {};
+            }
+        default:
+            return {};
     }
 }
 
 
 async function productReviews(req, body, urlParts) {
-    if (urlParts[1]) {
-        let resMsg = {};
-        let product_ID = urlParts[1];
-        let isProduct = true;
-        await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
-            if (!result[0])
-                isProduct = false;
-        }).catch(error => {
-            return failed();
-        });
-        if (!isProduct)
-            return resMsg;
-        let reviewInfo = await getProductReviews(req, body, product_ID);
-        if (reviewInfo) {
-            if (reviewInfo instanceof String) {
-                return failed();
-            } else if (reviewInfo instanceof Error) {
-                resMsg.code = 400;
-                resMsg.hdrs = {"Content-Type" : "text/html"};
-                resMsg.body = reviewInfo.toString();
+    switch(req.method) {
+        case 'GET':
+            if (urlParts[1]) {
+                let resMsg = {};
+                let product_ID = urlParts[1];
+                let isProduct = true;
+                await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
+                    if (!result[0])
+                        isProduct = false;
+                }).catch(error => {
+                    return failedDB();
+                });
+                if (!isProduct)
+                    return resMsg;
+                let reviewInfo = await getProductReviews(req, body, product_ID);
+                if (reviewInfo) {
+                    if (typeof reviewInfo === "string") {
+                        return failedDB();
+                    } else if (reviewInfo instanceof Error) {
+                        resMsg.code = 400;
+                        resMsg.hdrs = {"Content-Type" : "text/html"};
+                        resMsg.body = reviewInfo.toString();
+                        return resMsg;
+                    } else {
+                        resMsg.body = {};
+                        resMsg.body.average_rating = reviewInfo[0];
+                        resMsg.body.rating_distribution = reviewInfo[1];
+                        resMsg.body.reviews = reviewInfo[2];
+                    }
+                }
+                resMsg.code = 200;
+                resMsg.hdrs = {"Content-Type" : "application/json"};
+                resMsg.body = JSON.stringify(resMsg.body);
                 return resMsg;
             } else {
-                resMsg.body = {};
-                resMsg.body.average_rating = reviewInfo[0];
-                resMsg.body.distribution = reviewInfo[1];
-                resMsg.body.reviews = reviewInfo[2];
+                return {};
             }
-        }
-        resMsg.code = 200;
-        resMsg.hdrs = {"Content-Type" : "application/json"};
-        resMsg.body = JSON.stringify(resMsg.body);
-        return resMsg;
-    } else {
-        return {};
+        case 'DELETE':
+            // Handle DELETE requests to delete reviews
+            if (urlParts[1] === 'delete') {
+                try {
+                    // Parse the request body to extract productID
+                    const parsedBody = JSON.parse(body);
+                    const productID = parsedBody.productID;
+
+                    // Retrieve the user's email
+                    const email = await getEmail(req);
+
+                    // Check if user is logged in
+                    if (email === -1) {
+                        return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
+                    }
+
+                    // Delete review based on productID and user's email
+                    const deleteResult = await deleteReview(productID, email);
+
+                    // Handle the result of review deletion
+                    if (deleteResult.success) {
+                        // Return success response
+                        return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review deleted successfully" }) };
+                    } else {
+                        // Return error response
+                        return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Review not found or user does not have permission to delete" }) };
+                    }
+                } catch (error) {
+                    // Return error response if parsing body fails
+                    return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
+                }
+            } else {
+                // Return empty response for unsupported DELETE requests
+                return {};
+            }
+        case 'POST':
+            if (urlParts[1]) {
+                try {
+                    let product_ID = urlParts[1];
+                    let isProduct = true;
+                    // Make sure product exists
+                    await dBCon.promise().query("select product_ID from products where product_ID = '" + product_ID + "'").then(([ result ]) => {
+                        if (!result[0])
+                            isProduct = false;
+                    }).catch(error => {
+                        return failedDB();
+                    })
+
+                    // Make sure user is logged in to be able to use review options
+                    let userEmail = await getEmail(req);
+                    
+                    if (userEmail === -1) {
+                        return { code: 401, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "User not logged in" }) };
+                    }
+
+                    // Parse the request body to get productID, reviewID, and helpfulness rating
+                    const parsedBody = JSON.parse(body);
+                    const helpfulRating = parsedBody.helpfulRating;
+                    const description = parsedBody.description;
+
+                    if (urlParts[2] === 'rate-helpful'){
+                        // Rate review given the helpfulness rating, email, description, and productID
+                        const rateHelpResult = await rateReview(helpfulRating, userEmail, description, product_ID);
+
+                        if (rateHelpResult.success) {
+                            // Return success response
+                            return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Review helpfulness rated successfully" }) };
+                        } else {
+                            // Return error response
+                            return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Review not found or user does not have permission to rate" }) };
+                        }
+                    }else {
+                        return {}
+                    }
+                } catch (error) {
+                    // Return error response if parsing body error
+                    return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ error: "Invalid request body" }) };
+                }
+            } else {
+                return {};
+            }
     }
+    
 } 
 
-// Implementation for deleteReview function
-async function deleteReview(reviewID, userEmail) {
+// Rate Review Helpfulness function
+async function rateReview(rating, email, description, productID) {
     try {
-        // Verify the review belongs to the user attempting to delete it
-        const [review] = await dBCon.promise().query('SELECT * FROM ProductReviews WHERE review_ID = ? AND userEmail = ?', [reviewID, userEmail]);
-        if (review.length === 0) {
-            return { code: 404, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Review not found or not authorized to delete" }) };
-        }
-
-        // Proceed to delete the review
-        await dBCon.promise().query('DELETE FROM ProductReviews WHERE review_ID = ?', [reviewID]);
-        return { code: 200, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "Review deleted successfully" }) };
+        // Attempt to insert the review rating helpfulness
+        await dBCon.promise().query(
+            'INSERT INTO helpfulnessratings (rating, email, review_email, product_ID) VALUES (?, ?, ?, ?)', 
+            [rating, description, email, productID]
+        );
+        return { success: true }; // Return success
     } catch (error) {
-        console.error('Error during review deletion:', error);
-        return { code: 500, hdrs: { "Content-Type": "application/json" }, body: JSON.stringify({ error: 'Internal server error' }) };
+        console.error('Error during review insertion:', error);
+        return { success: false, error: 'Internal server error' }; // Return error response
     }
 }
-//
+
+async function shoppingCart(req, body, urlParts) {
+    let userEmail;
+
+    userEmail = await getEmail(req);
+  
+    if (userEmail instanceof Error || userEmail === -1) {
+        // If userEmail is -1, it indicates the user is not authenticated.
+        // TODO: make Guest able to interact with shopping cart
+        return {
+            code: 401,
+            hdrs: { "Content-Type": "text/html" },
+            body: "Unauthorized: Please login to view or modify the shopping cart."
+        };
+    }
+
+    switch (req.method) {
+        case 'GET':
+            return await viewShoppingCart(req);
+        case 'POST':
+            if (urlParts[1] === 'products') {
+                return await handleAddProductToCart(userEmail, body);
+            } 
+            return {};
+        case 'PUT':
+            if (urlParts[1] === 'products') {
+                return await editCartQuantity(userEmail, urlParts[2], body);
+            }
+            return {};
+        case 'DELETE':
+            if (urlParts[1] === 'products' && urlParts[2]) {
+                return await removeProductFromCart(userEmail, urlParts[2]);
+            } else if (urlParts[1] === 'items') {
+                return await clearCart(userEmail);
+            }
+            return {};
+        default:
+            return { code: 400, hdrs: { "Content-Type": "text/html" }, body: "Bad Request" };
+    }
+}
+
+
+async function orders(req, body, urlParts) {
+    switch(req.method) {
+        case 'GET':
+            if(!urlParts[1])
+                return await viewOrders(req, body, urlParts);
+            else if (urlParts[1].startsWith("search?")) {
+                let param = querystring.decode(urlParts[1].substring(7));
+                let keyword = param.key || null;
+                return await searchOrders(req, body, keyword);
+            } else {
+                return {};
+            }
+        case 'POST':
+            if (urlParts[1] == "create")
+                return await makeOrder(req, body, urlParts);
+            else if (urlParts[1] == "cancel")
+                return cancelOrder(req, body, urlParts);
+            else if (urlParts[1] == "return")
+                return returnOrder(req, body, urlParts);
+        default:
+            return {};
+    }
+}
+
+// Implementation for deleteReview function
+async function deleteReview(productID, email) {
+    try {
+        // Attempt to delete the review based on productID and email
+        await dBCon.promise().query('DELETE FROM productreviews WHERE product_ID = ? AND email = ?', [productID, email]);
+
+        // Check if the review was successfully deleted
+        const result = await dBCon.promise().query('SELECT * FROM productreviews WHERE product_ID = ? AND email = ?', [productID, email]);
+        if (result[0].length === 0) {
+            return { success: true }; // Return success response
+        } else {
+            return { success: false, error: "Review not found or not authorized to delete" }; // Return error response
+        }
+    } catch (error) {
+        console.error('Error during review deletion:', error);
+        return { success: false, error: 'Internal server error' }; // Return error response
+    }
+}
 
 async function viewOrders(req, body, urlParts) {
     let resMsg = {};
-    let user_ID = getEmail(req); 
-    let query = "select * from orders where user_ID = '" + user_ID + "'";
+    let email = await getEmail(req); 
+    let query = "select * from orders where email = '" + email + "'";
     const getOrderHistory = async() => {
         let resMsg = {};
         await dBCon.promise().query(query).then(([ result ]) => {
@@ -648,8 +1207,8 @@ async function viewOrders(req, body, urlParts) {
 async function viewShoppingCart(req) {
     let resMsg = { hdrs: {"Content-Type": "application/json"} };
     let userEmail = await getEmail(req);
-    if (userEmail instanceof Error) {
-        return failed();
+    if (userEmail instanceof Error || userEmail === -1) {
+        return { code: 401, hdrs: {"Content-Type": "text/html"}, body: "Please login to view cart." };
     }
 
     try {
@@ -679,13 +1238,59 @@ async function viewShoppingCart(req) {
 
     return resMsg;
 }
+
+async function editCartQuantity(userEmail, productID, body) {
+    let newQuantity;
+    try {
+        const productDetails = JSON.parse(body);
+        newQuantity = productDetails.quantity;
+        if (typeof newQuantity !== 'number' || newQuantity < 0) {
+            throw new Error("Invalid quantity specified.");
+        }
+    } catch (error) {
+        return { code: 400, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Invalid request body. Please specify a valid quantity." }) };
+    }
+    if (newQuantity === 0) {
+        return await removeProductFromCart(userEmail, productID);
+    }
+    try {
+        const [updateResult] = await dBCon.promise().query(
+            'UPDATE shoppingcartproducts SET quantity = ? WHERE email = ? AND product_ID = ?',
+            [newQuantity, userEmail, productID]
+        );
+        if (updateResult.affectedRows === 0) {
+            return { code: 404, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Product not found in cart." }) };
+        }
+        const [productInfo] = await dBCon.promise().query(
+            'SELECT price FROM products WHERE product_ID = ?', 
+            [productID]
+        );
+        if (productInfo.length === 0) {
+            throw new Error('Product not found.');
+        }
+        const productPrice = productInfo[0].price;
+        const costDifference = productPrice * newQuantity; 
+
+        await dBCon.promise().query(
+            'UPDATE shoppingcarts SET cost = cost + ? WHERE email = ?', 
+            [costDifference, userEmail] 
+        );
+
+        return { code: 200, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Cart updated successfully." }) };
+    } catch (error) {
+        console.error('Failed to update cart:', error);
+        return { code: 500, hdrs: {"Content-Type": "application/json"}, body: JSON.stringify({ message: "Internal server error." }) };
+    }
+}
+
+
 async function removeProductFromCart(userEmail, productID) {
-    const [exists] = await dBCon.promise().query(
-        'SELECT quantity FROM shoppingcartproducts WHERE email = ? AND product_ID = ?', 
+
+    const [result] = await dBCon.promise().query(
+        'SELECT p.price, scp.quantity FROM products p JOIN shoppingcartproducts scp ON p.product_ID = scp.product_ID WHERE scp.email = ? AND scp.product_ID = ?',
         [userEmail, productID]
     );
-    
-    if (exists.length === 0) {
+    if (result.length === 0) {
         // Product not found in the user's cart
         return {
             code: 404,
@@ -693,6 +1298,9 @@ async function removeProductFromCart(userEmail, productID) {
             body: "Product not found in cart."
         };
     }
+    const { price: productPrice, quantity: quantityToRemove } = result[0];
+
+    const costReduction = productPrice * quantityToRemove;
 
     // Proceed with deletion
     await dBCon.promise().query(
@@ -700,8 +1308,13 @@ async function removeProductFromCart(userEmail, productID) {
         [userEmail, productID]
     );
     
-    // TODO: Update the total cost in the shoppingcarts table here
+    // Update the total cost in the shoppingcarts table here
+    await dBCon.promise().query(
+        'UPDATE shoppingcarts SET cost = cost - ? WHERE email = ?', 
+        [costReduction, userEmail]
+    );
     
+
     return {
         code: 200,
         hdrs: { "Content-Type": "application/json" },
@@ -709,10 +1322,56 @@ async function removeProductFromCart(userEmail, productID) {
     };
 }
 
+async function clearCart(userEmail) {
+    try {
+        await dBCon.promise().beginTransaction();
 
-async function handleAddProductToCart(req, userEmail, body) {
+        // Check if the user has a shopping cart with items
+        const [cartExists] = await dBCon.promise().query(
+            'SELECT email FROM shoppingcarts WHERE email = ?', 
+            [userEmail]
+        );
+
+        if (cartExists.length === 0) {
+            return {
+                code: 404,
+                hdrs: { "Content-Type": "text/html" },
+                body: "Shopping cart does not exist."
+            };
+        }
+
+        // Clear all items from the user's shopping cart
+        await dBCon.promise().query(
+            'DELETE FROM shoppingcartproducts WHERE email = ?', 
+            [userEmail]
+        );
+
+        // Update the total cost in the shoppingcarts table to 0
+        await dBCon.promise().query(
+            'UPDATE shoppingcarts SET cost = 0 WHERE email = ?', 
+            [userEmail]
+        );
+
+        await dBCon.promise().commit(); // Commit the transaction
+        return {
+            code: 200,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Shopping cart cleared." })
+        };
+    } catch (error) {
+        await dBCon.promise().rollback(); 
+        console.error('Error clearing the shopping cart:', error);
+        return {
+            code: 500,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Internal server error. Could not clear the shopping cart." })
+        };
+    }
+}
+
+
+async function handleAddProductToCart(userEmail, body) {
     let productDetails;
-    console.log(body); 
     try {
         productDetails = JSON.parse(body);
     } catch (error) {
@@ -853,3 +1512,256 @@ async function getEmail(req) { // returns error if error, returns -1 if not logg
 function roundPrice(num) {
     return Math.ceil(num * 100) / 100;
 }
+
+async function makeOrder(req, body, urlParts) {
+    let resMsg = {};
+    
+    let email = getEmail(req);
+    const queries = [
+        "select * from shoppingcarts where user_ID = '" + email + "'",
+        "select * from shoppingcartproducts where user_ID = '" + email + "'",
+        "select * from products join shoppingcartproducts on products.product_ID = shoppingcartproducts.product_ID where shoppingcartproducts.email = '" + email + "'",
+    ];
+    const results = []; //results format = [[{shoppingcartproducts of user}], [{cartInf0}], [{product info}]];
+    for(let i = 0; i < queries.length; i++) {
+        try {
+            // Execute SQL queries asynchronously
+            let temp = await executeQueries(queries[i]);
+            results.push(temp);
+        } catch (error) {
+            failedDB();
+        }
+    }
+    let discounted_price = await applyDiscounts(results);
+    let result = await createOrder(req, body, results, discounted_price);
+    if(result == "invalid shipping address") {
+        resMsg.code = 403;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = result; 
+        return resMsg;
+    }
+   
+   
+    await insertOrder(result);
+    if(insertOrder) {
+        resMsg.code = 200;
+        resMsg.hdrs = {"Content-Type" : "text/html"};
+        resMsg.body = "successfully placed order :D\norder_ID: " + result.order_ID; 
+        return resMsg;
+    }
+    return;
+}
+
+async function applyDiscounts(orderInfoArray) {
+    let discounted_price = 0;
+    for(let i = 0; i < orderInfoArray[2].length; i++) {
+       let new_price = await getDiscounts(orderInfoArray[2][i].product_ID, orderInfoArray[2][i].cost);
+       discounted_price += new_price[0];
+    }
+    discounted_price = parseInt("FF", 16);
+    return  discounted_price;
+}
+
+async function executeQueries(query) {
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(result);
+        });
+    });
+}
+
+async function insertOrder(order) {
+    let body = "";
+    const orderAttributes = "(order_ID, email, date_made, payment_method, products_cost, tax_cost, shipping_cost, delivery_address, billing_address, status)";
+    let orderValues = `(${order.order_ID}, '${order.email}', '${order.date_made}', '${order.payment_method}', ${order.products_cost}, ${order.tax_cost}, ${order.shipping_cost}, '${order.delivery_address}', '${order.billing_address}', '${order.status}')`;
+    let query = "insert into orders " + orderAttributes + " values "  + orderValues;
+    return new Promise((resolve, reject) => {
+        dBCon.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return body;
+            }
+            resolve(result);
+        });
+    });
+}
+
+async function cancelOrder(req, body, urlParts) {
+    let resMsg = {};
+
+    try {
+        const parsedBody = JSON.parse(body);
+        const orderID = parsedBody.order_ID;
+
+        // Verify that the order exists in the database
+        const [orderStatus] = await dBCon.promise().query(
+            'SELECT status FROM orders WHERE  order_ID = ?', 
+            [orderID]
+        );
+
+        if (typeof orderStatus[0] == "undefined") {
+            return {
+                code: 404,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order not found." })
+            };
+        } 
+
+        // Check the status of the order to ensure it has not been shipped yet
+        if (orderStatus[0].status != 'not shipped') {
+            return {
+                code: 409,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order has already been shipped and cannot be canceled." })
+            };
+        } 
+       const refund = await stripe.refunds.create({
+          charge: '',
+            });
+       
+        // Proceed with the cancellation
+        await dBCon.promise().query(
+            "UPDATE orders SET status = ? WHERE order_ID = ?;", 
+            ["canceled", parseInt(orderID)]
+        );
+        
+    
+    
+        // Output the order ID and total refund
+        resMsg = {
+            code: 200,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order cancelled successfully and refund processed.", orderID: order.order_ID, totalRefund: order.products_cost})
+        };
+        
+    } catch (error) {
+        console.error('Error cancelling order or processing refund:', error);
+        resMsg = {
+            code: 500,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Internal server error while cancelling order or processing refund." })
+        };
+    }
+
+    return resMsg;
+}
+
+//Body is a JSON with the order number (the order has to be made by the user)
+async function returnOrder(req, body, urlParts){
+    let userEmail = await getEmail(req);
+    body = JSON.parse(body);
+    let orderID = body.orderID;
+    
+    const [returnStatus] = await dBCon.promise().query(
+        'SELECT status FROM orders WHERE email = ? AND order_ID = ?', 
+        [userEmail, orderID]
+    );
+
+    if(typeof returnStatus[0] === "undefined"){
+        return {
+            code: 404,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order not found."})
+        };
+    }
+    else if(returnStatus[0].status !== "delivered"){
+        return {
+            code: 409,
+            hdrs: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Order has not been delivered yet and cannot be returned"})
+        };
+    }
+    else{
+        const currentDate = new Date();
+        const [date] = await dBCon.promise().query(
+            'SELECT date_made FROM orders WHERE email = ? AND order_ID = ?', 
+            [userEmail, orderID]
+        );
+        const orderDate = new Date(date[0].date_made);
+
+        let differenceTime = currentDate.getTime() - orderDate.getTime();
+        let differenceDays = Math.round(differenceTime / (1000 * 3600 * 24));
+
+        if(differenceDays > 30){
+            return {
+                code: 409,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Order has been delivered for longer than 30 days and cannot be returned"})
+            };
+        }
+        else{
+            const [productCost] = await dBCon.promise().query(
+                'SELECT products_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const [taxCost] = await dBCon.promise().query(
+                'SELECT tax_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const [shippingCost] = await dBCon.promise().query(
+                'SELECT shipping_cost FROM orders WHERE email = ? AND order_ID = ?', 
+                [userEmail, orderID]
+            );
+            const totalCost = parseFloat(productCost[0].products_cost) + parseFloat(taxCost[0].tax_cost) + parseFloat(shippingCost[0].shipping_cost);
+
+            await dBCon.promise().query(
+                "UPDATE orders SET status = ? WHERE order_ID = ?;", 
+                ["returned", orderID]
+            );
+
+            return {
+                code: 200,
+                hdrs: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "A refund of " + totalCost + " dollars has been refunded to your card"})
+            };
+        }
+    }
+}
+
+async function postReview(req, requestBody) {
+    let reviewData;
+    try {
+        reviewData = JSON.parse(requestBody);
+    } catch (error) {
+        return {
+            code: 400,
+            hdrs: {"Content-Type": "text/html"},
+            body: "Invalid request body - JSON parsing failed."
+        };
+    }
+ 
+ 
+    // Ensure that reviewData contains email, product_ID, score, description, and created fields
+    // The 'created' field will need to be generated here, as an example:
+    const created = new Date().toISOString().slice(0, 19).replace('T', ' ');
+ 
+ 
+    const insertQuery = "INSERT INTO productreviews (product_ID, email, score, description, created) VALUES (?, ?, ?, ?, ?)";
+ 
+ 
+    try {
+        const [result] = await dBCon.promise().execute(insertQuery, [reviewData.product_ID, reviewData.email, reviewData.score, reviewData.review_text, created]);
+ 
+ 
+        if (result.affectedRows > 0) {
+            return {
+                code: 200,
+                hdrs: {"Content-Type": "text/html"},
+                body: "Review successfully posted."
+            };
+        } else {
+            return {
+                code: 500,
+                hdrs: {"Content-Type": "text/html"},
+                body: "Failed to post review for an unknown reason."
+            };
+        }
+    } catch (error) {
+        console.error(error);
+        return failed(); // Make sure the failed() function correctly reflects this context
+    }
+ } 

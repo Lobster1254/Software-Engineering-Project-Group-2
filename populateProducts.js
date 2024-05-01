@@ -15,13 +15,14 @@ readline.question('Enter password: ', pass => { // read password
     });
     dBCon.connect(function(err) { if (err) throw err; });
     console.log("Connected.");
-    loadProducts();
+    loadProducts("tablet");
+    loadProducts("camera");
 });
 
-async function loadProducts() {
+async function loadProducts(productType) {
     let products;
     try {
-        products = fs.readFileSync('tablets.json', 'utf8');
+        products = fs.readFileSync(productType + 's.json', 'utf8');
     } catch (error) {
         throw error;
     }
@@ -30,13 +31,11 @@ async function loadProducts() {
     for (let i = 0; i < products.category_results.length; i++) {
         let product_ID = products.category_results[i].product.product_id;
         let name = products.category_results[i].product.title;
-        name = "`" + name + "`";
-        name = name.replace("'", "\\'");
+        name = name.replaceAll("'", "\\'");
         let description;
         if (products.category_results[i].product.description) {
             description = products.category_results[i].product.description;
-            description = "`" + description + "`";
-            description = description.replace("'", "\\'");
+            description = description.replaceAll("'", "\\'");
         } else
             description = null;
         let stock
@@ -48,14 +47,13 @@ async function loadProducts() {
         let height_in = Math.floor(Math.random() * 2 + 1);
         let width_in = Math.floor(Math.random() * 24 + 1);
         let length_in = Math.floor(Math.random() * 24 + 1);
-        let category = "tablet";
+        let category = productType;
         let weight_oz = Math.floor(Math.random() * 30 + 1);
         query = "replace into products (product_ID, name, description, stock, price, height_in, width_in, length_in, category, weight_oz) values ('"
             + product_ID + "', '" + name + "', '" + description + "', '" + stock + "', '" + price + "', '" + height_in + "', '" + width_in + "', '"
             + length_in + "', '" + category + "', '" + weight_oz + "');";
         await dBCon.promise().query(query).then(([ result ]) => {
-            count++
-            console.log("Added product " + count + ".");
+            console.log("Added product " + product_ID + ".");
         }).catch(error => {
             console.log(error);
         });
